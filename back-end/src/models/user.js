@@ -26,9 +26,6 @@ const userSchema = new mongoose.Schema({
       type: String,
     },
   },
-  friendIdsList: {
-    type: Array,
-  },
 });
 
 module.exports = mongoose.model("User", userSchema);

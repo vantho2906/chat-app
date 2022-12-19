@@ -7,7 +7,7 @@ module.exports = {
   login: async (req, res, next) => {
     try {
       const { phone, password } = req.body;
-      const user = await User.findOne({ phone });
+      const user = await User.findOne({ phone: phone });
       if (!user)
         return res.status(400).send({ message: "Incorrect Phone or Password" });
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -55,9 +55,29 @@ module.exports = {
       let friendId =
         chatRoom.userIds[0] != id ? chatRoom.userIds[0] : chatRoom.userIds[1];
       User.findById(friendId).select({_id: 1,fullname: 1, avatar: 1}).exec((err, user) => {
+        user.chatRoomId = chatRoom._id.toString();
         contacts.push(user)
       })
     })
     return res.status(200).send({ data: contacts, message: "Get all contacts successfully!" });
   },
-};
+
+  findByFullname: async (req, res, next) => {
+    const {fullname} = req.body
+    const regex = new RegExp('/'+fullname+'/i')
+    const users = await User.find({fullname: {$regex: regex }}).select({_id: 1, fullname: 1, avatar: 1})
+    return res.status(200).send({data: users, message: "Find users successfully!"})
+  },
+
+  findByPhone: async (req, res, next) => {
+    const { phone } = req.body;
+    const user = await User.find({ phone: phone }).select({
+      _id: 1,
+      fullname: 1,
+      avatar: 1,
+    });
+    return res
+      .status(200)
+      .send({ data: users, message: "Find user successfully!" });
+  }
+}

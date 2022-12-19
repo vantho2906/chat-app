@@ -6,15 +6,12 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    users: Array,
-    sender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    senderId: {
+      type: String,
       required: true,
     },
-    chatRoom: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Chatroom",
+    chatRoomId: {
+      type: String,
       required: true,
     },
   },
