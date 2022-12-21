@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
     length: 10,
   },
+  username: {
+    type: String,
+    required: true,
+  },
   phone: {
     type: String,
     required: true,
@@ -25,6 +29,10 @@ const userSchema = new mongoose.Schema({
     imageBase64: {
       type: String,
     },
+  },
+  friendIdsList: {
+    type: Array,
+    default: [],
   },
 });
 

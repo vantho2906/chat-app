@@ -10,8 +10,8 @@ const router = require("express").Router();
 
 router.post("/login", login);
 router.post("/register", register);
-router.get("/get-contacts/:id", getAllContacts);
+router.get("/get-contacts/:username", getAllContacts);
 router.post("/fullname", findByFullname);
-router.post("/phonhe", findByPhone);
+router.post("/phone", findByPhone);
 
 module.exports = router;
