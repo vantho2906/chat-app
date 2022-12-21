@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark, faImage } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -10,7 +8,6 @@ import { registerRoute } from "../utils/APIRoutes";
 
 function Register() {
   const navigate = useNavigate();
-  // const [avatarName, setAvatarName] = useState("");
   const [values, setValues] = useState({
     fullname: "",
     username: "",
@@ -97,10 +94,7 @@ function Register() {
       toast.error("Phone number invalid", toastOptions);
       return false;
     }
-    // } else if (file === null) {
-    //   toast.error("Avatar must be required", toastOptions);
-    //   return false;
-    // }
+
     return true;
   };
 
@@ -148,32 +142,6 @@ function Register() {
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
-          {/* <div id="input-file">
-            <label htmlFor="file">
-              <FontAwesomeIcon icon={faImage} size="lg" />
-              <p>{avatarName ? `File: ${avatarName}` : "Add an avatar"}</p>
-            </label>
-            <input
-              type="file"
-              id="file"
-              name="file"
-              onChange={(e) => {
-                setAvatarName(e.target.files[0].name);
-                handleChange(e);
-              }}
-            />
-            {avatarName && (
-              <FontAwesomeIcon
-                icon={faCircleXmark}
-                size="1x"
-                id="close-icon"
-                onClick={() => {
-                  setAvatarName("");
-                  values.file = null;
-                }}
-              />
-            )}
-          </div> */}
 
           <button type="submit">Create User</button>
           <span>
@@ -210,8 +178,7 @@ const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background-color: #a1e2d9;
-    opacity: 0.5;
+    background-color: rgba(161, 226, 217, 0.5);
     box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
     border-radius: 1rem;
     padding: 2rem 5rem;

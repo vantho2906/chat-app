@@ -14,21 +14,21 @@ module.exports = {
         username: username,
         phone: phone,
       });
-      // const courier = CourierClient({
-      //   authorizationToken: process.env.COURIER_TOKEN,
-      // });
-      // const { requestId } = await courier.send({
-      //   message: {
-      //     to: {
-      //       phone_number: "84" + phone,
-      //     },
-      //     template: "QHPFQKVS4R4T09HZY083AGEXA70S",
-      //     data: {
-      //       recipientName: username,
-      //       OTPcode: OTPcode,
-      //     },
-      //   },
-      // });
+      const courier = CourierClient({
+        authorizationToken: process.env.COURIER_TOKEN,
+      });
+      const { requestId } = await courier.send({
+        message: {
+          to: {
+            phone_number: "84" + phone,
+          },
+          template: "QHPFQKVS4R4T09HZY083AGEXA70S",
+          data: {
+            recipientName: username,
+            code: OTPcode,
+          },
+        },
+      });
       return res
         .status(200)
         .send({ message: "send OTP successfully!", data: OTPentity });
@@ -40,7 +40,7 @@ module.exports = {
     const OTPcode = OTPgenerate();
     const OTPentity = OTPmodel.findOneAndUpdate(
       { username: username, phone: phone },
-      { OTPcode: OTPcode }
+      { code: OTPcode }
     );
     const courier = CourierClient({
       authorizationToken: "pk_prod_NVE4N6VZG04BFRKFTRHPNN9YJSZW",
@@ -53,7 +53,7 @@ module.exports = {
         template: "QHPFQKVS4R4T09HZY083AGEXA70S",
         data: {
           recipientName: username,
-          OTPcode: OTPcode,
+          code: OTPcode,
         },
       },
     });

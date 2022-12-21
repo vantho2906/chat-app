@@ -53,7 +53,7 @@ function ConfirmOTP() {
       console.log(res);
       if (res.status === 200) {
         console.log("successfully");
-        navigate("/chat");
+        navigate("/register/avatar");
       }
     });
   };
