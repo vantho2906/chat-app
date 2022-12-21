@@ -9,12 +9,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 connection();
 
-
-app.use('/',routes)
-
 app.get("/index", async (req, res) => {
   res.sendFile(__dirname + "/src/views/index.html");
 });
+app.use('/',routes)
+
 
 app.get("/photo", async (req, res) => {
   res.sendFile(__dirname + "/src/views/show.html");

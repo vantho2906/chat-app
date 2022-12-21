@@ -4,7 +4,7 @@ const UserModel = require("../models/user");
 var ObjectId = require("mongodb").ObjectId;
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "../public");
+    cb(null, "src/public");
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
@@ -12,11 +12,8 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage: storage });
 module.exports = {
-  upload: () =>{
-    upload.single('avatar')
-  },
-  uploadAvatar: (req, res, next) => {
-    const user = UserModel.findOne({ username: req.body.username });
+  uploadAvatar: async (req, res, next) => {
+    const user = await UserModel.findOne({ username: req.body.username });
     if (!user) return res.status(400).send({ message: "User not found" });
     if (!req.file)
       return res.status(400).send({ message: "Please upload a file" });
@@ -24,11 +21,15 @@ module.exports = {
     if (typeOfFile.match("/JPG|jpg|jpeg|png|gif/")) {
       let img = fs.readFileSync(req.file.path);
       let encode_image = img.toString("base64");
-      user.avatar.contentType = req.file.mimetype;
-      user.avatar.imageBase64 = encode_image;
-      user.save();
+      const avatar = { contentType: req.file.mimetype, imageBase64: encode_image };
+      // user.avatar.contentType = req.file.mimetype;
+      // user.avatar.imageBase64 = encode_image;
+      user.avatar = avatar
+      await user.save();
+      user.password = undefined
       res.status(200).send({
         message: "Upload image successfully",
+        data: user
       });
     } else {
       return res.status(400).send({ message: "Only image file is allowed" });
