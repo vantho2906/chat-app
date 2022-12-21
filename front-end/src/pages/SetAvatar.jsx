@@ -17,7 +17,8 @@ function SetAvatar() {
     };
     reader.readAsDataURL(e.target.files[0]);
   };
-  console.log(avatar);
+
+  const handleSubmit = (e) => {};
 
   return (
     <FormContainer>
