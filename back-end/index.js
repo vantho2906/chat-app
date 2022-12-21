@@ -9,7 +9,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 connection();
 
+<<<<<<< HEAD
 app.use("/", routes);
+=======
+app.get("/index", async (req, res) => {
+  res.sendFile(__dirname + "/src/views/index.html");
+});
+app.use('/',routes)
+>>>>>>> 116c34c19b8c22330d27d7de753dd92a2e2ef809
+
 
 app.get("/photo", async (req, res) => {
   res.sendFile(__dirname + "/src/views/show.html");
