@@ -12,6 +12,10 @@ connection();
 
 app.use('/',routes)
 
+app.get("/index", async (req, res) => {
+  res.sendFile(__dirname + "/src/views/index.html");
+});
+
 app.get("/photo", async (req, res) => {
   res.sendFile(__dirname + "/src/views/show.html");
 });

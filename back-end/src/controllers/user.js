@@ -7,7 +7,7 @@ module.exports = {
   login: async (req, res, next) => {
     try {
       const { phone, password } = req.body;
-      const user = await User.findOne({ phone: phone });
+      const user = await User.findOne({ phone: phone })
       if (!user)
         return res.status(400).send({ message: "Incorrect Phone or Password" });
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -15,7 +15,7 @@ module.exports = {
         return res.status(400).send({
           message: "Incorrect Phone or Password",
         });
-      delete user.password;
+      user.password = undefined;
       return res.status(200).send({ data: user });
     } catch (ex) {
       next(ex);
@@ -31,9 +31,11 @@ module.exports = {
       const usernameCheck = await User.findOne({ username });
       if (usernameCheck)
         return res.status(400).send({ message: "Username already used" });
-      if(password != confirmPassword)
-        return res.status(400).send({ message: "Password and confirm password are not the same" });
-      return res.status(200).send({message: "Skip this step successfully!"});
+      if (password != confirmPassword)
+        return res
+          .status(400)
+          .send({ message: "Password and confirm password are not the same" });
+      return res.status(200).send({ message: "Skip this step successfully!" });
     } catch (ex) {
       next(ex);
     }
