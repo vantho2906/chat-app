@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,14 +10,16 @@ import { registerRoute } from "../utils/APIRoutes";
 
 function Register() {
   const navigate = useNavigate();
-  const [avatarName, setAvatarName] = useState("");
+  // const [avatarName, setAvatarName] = useState("");
   const [values, setValues] = useState({
+    fullname: "",
     username: "",
-    emailPhone: "",
+    phone: "",
     password: "",
     confirmPassword: "",
-    avatar: null,
   });
+
+  // console.log(typeof values.avatar);
 
   const toastOptions = {
     position: "bottom-right",
@@ -27,30 +29,46 @@ function Register() {
     theme: "dark",
   };
 
+  // useEffect(() => {
+  //   if (localStorage.getItem("chat-app-user")) {
+  //     navigate("/");
+  //   }
+  // }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (handleValidation()) {
-      const { username, emailPhone, password, confirmPassword, avatar } =
-        values;
-      const { data } = await axios.post(registerRoute, {
+      const { username, phone, password, confirmPassword, fullname } = values;
+      console.log(values);
+      const data = await axios.post(registerRoute, {
         username,
-        emailPhone,
+        phone,
         password,
-        avatar,
+        confirmPassword,
       });
-      if (data.status === false) {
+      // const { message } = await axios.post(avatarRoute, {
+      //   id,
+      // });
+      if (data.status === 400) {
         toast.error(data.msg, toastOptions);
       }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+      if (data.status === 200) {
+        // localStorage.setItem("chat-app-user", JSON.stringify(data.data));
+        navigate("/register/confirmOTP", {
+          state: {
+            username: username,
+            phone: phone,
+            password: password,
+            fullname: fullname,
+          },
+        });
       }
     } else {
     }
   };
 
   const handleValidation = () => {
-    const { username, emailPhone, password, confirmPassword, avatar } = values;
+    const { username, phone, password, confirmPassword } = values;
     if (password !== confirmPassword) {
       toast.error(
         "Password and confirm password should be same.",
@@ -63,26 +81,49 @@ function Register() {
     } else if (password.length < 8) {
       toast.error("Password should be greater than 8 characters", toastOptions);
       return false;
-    } else if (emailPhone === "") {
-      toast.error("Email must be required", toastOptions);
+    } else if (phone === "") {
+      toast.error("Phone must be required", toastOptions);
       return false;
-    } else if (avatar === null) {
-      toast.error("avatar must be required", toastOptions);
+    } else if (phone.length !== 10) {
+      toast.error("Phone must have 10 numbers", toastOptions);
+      return false;
+    } else if (
+      phone[0] !== "0" ||
+      (phone[1] !== "3" &&
+        phone[1] !== "5" &&
+        phone[1] !== "7" &&
+        phone[1] !== "8")
+    ) {
+      toast.error("Phone number invalid", toastOptions);
       return false;
     }
+    // } else if (file === null) {
+    //   toast.error("Avatar must be required", toastOptions);
+    //   return false;
+    // }
     return true;
   };
 
   const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
+    let value = e.target.files ? e.target.files : e.target.value;
+    setValues({
+      ...values,
+      [e.target.name]: value,
+    });
   };
   return (
     <>
       <FormContainer>
-        <form onSubmit={(e) => handleSubmit(e)}>
+        <form enctype="multipart/form-data" onSubmit={(e) => handleSubmit(e)}>
           <div className="brand">
             <h1>Chap-app</h1>
           </div>
+          <input
+            type="text"
+            placeholder="Fullname"
+            name="fullname"
+            onChange={(e) => handleChange(e)}
+          />
           <input
             type="text"
             placeholder="Username"
@@ -90,9 +131,9 @@ function Register() {
             onChange={(e) => handleChange(e)}
           />
           <input
-            type="text"
-            placeholder="Email / Phone"
-            name="emailPhone"
+            type="tel"
+            placeholder="Phone"
+            name="phone"
             onChange={(e) => handleChange(e)}
           />
           <input
@@ -107,16 +148,15 @@ function Register() {
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
-          <div id="input-file">
-            <label htmlFor="avatar">
+          {/* <div id="input-file">
+            <label htmlFor="file">
               <FontAwesomeIcon icon={faImage} size="lg" />
               <p>{avatarName ? `File: ${avatarName}` : "Add an avatar"}</p>
             </label>
             <input
               type="file"
-              id="avatar"
-              name="avatar"
-              accept="image/png, image/jpeg"
+              id="file"
+              name="file"
               onChange={(e) => {
                 setAvatarName(e.target.files[0].name);
                 handleChange(e);
@@ -129,11 +169,11 @@ function Register() {
                 id="close-icon"
                 onClick={() => {
                   setAvatarName("");
-                  values.avatar = null;
+                  values.file = null;
                 }}
               />
             )}
-          </div>
+          </div> */}
 
           <button type="submit">Create User</button>
           <span>
@@ -188,7 +228,7 @@ const FormContainer = styled.div`
         outline: none;
       }
     }
-    #avatar {
+    #file {
       display: none;
     }
     #input-file {

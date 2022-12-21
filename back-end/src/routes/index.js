@@ -10,7 +10,7 @@ router.get("/", function (req, res) {
 
 router.use("/upload", uploadRoute);
 router.use("/user", userRoute);
-router.use("/invite,", invitationRoute);
-router.use("/message,", messageRoute);
-router.use("/otp,", otpRoute);
+router.use("/invite", invitationRoute);
+router.use("/message", messageRoute);
+router.use("/otp", otpRoute);
 module.exports = router;

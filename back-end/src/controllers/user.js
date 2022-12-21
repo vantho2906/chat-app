@@ -31,9 +31,11 @@ module.exports = {
       const usernameCheck = await User.findOne({ username });
       if (usernameCheck)
         return res.status(400).send({ message: "Username already used" });
-      if(password != confirmPassword)
-        return res.status(400).send({ message: "Password and confirm password are not the same" });
-      return res.status(200).send({message: "Skip this step successfully!"});
+      if (password != confirmPassword)
+        return res
+          .status(400)
+          .send({ message: "Password and confirm password are not the same" });
+      return res.status(200).send({ message: "Skip this step successfully!" });
     } catch (ex) {
       next(ex);
     }
