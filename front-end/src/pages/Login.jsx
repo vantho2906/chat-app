@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,7 +9,7 @@ import { loginRoute } from "../utils/APIRoutes";
 function Login() {
   const navigate = useNavigate();
   const [values, setValues] = useState({
-    username: "",
+    phone: "",
     password: "",
   });
 
@@ -21,18 +21,25 @@ function Login() {
     theme: "dark",
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("chat-app-user")) {
+      navigate("/");
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (handleValidation()) {
-      const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
+      const { phone, password } = values;
+      const data = await axios.post(loginRoute, {
+        phone,
         password,
       });
-      if (data.status === false) {
+      console.log(data);
+      if (data.status === 400) {
         toast.error(data.msg, toastOptions);
       }
-      if (data.status === true) {
+      if (data.status === 200) {
         localStorage.setItem("chat-app-user", JSON.stringify(data.user));
         navigate("/");
       }
@@ -41,11 +48,11 @@ function Login() {
   };
 
   const handleValidation = () => {
-    const { username, password } = values;
+    const { phone, password } = values;
     if (password === "") {
       toast.error("Username and Password is required", toastOptions);
       return false;
-    } else if (username.length === "") {
+    } else if (phone === "") {
       toast.error("Username and Password is required", toastOptions);
       return false;
     }
@@ -63,11 +70,10 @@ function Login() {
             <h1>Chap-app</h1>
           </div>
           <input
-            type="text"
-            placeholder="Username"
-            name="username"
+            type="tel"
+            placeholder="Phone"
+            name="phone"
             onChange={(e) => handleChange(e)}
-            min="3"
           />
           <input
             type="password"

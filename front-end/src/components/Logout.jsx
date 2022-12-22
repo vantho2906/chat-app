@@ -1,0 +1,33 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+
+function Logout() {
+  const navigate = useNavigate();
+  const handleClick = async () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+  return (
+    <Button onClick={handleClick}>
+      <FontAwesomeIcon icon={faRightFromBracket} id="icon" />
+    </Button>
+  );
+}
+
+const Button = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  .icon {
+    font-size: 1.3rem;
+    color: #ebe7ff;
+  }
+`;
+
+export default Logout;

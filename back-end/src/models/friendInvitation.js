@@ -13,8 +13,8 @@ const friendInvitationSchema = new mongoose.Schema(
     status: {
       type: String,
       require: true,
-      default: 'processing' // 'cancelled' and 'agreed'
-    }
+      default: "processing", // 'cancelled' and 'agreed'
+    },
   },
   {
     timestamps: true,
