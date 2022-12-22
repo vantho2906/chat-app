@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const friendInvitationSchema = new mongoose.Schema(
   {
@@ -13,7 +13,7 @@ const friendInvitationSchema = new mongoose.Schema(
     status: {
       type: String,
       require: true,
-      default: "processing", // 'cancelled' and 'agreed'
+      default: 'processing', // 'cancelled' and 'agreed'
     },
   },
   {
@@ -21,4 +21,4 @@ const friendInvitationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("FriendInvitation", friendInvitationSchema);
+module.exports = mongoose.model('FriendInvitation', friendInvitationSchema);

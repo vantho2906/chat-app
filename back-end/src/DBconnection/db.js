@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-mongoose.set("strictQuery", true);
+mongoose.set('strictQuery', true);
 let connect = () => {
   mongoose
     .connect(process.env.MONGO_URL, {
@@ -8,9 +8,9 @@ let connect = () => {
       useUnifiedTopology: true,
     })
     .then(() => {
-      console.log("DB connection established");
+      console.log('DB connection established');
     })
-    .catch((err) => console.log(err.message));
+    .catch(err => console.log(err.message));
 };
 
 module.exports = connect;

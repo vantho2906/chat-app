@@ -1,8 +1,8 @@
-const { OTPgenerate } = require("../utils/OTPutil");
-const OTPmodel = require("../models/otp");
-const Usermodel = require("../models/user");
-const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
+const { OTPgenerate } = require('../utils/OTPutil');
+const OTPmodel = require('../models/otp');
+const Usermodel = require('../models/user');
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 module.exports = {
   sendOTP: async (req, res, next) => {
@@ -16,7 +16,7 @@ module.exports = {
     const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     // Create a transporter object for sending emails
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_ACCOUNT,
         pass: process.env.EMAIL_PASSWORD,
@@ -26,7 +26,7 @@ module.exports = {
     const mailOptions = {
       from: process.env.EMAIL_ACCOUNT,
       to: email,
-      subject: "Sending OTP",
+      subject: 'Sending OTP',
       text: text,
     };
     // Send the email
@@ -34,9 +34,9 @@ module.exports = {
       if (error) {
         return res
           .status(400)
-          .send({ message: "Send OTP failed!", error: error });
+          .send({ message: 'Send OTP failed!', error: error });
       } else {
-        return res.status(200).send({ message: "Send OTP successfully!" });
+        return res.status(200).send({ message: 'Send OTP successfully!' });
       }
     });
   },
@@ -51,7 +51,7 @@ module.exports = {
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     // Create a transporter object for sending emails
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_ACCOUNT,
         pass: process.env.EMAIL_PASSWORD,
@@ -61,7 +61,7 @@ module.exports = {
     const mailOptions = {
       from: process.env.EMAIL_ACCOUNT,
       to: email,
-      subject: "Sending OTP",
+      subject: 'Sending OTP',
       text: text,
     };
     // Send the email
@@ -69,9 +69,9 @@ module.exports = {
       if (error) {
         return res
           .status(400)
-          .send({ message: "Send OTP failed!", error: error });
+          .send({ message: 'Send OTP failed!', error: error });
       } else {
-        return res.status(200).send({ message: "Resend OTP successfully!" });
+        return res.status(200).send({ message: 'Resend OTP successfully!' });
       }
     });
   },
@@ -85,12 +85,12 @@ module.exports = {
       if (OTPentity) {
         let time = (now.getTime() - OTPentity.updatedAt.getTime()) / 1000;
         if (time > 120)
-          return res.status(400).send({ message: "Your OTP is expired" });
+          return res.status(400).send({ message: 'Your OTP is expired' });
       }
       if (!OTPentity)
-        return res.status(400).send({ message: "You enter wrong OTP" });
+        return res.status(400).send({ message: 'You enter wrong OTP' });
       if (OTPentity.username != username || OTPentity.phone != phone)
-        return res.status(400).send({ message: "You enter wrong OTP" });
+        return res.status(400).send({ message: 'You enter wrong OTP' });
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await Usermodel.create({
         username: username,
@@ -99,7 +99,7 @@ module.exports = {
       });
       user.password = undefined;
       return res.status(200).send({
-        message: "You enter OTP right. Register successfully!",
+        message: 'You enter OTP right. Register successfully!',
         data: user,
       });
     }

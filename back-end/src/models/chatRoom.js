@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const chatRoomSchema = new mongoose.Schema(
   {
     userIds: {
       type: Array,
-      require: true
-    }
+      require: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Chatroom", chatRoomSchema);
+module.exports = mongoose.model('Chatroom', chatRoomSchema);

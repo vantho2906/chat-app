@@ -1,6 +1,6 @@
-const User = require("../models/user");
-const ChatRoom = require("../models/chatRoom");
-const bcrypt = require("bcrypt");
+const User = require('../models/user');
+const ChatRoom = require('../models/chatRoom');
+const bcrypt = require('bcrypt');
 
 module.exports = {
   login: async (req, res, next) => {
@@ -8,11 +8,11 @@ module.exports = {
       const { phone, password } = req.body;
       const user = await User.findOne({ phone: phone });
       if (!user)
-        return res.status(400).send({ message: "Incorrect Phone or Password" });
+        return res.status(400).send({ message: 'Incorrect Phone or Password' });
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid)
         return res.status(400).send({
-          message: "Incorrect Phone or Password",
+          message: 'Incorrect Phone or Password',
         });
       user.password = undefined;
       return res.status(200).send({ data: user });
@@ -26,15 +26,15 @@ module.exports = {
       const { phone, username, password, confirmPassword } = req.body;
       const phoneCheck = await User.findOne({ phone });
       if (phoneCheck)
-        return res.status(400).send({ message: "Phone already used" });
+        return res.status(400).send({ message: 'Phone already used' });
       const usernameCheck = await User.findOne({ username });
       if (usernameCheck)
-        return res.status(400).send({ message: "Username already used" });
+        return res.status(400).send({ message: 'Username already used' });
       if (password != confirmPassword)
         return res
           .status(400)
-          .send({ message: "Password and confirm password are not the same" });
-      return res.status(200).send({ message: "Skip this step successfully!" });
+          .send({ message: 'Password and confirm password are not the same' });
+      return res.status(200).send({ message: 'Skip this step successfully!' });
     } catch (ex) {
       next(ex);
     }
@@ -42,17 +42,17 @@ module.exports = {
 
   getAllContacts: async (req, res, next) => {
     const user = await User.findOne({ username: req.params.username });
-    if (!user) return res.status(400).send({ message: "User not exist" });
+    if (!user) return res.status(400).send({ message: 'User not exist' });
     const chatRooms = await ChatRoom.find({
       $and: [
         { userIds: { $elemMatch: { $eq: user._id.toString() } } },
         { userIds: { $elemMatch: { $in: user.friendIdsList } } },
       ],
-    }).sort({ updatedAt: "desc" });
+    }).sort({ updatedAt: 'desc' });
     if (chatRoom.length == 0)
-      return res.status(400).send({ message: "No contacts available" });
+      return res.status(400).send({ message: 'No contacts available' });
     let contacts = [];
-    chatRooms.map((chatRoom) => {
+    chatRooms.map(chatRoom => {
       let friendId =
         chatRoom.userIds[0] != id ? chatRoom.userIds[0] : chatRoom.userIds[1];
       User.findById(friendId)
@@ -64,14 +64,13 @@ module.exports = {
     });
     return res
       .status(200)
-      .send({ data: contacts, message: "Get all contacts successfully!" });
+      .send({ data: contacts, message: 'Get all contacts successfully!' });
   },
-  
-  getCurrentUser: async (userId) => {
-    const user =  await User.findById(userId);
-    if(!user) return false
-    user.password = undefined
-    return user
-  }
 
+  getCurrentUser: async userId => {
+    const user = await User.findById(userId);
+    if (!user) return false;
+    user.password = undefined;
+    return user;
+  },
 };

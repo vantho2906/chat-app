@@ -1,21 +1,20 @@
-const express = require("express");
-const cors = require("cors");
+const express = require('express');
+const cors = require('cors');
 const app = express();
-const connection = require("./src/DBconnection/db");
-const routes = require("./src/routes/index");
-require("dotenv").config();
+const connection = require('./src/DBconnection/db');
+const routes = require('./src/routes/index');
+require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 connection();
-app.get("/index", async (req, res) => {
-  res.sendFile(__dirname + "/src/views/index.html");
+app.get('/index', async (req, res) => {
+  res.sendFile(__dirname + '/src/views/index.html');
 });
-app.use('/',routes)
+app.use('/', routes);
 
-
-app.get("/photo", async (req, res) => {
-  res.sendFile(__dirname + "/src/views/show.html");
+app.get('/photo', async (req, res) => {
+  res.sendFile(__dirname + '/src/views/show.html');
 });
 
 const server = app.listen(process.env.PORT, () => {

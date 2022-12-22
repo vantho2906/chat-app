@@ -1,4 +1,4 @@
-const otpGenerator = require("otp-generator");
+const otpGenerator = require('otp-generator');
 
 module.exports = {
   OTPgenerate: () => {

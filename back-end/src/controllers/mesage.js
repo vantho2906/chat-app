@@ -1,7 +1,7 @@
-const User = require("../models/user");
-const ChatRoom = require("../models/chatRoom");
-const Message = require("../models/message");
-const bcrypt = require("bcrypt");
+const User = require('../models/user');
+const ChatRoom = require('../models/chatRoom');
+const Message = require('../models/message');
+const bcrypt = require('bcrypt');
 
 module.exports = {
   getMessages: async (req, res, next) => {
@@ -10,14 +10,14 @@ module.exports = {
       const chatRoomId = req.params.chatRoomId;
       const messages = await Message.find({
         chatRoomId: chatRoomId,
-      }).sort({ updatedAt: "asc" });
-      const projectedMessages = messages.map((msg) => {
+      }).sort({ updatedAt: 'asc' });
+      const projectedMessages = messages.map(msg => {
         return {
           fromSelf: msg.senderId == myId,
           message: msg.message,
         };
       });
-      return res.status(200).send({data: projectedMessages});
+      return res.status(200).send({ data: projectedMessages });
     } catch (ex) {
       next(ex);
     }
@@ -36,18 +36,14 @@ module.exports = {
         updatedAt: new Date(),
       });
       if (!result)
-        return res
-          .status(400)
-          .send({ message: "Unavailable chat room" });
+        return res.status(400).send({ message: 'Unavailable chat room' });
       if (data)
-        return res.status(200).send({ message: "Message added successfully." });
+        return res.status(200).send({ message: 'Message added successfully.' });
       return res
         .status(400)
-        .send({ message: "Failed to add message to the database" });
+        .send({ message: 'Failed to add message to the database' });
     } catch (ex) {
       next(ex);
     }
   },
-  
-  
 };

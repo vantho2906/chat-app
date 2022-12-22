@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
 module.exports = {
   findByFullname: async (req, res, next) => {
@@ -9,10 +9,10 @@ module.exports = {
       avatar: 1,
     });
     if (users.length == 0)
-      return res.status(400).send({ message: "Can not find" });
+      return res.status(400).send({ message: 'Can not find' });
     return res
       .status(200)
-      .send({ data: users, message: "Find users successfully!" });
+      .send({ data: users, message: 'Find users successfully!' });
   },
 
   findByPhone: async (req, res, next) => {
@@ -22,10 +22,10 @@ module.exports = {
       fullname: 1,
       avatar: 1,
     });
-    if (!user) return res.status(400).send({ message: "Can not find" });
+    if (!user) return res.status(400).send({ message: 'Can not find' });
     return res
       .status(200)
-      .send({ data: user, message: "Find user successfully!" });
+      .send({ data: user, message: 'Find user successfully!' });
   },
 
   findByEmail: async (req, res, next) => {
@@ -35,9 +35,9 @@ module.exports = {
       fullname: 1,
       avatar: 1,
     });
-    if (!user) return res.status(400).send({ message: "Can not find" });
+    if (!user) return res.status(400).send({ message: 'Can not find' });
     return res
       .status(200)
-      .send({ data: user, message: "Find user successfully!" });
+      .send({ data: user, message: 'Find user successfully!' });
   },
 };

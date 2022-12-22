@@ -1,11 +1,11 @@
 exports.InviteStatus = {
   processing() {
-    return "processing";
+    return 'processing';
   },
   cancelled() {
-    return "cancelled";
+    return 'cancelled';
   },
   agreed() {
-    return "agreed";
+    return 'agreed';
   },
 };
