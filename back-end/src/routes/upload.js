@@ -20,3 +20,4 @@ router.post("/", upload.single('avatar'), uploadAvatar);
 router.post("/upload-multiple", uploadMultipleImages);
 
 module.exports = router;
+

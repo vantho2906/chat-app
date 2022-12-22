@@ -2,62 +2,78 @@ const { OTPgenerate } = require("../utils/OTPutil");
 const OTPmodel = require("../models/otp");
 const Usermodel = require("../models/user");
 const bcrypt = require("bcrypt");
-const  { CourierClient } = require("@trycourier/courier") ;
+const nodemailer = require("nodemailer");
 
 module.exports = {
   sendOTP: async (req, res, next) => {
-    const { username, phone } = req.body;
+    const { username, email } = req.body;
     const OTPcode = OTPgenerate();
     const OTPentity = await OTPmodel.create({
       code: OTPcode,
       username: username,
-      phone: phone,
-    })
-    const courier = CourierClient({
-      authorizationToken: process.env.COURIER_TOKEN,
+      email: email,
     });
-    const { requestId } = await courier.send({
-      message: {
-        to: {
-          phone_number: "84"+phone,
-        },
-        template: "QHPFQKVS4R4T09HZY083AGEXA70S",
-        data: {
-          recipientName: username,
-          OTPcode: OTPcode,
-        },
+    const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
+    // Create a transporter object for sending emails
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
-    return res
-      .status(200)
-      .send({ message: "send OTP successfully!"});
+    // Define the email options
+    const mailOptions = {
+      from: process.env.EMAIL_ACCOUNT,
+      to: email,
+      subject: "Sending OTP",
+      text: text,
+    };
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res
+          .status(400)
+          .send({ message: "Send OTP failed!", error: error });
+      } else {
+        return res.status(200).send({ message: "Send OTP successfully!" });
+      }
+    });
   },
 
   resendOTP: async (req, res, next) => {
-    const { username, phone } = req.body;
+    const { username, email } = req.body;
     const OTPcode = OTPgenerate();
     const OTPentity = await OTPmodel.findOneAndUpdate(
-      { username: username, phone: phone },
+      { username: username, email: email },
       { code: OTPcode }
     );
-    const courier = CourierClient({
-      authorizationToken: "pk_prod_NVE4N6VZG04BFRKFTRHPNN9YJSZW",
-    });
-    const { requestId } = await courier.send({
-      message: {
-        to: {
-          phone_number: "84" + phone,
-        },
-        template: "QHPFQKVS4R4T09HZY083AGEXA70S",
-        data: {
-          recipientName: username,
-          OTPcode: OTPcode,
-        },
+    const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
+    // Create a transporter object for sending emails
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
-    return res
-      .status(200)
-      .send({ message: "send OTP successfully!" });
+    // Define the email options
+    const mailOptions = {
+      from: process.env.EMAIL_ACCOUNT,
+      to: email,
+      subject: "Sending OTP",
+      text: text,
+    };
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res
+          .status(400)
+          .send({ message: "Send OTP failed!", error: error });
+      } else {
+        return res.status(200).send({ message: "Resend OTP successfully!" });
+      }
+    });
   },
 
   confirmOTP: async (req, res, next) => {
@@ -65,7 +81,7 @@ module.exports = {
     const OTPentity = await OTPmodel.findOne({ code: OTPcode });
     console.log(OTPentity);
     let now = new Date();
-    if(OTPentity) {
+    if (OTPentity) {
       let time = (now.getTime() - OTPentity.updatedAt.getTime()) / 1000;
       if (time > 120)
         return res.status(400).send({ message: "Your OTP is expired" });
@@ -80,7 +96,7 @@ module.exports = {
       username,
       phone,
       password: hashedPassword,
-    })
+    });
     user.password = undefined;
     return res.status(200).send({
       message: "You enter OTP right. Register successfully!",

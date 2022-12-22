@@ -2,7 +2,6 @@ const User = require("../models/user");
 const ChatRoom = require("../models/chatRoom");
 const Message = require("../models/message");
 const bcrypt = require("bcrypt");
-var ObjectId = require("mongodb").ObjectId;
 
 module.exports = {
   getMessages: async (req, res, next) => {

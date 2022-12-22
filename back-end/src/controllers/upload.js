@@ -1,7 +1,6 @@
 const multer = require("multer");
 const fs = require("fs-extra");
 const UserModel = require("../models/user");
-var ObjectId = require("mongodb").ObjectId;
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "src/public");
@@ -22,8 +21,6 @@ module.exports = {
       let img = fs.readFileSync(req.file.path);
       let encode_image = img.toString("base64");
       const avatar = { contentType: req.file.mimetype, imageBase64: encode_image };
-      // user.avatar.contentType = req.file.mimetype;
-      // user.avatar.imageBase64 = encode_image;
       user.avatar = avatar
       await user.save();
       user.password = undefined

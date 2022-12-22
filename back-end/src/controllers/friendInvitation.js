@@ -3,7 +3,6 @@ const ChatRoom = require("../models/chatRoom");
 const Message = require("../models/message");
 const FriendInvitation = require("../models/friendInvitation");
 const { InviteStatus } = require("../utils/inviteStatus");
-var ObjectId = require("mongodb").ObjectId;
 
 module.exports = {
   sendFriendRequest: async (req, res, next) => {

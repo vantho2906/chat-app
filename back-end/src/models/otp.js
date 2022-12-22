@@ -12,10 +12,9 @@ const OTPSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    phone: {
+    email: {
       type: String,
       required: true,
-      length: 10,
     },
   },
   {

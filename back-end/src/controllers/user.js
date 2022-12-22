@@ -1,13 +1,12 @@
 const User = require("../models/user");
 const ChatRoom = require("../models/chatRoom");
 const bcrypt = require("bcrypt");
-var ObjectId = require("mongodb").ObjectId;
 
 module.exports = {
   login: async (req, res, next) => {
     try {
       const { phone, password } = req.body;
-      const user = await User.findOne({ phone: phone })
+      const user = await User.findOne({ phone: phone });
       if (!user)
         return res.status(400).send({ message: "Incorrect Phone or Password" });
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -67,29 +66,12 @@ module.exports = {
       .status(200)
       .send({ data: contacts, message: "Get all contacts successfully!" });
   },
+  
+  getCurrentUser: async (userId) => {
+    const user =  await User.findById(userId);
+    if(!user) return false
+    user.password = undefined
+    return user
+  }
 
-  findByFullname: async (req, res, next) => {
-    const { fullname } = req.body;
-    const regex = new RegExp("/" + fullname + "/i");
-    const users = await User.find({ fullname: { $regex: regex } }).select({
-      _id: 1,
-      fullname: 1,
-      avatar: 1,
-    });
-    return res
-      .status(200)
-      .send({ data: users, message: "Find users successfully!" });
-  },
-
-  findByPhone: async (req, res, next) => {
-    const { phone } = req.body;
-    const user = await User.find({ phone: phone }).select({
-      _id: 1,
-      fullname: 1,
-      avatar: 1,
-    });
-    return res
-      .status(200)
-      .send({ data: user, message: "Find user successfully!" });
-  },
 };
