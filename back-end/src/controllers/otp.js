@@ -8,7 +8,7 @@ module.exports = {
   sendOTP: async (req, res, next) => {
     const { username, email } = req.body;
     const OTPcode = OTPgenerate();
-    const OTPentity = OTPmodel.create({
+    const OTPentity = await OTPmodel.create({
       code: OTPcode,
       username: username,
       email: email,
@@ -82,25 +82,26 @@ module.exports = {
     console.log(OTPentity);
     let now = new Date();
     if (OTPentity) {
-    if (OTPentity) {
-      let time = (now.getTime() - OTPentity.updatedAt.getTime()) / 1000;
-      if (time > 120)
-        return res.status(400).send({ message: "Your OTP is expired" });
+      if (OTPentity) {
+        let time = (now.getTime() - OTPentity.updatedAt.getTime()) / 1000;
+        if (time > 120)
+          return res.status(400).send({ message: "Your OTP is expired" });
+      }
+      if (!OTPentity)
+        return res.status(400).send({ message: "You enter wrong OTP" });
+      if (OTPentity.username != username || OTPentity.phone != phone)
+        return res.status(400).send({ message: "You enter wrong OTP" });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await Usermodel.create({
+        username: username,
+        phone,
+        password: hashedPassword,
+      });
+      user.password = undefined;
+      return res.status(200).send({
+        message: "You enter OTP right. Register successfully!",
+        data: user,
+      });
     }
-    if (!OTPentity)
-      return res.status(400).send({ message: "You enter wrong OTP" });
-    if (OTPentity.username != username || OTPentity.phone != phone)
-      return res.status(400).send({ message: "You enter wrong OTP" });
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await Usermodel.create({
-      username: username,
-      phone,
-      password: hashedPassword,
-    });
-    user.password = undefined;
-    return res.status(200).send({
-      message: "You enter OTP right. Register successfully!",
-      data: user,
-    });
-  }
-}
+  },
+};
