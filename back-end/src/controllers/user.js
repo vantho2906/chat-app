@@ -40,6 +40,12 @@ module.exports = {
     }
   },
 
+  changePassword: async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).send({ message: 'User not found!' });
+  },
+
   getAllContacts: async (req, res, next) => {
     const user = await User.findOne({ username: req.params.username });
     if (!user) return res.status(400).send({ message: 'User not exist' });

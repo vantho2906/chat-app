@@ -5,6 +5,27 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 
 module.exports = {
+  sendEmail: async (email, text) => {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+    const mailOptions = {
+      from: process.env.EMAIL_ACCOUNT,
+      to: email,
+      subject: 'Sending OTP',
+      text: text,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return false;
+      }
+      return true;
+    });
+  },
   sendOTP: async (req, res, next) => {
     const { username, email } = req.body;
     const OTPcode = OTPgenerate();
@@ -14,31 +35,9 @@ module.exports = {
       email: email,
     });
     const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
-    // Create a transporter object for sending emails
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_ACCOUNT,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-    // Define the email options
-    const mailOptions = {
-      from: process.env.EMAIL_ACCOUNT,
-      to: email,
-      subject: 'Sending OTP',
-      text: text,
-    };
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return res
-          .status(400)
-          .send({ message: 'Send OTP failed!', error: error });
-      } else {
-        return res.status(200).send({ message: 'Send OTP successfully!' });
-      }
-    });
+    if (module.exports.sendEmail(email, text))
+      return res.status(200).send({ message: 'Send OTP successfully!' });
+    return res.status(400).send({ message: 'Send OTP failed!', error: error });
   },
 
   resendOTP: async (req, res, next) => {
@@ -49,31 +48,9 @@ module.exports = {
       { code: OTPcode }
     );
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
-    // Create a transporter object for sending emails
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_ACCOUNT,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-    // Define the email options
-    const mailOptions = {
-      from: process.env.EMAIL_ACCOUNT,
-      to: email,
-      subject: 'Sending OTP',
-      text: text,
-    };
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return res
-          .status(400)
-          .send({ message: 'Send OTP failed!', error: error });
-      } else {
-        return res.status(200).send({ message: 'Resend OTP successfully!' });
-      }
-    });
+    if (module.exports.sendEmail(email, text))
+      return res.status(200).send({ message: 'Resend OTP successfully!' });
+    return res.status(400).send({ message: 'Send OTP failed!', error: error });
   },
 
   confirmOTP: async (req, res, next) => {
