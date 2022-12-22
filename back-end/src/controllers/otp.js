@@ -49,7 +49,7 @@ module.exports = {
     );
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     if (module.exports.sendEmail(email, text))
-      return res.status(200).send({ message: 'Resend OTP successfully!' });
+      return res.status(200).send({ message: 'Send OTP successfully!' });
     return res.status(400).send({ message: 'Send OTP failed!', error: error });
   },
 

@@ -41,9 +41,39 @@ module.exports = {
   },
 
   changePassword: async (req, res, next) => {
-    const { email } = req.body;
+    const { password, newPassword, confirmNewPassword, email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).send({ message: 'User not found!' });
+    if (user.password != password)
+      return res.status(400).send({ message: 'Old password is incorrect!' });
+    if (newPassword.length < 8)
+      return res
+        .status(400)
+        .send({ message: 'New password must have length at least of 8' });
+    if (newPassword != confirmNewPassword)
+      return res
+        .status(400)
+        .send({ message: 'Password and confirm password are not the same' });
+    user.password = newPassword;
+    await user.save();
+    return res.status(200).send({ message: 'Change password successfully!' });
+  },
+
+  forgotPassword: async (req, res, next) => {
+    const { newPassword, confirmNewPassword, email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).send({ message: 'User not found!' });
+    if (newPassword.length < 8)
+      return res
+        .status(400)
+        .send({ message: 'New password must have length at least of 8' });
+    if (newPassword != confirmNewPassword)
+      return res
+        .status(400)
+        .send({ message: 'Password and confirm password are not the same' });
+    user.password = newPassword;
+    await user.save();
+    return res.status(200).send({ message: 'Change password successfully!' });
   },
 
   getAllContacts: async (req, res, next) => {
