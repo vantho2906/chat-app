@@ -12,6 +12,9 @@ connection();
 app.get('/index', async (req, res) => {
   res.sendFile(__dirname + '/src/views/index.html');
 });
+app.use('/socket', (req, res) =>
+  res.sendFile(__dirname + '/src/views/test.html')
+);
 app.use('/', routes);
 
 app.get('/photo', async (req, res) => {

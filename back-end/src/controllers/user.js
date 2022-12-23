@@ -23,13 +23,16 @@ module.exports = {
 
   register: async (req, res, next) => {
     try {
-      const { phone, username, password, confirmPassword } = req.body;
+      const { phone, username, password, confirmPassword, email } = req.body;
       const phoneCheck = await User.findOne({ phone });
       if (phoneCheck)
         return res.status(400).send({ message: 'Phone already used' });
       const usernameCheck = await User.findOne({ username });
       if (usernameCheck)
         return res.status(400).send({ message: 'Username already used' });
+      const emailCheck = await User.findOne({ email });
+      if (emailCheck)
+        return res.status(400).send({ message: 'Email already used' });
       if (password != confirmPassword)
         return res
           .status(400)
@@ -101,6 +104,16 @@ module.exports = {
     return res
       .status(200)
       .send({ data: contacts, message: 'Get all contacts successfully!' });
+  },
+
+  getUserById: async (req, res, next) => {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(400).send({ message: 'User not found!' });
+    user.password = undefined;
+    return res
+      .status(200)
+      .send({ data: user, message: 'Get user successfully' });
   },
 
   getCurrentUser: async userId => {
