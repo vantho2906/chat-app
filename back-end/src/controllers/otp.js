@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 
 module.exports = {
-  sendEmail: async (email, text) => {
+  sendEmail: (email, text) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -14,17 +14,18 @@ module.exports = {
       },
     });
     const mailOptions = {
-      from: process.env.EMAIL_ACCOUNT,
+      from: process.env.EMAIL_USERNAME,
       to: email,
       subject: 'Sending OTP',
       text: text,
     };
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return false;
-      }
-      return true;
-    });
+    try {
+      transporter.sendMail(mailOptions);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    return true;
   },
   sendOTP: async (req, res, next) => {
     const { username, email } = req.body;
@@ -37,7 +38,7 @@ module.exports = {
     const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     if (module.exports.sendEmail(email, text))
       return res.status(200).send({ message: 'Send OTP successfully!' });
-    return res.status(400).send({ message: 'Send OTP failed!', error: error });
+    return res.status(400).send({ message: 'Send OTP failed!' });
   },
 
   resendOTP: async (req, res, next) => {
@@ -48,9 +49,9 @@ module.exports = {
       { code: OTPcode }
     );
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
-    if (module.exports.sendEmail(email, text))
+    if (module.exports.sendEmail(email, text) == true)
       return res.status(200).send({ message: 'Send OTP successfully!' });
-    return res.status(400).send({ message: 'Send OTP failed!', error: error });
+    return res.status(400).send({ message: 'Send OTP failed!' });
   },
 
   confirmOTP: async (req, res, next) => {
