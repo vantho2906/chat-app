@@ -23,8 +23,8 @@ module.exports = {
     const user = await User.findById(userId);
     if (!user) return res.status(400).send({ message: 'User not found' });
     const invitations = await FriendInvitation.find({
-      receiverId: id,
-      status: InviteStatus.processing,
+      receiverId: userId,
+      status: InviteStatus.processing(),
     }).sort({ updateAt: 'desc' });
     return res
       .status(200)
@@ -34,7 +34,7 @@ module.exports = {
   acceptFriendRequest: async (req, res, next) => {
     const inviteId = req.params.inviteId;
     const invitation = await FriendInvitation.findById(inviteId);
-    if (!invitation || invitation.status != InviteStatus.processing)
+    if (!invitation || invitation.status != InviteStatus.processing())
       res.status(400).send({ message: 'Invitation not found' });
     invitation.status = InviteStatus.agreed;
     await ChatRoom.create({
@@ -55,7 +55,7 @@ module.exports = {
   cancelledFriendRequest: async (req, res, next) => {
     const inviteId = req.params.inviteId;
     const invitation = await FriendInvitation.findById(inviteId);
-    if (!invitation || invitation.status != InviteStatus.processing)
+    if (!invitation || invitation.status != InviteStatus.processing())
       res.status(400).send({ message: 'Invitation not found' });
     invitation.status = InviteStatus.cancelled;
     await invitation.save();
