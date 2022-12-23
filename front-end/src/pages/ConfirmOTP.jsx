@@ -14,17 +14,17 @@ function ConfirmOTP() {
   const navigate = useNavigate();
   const [OTPcode, setOTPcode] = useState('');
   const location = useLocation();
-  const { username, phone, password, fullname } = location.state;
+  const { username, email, phone, password, fullname } = location.state;
 
   const handleChange = e => {
     setOTPcode(e.target.value);
   };
   useEffect(() => {
     const handleSendOTP = async () => {
-      console.log(username, phone);
+      console.log(username, email);
       const data = await axios.post(sendOTPRoute, {
         username,
-        phone,
+        email,
       });
       console.log(data);
     };
@@ -41,10 +41,12 @@ function ConfirmOTP() {
 
   const handleSubmitOTP = async e => {
     e.preventDefault();
+    console.log(OTPcode);
     const data = axios.post(confirmOTPRoute, {
       OTPcode,
-      fullname,
+      email,
       username,
+      fullname,
       phone,
       password,
     });

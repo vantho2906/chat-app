@@ -37,13 +37,12 @@ function Register() {
     if (handleValidation()) {
       const { username, phone, email, password, confirmPassword, fullname } =
         values;
-      console.log(values);
       const data = await axios.post(registerRoute, {
-        email,
-        username,
         phone,
+        username,
         password,
         confirmPassword,
+        email,
       });
       // const { message } = await axios.post(avatarRoute, {
       //   id,
@@ -53,9 +52,10 @@ function Register() {
       }
       if (data.status === 200) {
         // localStorage.setItem("chat-app-user", JSON.stringify(data.data));
-        navigate('/register/avatar', {
+        navigate('/register/confirmOTP', {
           state: {
             username: username,
+            email: email,
             phone: phone,
             password: password,
             fullname: fullname,
