@@ -67,7 +67,7 @@ module.exports = {
       }
       if (!OTPentity)
         return res.status(400).send({ message: 'You enter wrong OTP' });
-      if (OTPentity.username != username || OTPentity.phone != phone)
+      if (OTPentity.username != username || OTPentity.email != email)
         return res.status(400).send({ message: 'You enter wrong OTP' });
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await Usermodel.create({
