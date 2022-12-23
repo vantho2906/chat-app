@@ -1,56 +1,65 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {} from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { getRequestRoute } from "../utils/APIRoutes";
+import SearchUser from "./SearchUser";
+import Message from "./Message";
+import Notification from "./Notifications";
 
 function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
-  // const [currentUserImage, setCurrentUserImage] = useState(undefined);
-  const [currentSelected, setCurrentSelected] = useState(undefined);
+  const [currentUserImage, setCurrentUserImage] = useState(undefined);
+  const [navSelect, setNavSelect] = useState("messages");
 
   useEffect(() => {
     if (currentUser) {
-      // setCurrentUserImage(currentUser.avatar);
+      setCurrentUserImage(currentUser.avatar);
       setCurrentUserName(currentUser.fullname);
     }
-  }, []);
+  }, [currentUser]);
 
-  const changeCurrentChat = (index, contact) => {
-    setCurrentSelected(index);
-    changeChat(contact);
-  };
   return (
     <>
       {currentUserName && (
         <Container>
           <div className="brand">
-            <div className="avatar">
-              <img
-                src="https://fictionhorizon.com/wp-content/uploads/2021/08/1608125060_One-Piece-this-is-how-Luffy-would-be-if-he-1024x535.jpeg"
-                alt=""
-              />
-              <h3>{currentUser.username}</h3>
-            </div>
-            <h3>Chat app</h3>
+            <img
+              src={"data:image/png;base64, " + currentUserImage.imageBase64}
+              alt=""
+            />
+            <h3>{currentUser.fullname}</h3>
           </div>
-          <div className="contacts">
-            {contacts.map((contact, index) => {
-              return (
-                <div
-                  className={`contact ${
-                    index === currentSelected ? "selected" : ""
-                  }`}
-                  key={index}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  <div className="avatar">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="username">
-                    <h3>{contact.username}</h3>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="nav">
+            <h6
+              onClick={() => {
+                setNavSelect("messages");
+              }}
+              className={`${navSelect === "messages" ? "selected" : ""}`}
+            >
+              Messages
+            </h6>
+            <h6
+              onClick={() => {
+                setNavSelect("search-friends");
+              }}
+              className={`${navSelect === "search-friends" ? "selected" : ""}`}
+            >
+              Search friends
+            </h6>
+            <h6
+              onClick={() => {
+                setNavSelect("notifications");
+              }}
+              className={`${navSelect === "notifications" ? "selected" : ""}`}
+            >
+              Notifications
+            </h6>
           </div>
+          {navSelect === "messages" && <Message contacts={contacts} />}
+          {navSelect === "search-friends" && <SearchUser />}
+          {navSelect === "notifications" && <Notification />}
         </Container>
       )}
     </>
@@ -59,40 +68,50 @@ function Contacts({ contacts, currentUser, changeChat }) {
 
 const Container = styled.div`
   display: grid;
-  grid-template-rows: 13% 87%;
+  grid-template-rows: 8% 8% 84%;
   background-color: rgba(249, 251, 255, 0.5);
   box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
   overflow: hidden;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
   .brand {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
+    justify-content: flex-start;
     gap: 1rem;
-    .avatar {
+    img {
+      border-radius: 999rem;
+      height: 2.5rem;
+      width: 2.5rem;
+      max-inline-size: 100%;
+    }
+  }
+  .nav {
+    display: flex;
+    // justify-content: space-between;
+    cursor: pointer;
+    h6 {
       display: flex;
-      width: 2rem;
+      justify-content: center;
       align-items: center;
-      img {
-        border-radius: 999rem;
-        height: 2rem;
-        max-inline-size: 100%;
-      }
-      h3 {
-        padding-left: 0.5rem;
-      }
-    }
-    h3 {
-      color: #79c7c5;
+      min-width: 33.3%;
+      color: #777777;
       text-transform: uppercase;
+      border-radius: 2rem;
+      gap: 4px;
     }
+    .selected {
+      background-color: #79c7c5;
+    }
+  }
+  
   }
   .contacts {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: auto;
-    gap: 0.8rem;
+    gap: 1rem;
     margin-top: 2rem;
     &::-webkit-scrollbar {
       width: 0.2rem;
@@ -116,6 +135,9 @@ const Container = styled.div`
       .avatar {
         img {
           hegiht: 3rem;
+          width: 3rem;
+          object-fit: cover;
+          border-radius: 999rem;
         }
       }
       .username {

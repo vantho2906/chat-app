@@ -6,6 +6,7 @@ import { allUsersRoute, host } from "../utils/APIRoutes";
 import Contacts from "../components/Contacts";
 import ChatContainer from "../components/ChatContainer";
 import { io } from "socket.io-client";
+import "react-toastify/dist/ReactToastify.css";
 
 function Chat() {
   const socket = useRef(null);
@@ -19,10 +20,10 @@ function Chat() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (!localStorage.getItem("chat-app-user")) {
+      if (!localStorage.getItem("chap-app-user")) {
         navigate("/login");
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem("chat-app-user")));
+        setCurrentUser(await JSON.parse(localStorage.getItem("chap-app-user")));
       }
     };
     checkUser();
@@ -80,7 +81,7 @@ const Container = styled.div`
     height: 85vh;
     width: 85vw;
     display: grid;
-    grid-template-columns: 25% 75%;
+    grid-template-columns: 30% 70%;
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       grid-template-columns: 35% 65%;
     }

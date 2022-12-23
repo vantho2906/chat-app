@@ -35,9 +35,11 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (handleValidation()) {
-      const { username, phone, password, confirmPassword, fullname } = values;
+      const { username, phone, email, password, confirmPassword, fullname } =
+        values;
       console.log(values);
       const data = await axios.post(registerRoute, {
+        email,
         username,
         phone,
         password,
@@ -51,7 +53,7 @@ function Register() {
       }
       if (data.status === 200) {
         // localStorage.setItem("chat-app-user", JSON.stringify(data.data));
-        navigate("/register/confirmOTP", {
+        navigate("/register/avatar", {
           state: {
             username: username,
             phone: phone,
@@ -65,7 +67,7 @@ function Register() {
   };
 
   const handleValidation = () => {
-    const { username, phone, password, confirmPassword } = values;
+    const { username, email, phone, password, confirmPassword } = values;
     if (password !== confirmPassword) {
       toast.error(
         "Password and confirm password should be same.",
@@ -77,6 +79,9 @@ function Register() {
       return false;
     } else if (password.length < 8) {
       toast.error("Password should be greater than 8 characters", toastOptions);
+      return false;
+    } else if (email === "") {
+      toast.error("Email must be required", toastOptions);
       return false;
     } else if (phone === "") {
       toast.error("Phone must be required", toastOptions);
@@ -125,6 +130,12 @@ function Register() {
             onChange={(e) => handleChange(e)}
           />
           <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            onChange={(e) => handleChange(e)}
+          />
+          <input
             type="tel"
             placeholder="Phone"
             name="phone"
@@ -160,7 +171,7 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
   background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
   .brand {
@@ -177,7 +188,7 @@ const FormContainer = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     background-color: rgba(161, 226, 217, 0.5);
     box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
     border-radius: 1rem;

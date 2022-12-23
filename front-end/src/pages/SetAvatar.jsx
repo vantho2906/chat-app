@@ -5,27 +5,53 @@ import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { avatarRoute } from "../utils/APIRoutes";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function SetAvatar() {
+  const navigate = useNavigate();
   const [avatarName, setAvatarName] = useState("");
-  const [avatar, setAvatar] = useState(null);
+  const [avatarImage, setAvatarImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const location = useLocation();
+  const { username } = location.state;
 
   const handleChange = (e) => {
+    setFile(e.target.files[0]);
     var reader = new FileReader();
     reader.onloadend = function () {
-      setAvatar(reader.result);
+      setAvatarImage(reader.result);
     };
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const avatar = new FormData();
+    avatar.append("avatar", file);
+    avatar.append("username", username);
+    console.log(avatar.get("avatar"));
+    console.log(username);
+    const data = await axios.post(avatarRoute, avatar);
+    if (data.status === 200) {
+      localStorage.setItem("chap-app-user", JSON.stringify(data.data.data));
+      navigate("/");
+    } else {
+    }
+  };
 
   return (
     <FormContainer>
-      <form>
+      <form
+        encType="multipart/form-data"
+        action="/upload"
+        method="post"
+        onSubmit={(e) => handleSubmit(e)}
+      >
         <div className="brand">
           <h1>Set Avatar</h1>
         </div>
+
         <div className="input-file">
           <label htmlFor="file">
             <FontAwesomeIcon icon={faImage} size="lg" />
@@ -34,12 +60,13 @@ function SetAvatar() {
           <input
             type="file"
             id="file"
-            name="file"
+            // name="avatar"
             onChange={(e) => {
               setAvatarName(e.target.files[0].name);
               handleChange(e);
             }}
           />
+
           {avatarName && (
             <FontAwesomeIcon
               icon={faCircleXmark}
@@ -47,12 +74,12 @@ function SetAvatar() {
               id="close-icon"
               onClick={() => {
                 setAvatarName("");
-                setAvatar(null);
+                setAvatarImage(null);
               }}
             />
           )}
         </div>
-        <img src={avatar} alt="" />
+        <img src={avatarImage} alt="" />
         <button type="submit">Confirm</button>
       </form>
     </FormContainer>
@@ -95,6 +122,7 @@ const FormContainer = styled.div`
       border-radius: 50%;
     }
     input {
+      display: none;
       background-color: transparent;
       padding: 1rem;
       border: 0.1rem solid #777777;
@@ -106,9 +134,6 @@ const FormContainer = styled.div`
         border: 0.1rem solid #000000;
         outline: none;
       }
-    }
-    #file {
-      display: none;
     }
     .input-file {
       position: relative;

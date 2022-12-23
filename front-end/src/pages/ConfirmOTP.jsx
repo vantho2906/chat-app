@@ -53,7 +53,11 @@ function ConfirmOTP() {
       console.log(res);
       if (res.status === 200) {
         console.log("successfully");
-        navigate("/register/avatar");
+        navigate("/register/avatar", {
+          state: {
+            username: username,
+          },
+        });
       }
     });
   };
