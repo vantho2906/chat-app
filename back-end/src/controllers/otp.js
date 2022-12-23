@@ -55,7 +55,7 @@ module.exports = {
   },
 
   confirmOTP: async (req, res, next) => {
-    const { OTPcode, username, phone, password } = req.body;
+    const { OTPcode, username, phone, password, email, fullname } = req.body;
     const OTPentity = await OTPmodel.findOne({ code: OTPcode });
     console.log(OTPentity);
     let now = new Date();
@@ -71,9 +71,11 @@ module.exports = {
         return res.status(400).send({ message: 'You enter wrong OTP' });
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await Usermodel.create({
-        username: username,
+        fullname,
+        username,
         phone,
         password: hashedPassword,
+        email,
       });
       user.password = undefined;
       return res.status(200).send({
