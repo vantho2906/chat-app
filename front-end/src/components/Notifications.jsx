@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserPlus,
   faCheck,
   faCircleXmark,
   faUserXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+} from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import {
   sendRequestRoute,
   searchUserByFullnameRoute,
   getRequestRoute,
-} from "../utils/APIRoutes";
+} from '../utils/APIRoutes';
 function Notification() {
-  const currentUser = JSON.parse(localStorage.getItem("chap-app-user"));
+  const currentUser = JSON.parse(localStorage.getItem('chap-app-user'));
   const [currentRequest, setCurrentRequest] = useState([]);
   useEffect(() => {
     const handleRequest = async () => {
@@ -26,7 +26,7 @@ function Notification() {
   }, []);
   console.log(currentRequest);
 
-  const handleSendRequest = async (receiverId) => {
+  const handleSendRequest = async receiverId => {
     const myId = currentUser._id;
     await axios.post(sendRequestRoute, {
       receiverId,

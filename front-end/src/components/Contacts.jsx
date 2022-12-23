@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {} from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
-import { getRequestRoute } from "../utils/APIRoutes";
-import SearchUser from "./SearchUser";
-import Message from "./Message";
-import Notification from "./Notifications";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {} from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { getRequestRoute } from '../utils/APIRoutes';
+import SearchUser from './SearchUser';
+import Message from './Message';
+import Notification from './Notifications';
 
 function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
-  const [navSelect, setNavSelect] = useState("messages");
+  const [navSelect, setNavSelect] = useState('messages');
 
   useEffect(() => {
     if (currentUser) {
@@ -26,7 +26,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
         <Container>
           <div className="brand">
             <img
-              src={"data:image/png;base64, " + currentUserImage.imageBase64}
+              src={'data:image/png;base64, ' + currentUserImage.imageBase64}
               alt=""
             />
             <h3>{currentUser.fullname}</h3>
@@ -34,32 +34,32 @@ function Contacts({ contacts, currentUser, changeChat }) {
           <div className="nav">
             <h6
               onClick={() => {
-                setNavSelect("messages");
+                setNavSelect('messages');
               }}
-              className={`${navSelect === "messages" ? "selected" : ""}`}
+              className={`${navSelect === 'messages' ? 'selected' : ''}`}
             >
               Messages
             </h6>
             <h6
               onClick={() => {
-                setNavSelect("search-friends");
+                setNavSelect('search-friends');
               }}
-              className={`${navSelect === "search-friends" ? "selected" : ""}`}
+              className={`${navSelect === 'search-friends' ? 'selected' : ''}`}
             >
               Search friends
             </h6>
             <h6
               onClick={() => {
-                setNavSelect("notifications");
+                setNavSelect('notifications');
               }}
-              className={`${navSelect === "notifications" ? "selected" : ""}`}
+              className={`${navSelect === 'notifications' ? 'selected' : ''}`}
             >
               Notifications
             </h6>
           </div>
-          {navSelect === "messages" && <Message contacts={contacts} />}
-          {navSelect === "search-friends" && <SearchUser />}
-          {navSelect === "notifications" && <Notification />}
+          {navSelect === 'messages' && <Message contacts={contacts} />}
+          {navSelect === 'search-friends' && <SearchUser />}
+          {navSelect === 'notifications' && <Notification />}
         </Container>
       )}
     </>

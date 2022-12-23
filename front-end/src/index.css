@@ -1,20 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300;400;500&display=swap');
 
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body, button, input {
+body,
+button,
+input {
   font-family: 'Josefin Sans', sans-serif;
 }
 
 :root {
-  --primary: #79C7C5;
-  --secondary: #A1E2D9;
-  --white: #F9FBFF;
+  --primary: #79c7c5;
+  --secondary: #a1e2d9;
+  --white: #f9fbff;
   --dark: #777777;
 }
 

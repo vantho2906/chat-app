@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserPlus,
   faCheck,
   faCircleXmark,
   faUserXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+} from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import {
   sendRequestRoute,
   searchUserByFullnameRoute,
   getRequestRoute,
-} from "../utils/APIRoutes";
+} from '../utils/APIRoutes';
 function SearchUser() {
   const [currentRequest, setCurrentRequest] = useState(undefined);
-  const [searchUser, setSearchUser] = useState("");
+  const [searchUser, setSearchUser] = useState('');
   const [loadUserChats, setLoadUserChats] = useState([]);
-  const handleSearchChange = (e) => {
+  const handleSearchChange = e => {
     setSearchUser(e.target.value);
   };
   useEffect(() => {
@@ -43,8 +43,8 @@ function SearchUser() {
     handleSearchUser();
   }, [searchUser]);
 
-  const currentUser = JSON.parse(localStorage.getItem("chap-app-user"));
-  const handleSendRequest = async (receiverId) => {
+  const currentUser = JSON.parse(localStorage.getItem('chap-app-user'));
+  const handleSendRequest = async receiverId => {
     const myId = currentUser._id;
     await axios.post(sendRequestRoute, {
       receiverId,
@@ -61,7 +61,7 @@ function SearchUser() {
           <input
             type="tel"
             placeholder="Search..."
-            onChange={(e) => {
+            onChange={e => {
               handleSearchChange(e);
             }}
             value={searchUser}
@@ -72,7 +72,7 @@ function SearchUser() {
               size="1x"
               id="close-icon"
               onClick={() => {
-                setSearchUser("");
+                setSearchUser('');
                 setLoadUserChats([]);
               }}
             />
@@ -88,7 +88,7 @@ function SearchUser() {
                       <div className="avatar">
                         <img
                           src={
-                            "data:image/png;base64, " +
+                            'data:image/png;base64, ' +
                             contact.avatar.imageBase64
                           }
                           alt=""
@@ -102,7 +102,7 @@ function SearchUser() {
                           }}
                         >
                           {currentRequest.filter(
-                            (sender) => sender.receiverId === contact._id
+                            sender => sender.receiverId === contact._id
                           ).length > 0 ? (
                             <FontAwesomeIcon icon={faUserXmark} size="1x" />
                           ) : (

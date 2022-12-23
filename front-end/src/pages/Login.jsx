@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-import { loginRoute } from "../utils/APIRoutes";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { loginRoute } from '../utils/APIRoutes';
 
 function Login() {
   const navigate = useNavigate();
   const [values, setValues] = useState({
-    phone: "",
-    password: "",
+    phone: '',
+    password: '',
   });
 
   const toastOptions = {
-    position: "bottom-right",
+    position: 'bottom-right',
     autoClose: 8000,
     pauseOnHover: true,
     draggable: true,
-    theme: "dark",
+    theme: 'dark',
   };
 
   useEffect(() => {
-    if (localStorage.getItem("chat-app-user")) {
-      navigate("/");
+    if (localStorage.getItem('chat-app-user')) {
+      navigate('/');
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (handleValidation()) {
       const { phone, password } = values;
@@ -40,8 +40,8 @@ function Login() {
         toast.error(data.msg, toastOptions);
       }
       if (data.status === 200) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+        localStorage.setItem('chat-app-user', JSON.stringify(data.user));
+        navigate('/');
       }
     } else {
     }
@@ -49,23 +49,23 @@ function Login() {
 
   const handleValidation = () => {
     const { phone, password } = values;
-    if (password === "") {
-      toast.error("Username and Password is required", toastOptions);
+    if (password === '') {
+      toast.error('Username and Password is required', toastOptions);
       return false;
-    } else if (phone === "") {
-      toast.error("Username and Password is required", toastOptions);
+    } else if (phone === '') {
+      toast.error('Username and Password is required', toastOptions);
       return false;
     }
     return true;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
   return (
     <>
       <FormContainer>
-        <form onSubmit={(e) => handleSubmit(e)}>
+        <form onSubmit={e => handleSubmit(e)}>
           <div className="brand">
             <h1>Chap-app</h1>
           </div>
@@ -73,18 +73,18 @@ function Login() {
             type="tel"
             placeholder="Phone"
             name="phone"
-            onChange={(e) => handleChange(e)}
+            onChange={e => handleChange(e)}
           />
           <input
             type="password"
             placeholder="Password"
             name="password"
-            onChange={(e) => handleChange(e)}
+            onChange={e => handleChange(e)}
           />
 
           <button type="submit">Login</button>
           <span>
-            Don't have an account ? <Link to="/register">Register</Link>{" "}
+            Don't have an account ? <Link to="/register">Register</Link>{' '}
           </span>
         </form>
       </FormContainer>

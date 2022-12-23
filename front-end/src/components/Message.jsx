@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
 function Message({ contacts }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
@@ -13,14 +13,14 @@ function Message({ contacts }) {
           return (
             <div
               className={`contact ${
-                index === currentSelected ? "selected" : ""
+                index === currentSelected ? 'selected' : ''
               }`}
               key={index}
               onClick={() => changeCurrentChat(index, contact)}
             >
               <div className="avatar">
                 <img
-                  src={"data:image/png;base64, " + contact.avatar.imageBase64}
+                  src={'data:image/png;base64, ' + contact.avatar.imageBase64}
                   alt=""
                 />
               </div>

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark, faImage } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
-import { avatarRoute } from "../utils/APIRoutes";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleXmark, faImage } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+import { avatarRoute } from '../utils/APIRoutes';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function SetAvatar() {
   const navigate = useNavigate();
-  const [avatarName, setAvatarName] = useState("");
+  const [avatarName, setAvatarName] = useState('');
   const [avatarImage, setAvatarImage] = useState(null);
   const [file, setFile] = useState(null);
   const location = useLocation();
   const { username } = location.state;
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFile(e.target.files[0]);
     var reader = new FileReader();
     reader.onloadend = function () {
@@ -25,17 +25,17 @@ function SetAvatar() {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const avatar = new FormData();
-    avatar.append("avatar", file);
-    avatar.append("username", username);
-    console.log(avatar.get("avatar"));
+    avatar.append('avatar', file);
+    avatar.append('username', username);
+    console.log(avatar.get('avatar'));
     console.log(username);
     const data = await axios.post(avatarRoute, avatar);
     if (data.status === 200) {
-      localStorage.setItem("chap-app-user", JSON.stringify(data.data.data));
-      navigate("/");
+      localStorage.setItem('chap-app-user', JSON.stringify(data.data.data));
+      navigate('/');
     } else {
     }
   };
@@ -46,7 +46,7 @@ function SetAvatar() {
         encType="multipart/form-data"
         action="/upload"
         method="post"
-        onSubmit={(e) => handleSubmit(e)}
+        onSubmit={e => handleSubmit(e)}
       >
         <div className="brand">
           <h1>Set Avatar</h1>
@@ -55,13 +55,13 @@ function SetAvatar() {
         <div className="input-file">
           <label htmlFor="file">
             <FontAwesomeIcon icon={faImage} size="lg" />
-            <p>{avatarName ? `File: ${avatarName}` : "Add an avatar"}</p>
+            <p>{avatarName ? `File: ${avatarName}` : 'Add an avatar'}</p>
           </label>
           <input
             type="file"
             id="file"
             // name="avatar"
-            onChange={(e) => {
+            onChange={e => {
               setAvatarName(e.target.files[0].name);
               handleChange(e);
             }}
@@ -73,7 +73,7 @@ function SetAvatar() {
               size="1x"
               id="close-icon"
               onClick={() => {
-                setAvatarName("");
+                setAvatarName('');
                 setAvatarImage(null);
               }}
             />

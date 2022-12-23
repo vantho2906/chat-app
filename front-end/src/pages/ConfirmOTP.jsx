@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 import {
   sendOTPRoute,
   resendOTPRoute,
   confirmOTPRoute,
-} from "../utils/APIRoutes";
-import { useNavigate, useLocation } from "react-router-dom";
+} from '../utils/APIRoutes';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function ConfirmOTP() {
   const navigate = useNavigate();
-  const [OTPcode, setOTPcode] = useState("");
+  const [OTPcode, setOTPcode] = useState('');
   const location = useLocation();
   const { username, phone, password, fullname } = location.state;
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setOTPcode(e.target.value);
   };
   useEffect(() => {
@@ -39,7 +39,7 @@ function ConfirmOTP() {
     console.log(data);
   };
 
-  const handleSubmitOTP = async (e) => {
+  const handleSubmitOTP = async e => {
     e.preventDefault();
     const data = axios.post(confirmOTPRoute, {
       OTPcode,
@@ -49,11 +49,11 @@ function ConfirmOTP() {
       password,
     });
     console.log(data);
-    data.then((res) => {
+    data.then(res => {
       console.log(res);
       if (res.status === 200) {
-        console.log("successfully");
-        navigate("/register/avatar", {
+        console.log('successfully');
+        navigate('/register/avatar', {
           state: {
             username: username,
           },
@@ -63,24 +63,24 @@ function ConfirmOTP() {
   };
 
   const toastOptions = {
-    position: "bottom-right",
+    position: 'bottom-right',
     autoClose: 8000,
     pauseOnHover: true,
     draggable: true,
-    theme: "dark",
+    theme: 'dark',
   };
 
   return (
     <>
       <FormContainer>
-        <form onSubmit={(e) => handleSubmitOTP(e)}>
+        <form onSubmit={e => handleSubmitOTP(e)}>
           <div className="brand">
             <h1>Confirm OTP</h1>
           </div>
           <input
             type="text"
             placeholder="OTP Code"
-            onChange={(e) => handleChange(e)}
+            onChange={e => handleChange(e)}
             value={OTPcode}
           />
           <span onClick={() => handleResendOTP()}>Resend OTP</span>

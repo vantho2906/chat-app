@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { allUsersRoute, host } from "../utils/APIRoutes";
-import Contacts from "../components/Contacts";
-import ChatContainer from "../components/ChatContainer";
-import { io } from "socket.io-client";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useState, useRef } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { allUsersRoute, host } from '../utils/APIRoutes';
+import Contacts from '../components/Contacts';
+import ChatContainer from '../components/ChatContainer';
+import { io } from 'socket.io-client';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Chat() {
   const socket = useRef(null);
@@ -20,10 +20,10 @@ function Chat() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (!localStorage.getItem("chap-app-user")) {
-        navigate("/login");
+      if (!localStorage.getItem('chap-app-user')) {
+        navigate('/login');
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem("chap-app-user")));
+        setCurrentUser(await JSON.parse(localStorage.getItem('chap-app-user')));
       }
     };
     checkUser();
@@ -45,7 +45,7 @@ function Chat() {
   //   };
   //   checkCurrentUser();
   // }, [currentUser]);
-  const handleChatChange = (chat) => {
+  const handleChatChange = chat => {
     setCurrentChat(chat);
   };
   return (

@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import Picker from "emoji-picker-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import Picker from 'emoji-picker-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
 
 function ChatInput({ handleSendMsg }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState('');
 
   const handleEmojiPickerHideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
   };
-  const handleEmojiClick = (emoji) => {
+  const handleEmojiClick = emoji => {
     let message = msg;
     message += emoji.emoji;
     setMsg(message);
   };
 
-  const sendChat = (e) => {
+  const sendChat = e => {
     e.preventDefault();
     if (msg.length > 0) {
       handleSendMsg(msg);
-      setMsg("");
+      setMsg('');
     }
   };
 
@@ -36,12 +36,12 @@ function ChatInput({ handleSendMsg }) {
           {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
         </div>
       </div>
-      <form className="input-container" onSubmit={(e) => sendChat(e)}>
+      <form className="input-container" onSubmit={e => sendChat(e)}>
         <input
           type="text"
           placeholder="Type your message here"
           value={msg}
-          onChange={(e) => setMsg(e.target.value)}
+          onChange={e => setMsg(e.target.value)}
         />
         <button className="submit">
           <FontAwesomeIcon icon={faPaperPlane} />
