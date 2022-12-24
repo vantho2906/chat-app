@@ -32,17 +32,28 @@ const io = socket(server, {
   },
 });
 
-global.onlineUsers = new Map();
-io.on('connection', socket => {
-  global.chatSocket = socket;
-  socket.on('add-user', userId => {
-    onlineUsers.set(userId, socket.id);
-  });
+// global.onlineUsers = new Map();
+// io.on('connection', socket => {
+//   global.chatSocket = socket;
+//   socket.on('add-user', userId => {
+//     onlineUsers.set(userId, socket.id);
+//   });
 
+//   socket.on('send-msg', data => {
+//     const sendUserSocket = onlineUsers.get(data.to);
+//     if (sendUserSocket) {
+//       socket.to(sendUserSocket).emit('msg-recieve', data.msg);
+//     }
+//   });
+// });
+
+// data: {
+//   chatRoomId,
+//   message,
+//   senderId,
+// }
+io.on('connection', socket => {
   socket.on('send-msg', data => {
-    const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
-      socket.to(sendUserSocket).emit('msg-recieve', data.msg);
-    }
+    x;
   });
 });
