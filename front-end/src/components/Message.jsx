@@ -3,22 +3,20 @@ import styled from 'styled-components';
 import { getAllContacts } from '../utils/APIRoutes';
 import axios from 'axios';
 
-function Message({ contacts }) {
+function Message({ changeChat }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [userChats, setUserChats] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const changeCurrentChat = (index, contact) => {
+    changeChat(contacts.chatRoomIdList[index], contact);
     setCurrentSelected(index);
   };
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
-    console.log(currentUser.username);
     const handleUserChats = async () => {
       const data = await axios.get(`${getAllContacts}/${currentUser.username}`);
-      console.log(data);
-      // data.data.data.map(async user => {
-      //   const item = await axios.get(`${getUserRoute}/${user.senderId}`);
-      //   setCurrentUserRequest(prev => [...prev, item.data.data]);
-      // });
+      setContacts(data.data.data);
+      setUserChats(data.data.data.contacts);
     };
     handleUserChats();
   }, []);
@@ -30,7 +28,13 @@ function Message({ contacts }) {
             <div>
               {userChats.map((contact, index) => {
                 return (
-                  <div className="contact" key={index}>
+                  <div
+                    className={`contact ${
+                      index === currentSelected ? 'selected' : ''
+                    }`}
+                    onClick={() => changeCurrentChat(index, contact)}
+                    key={index}
+                  >
                     <div className="avatar">
                       <img
                         src={
@@ -65,7 +69,6 @@ const Container = styled.div`
       align-items: center;
       overflow: auto;
       margin-top: 1rem;
-      border-bottom: 1px solid #777777;
       &::-webkit-scrollbar {
         width: 0.2rem;
         &-thumb {
@@ -79,6 +82,9 @@ const Container = styled.div`
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        .selected {
+          background-color: rgba(249, 251, 255, 1) !important;
+        }
         .contact {
           background-color: #ffffff30;
           max-height: 4rem;

@@ -10,8 +10,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
-  sendRequestRoute,
-  searchUserByFullnameRoute,
   getRequestRoute,
   getUserRoute,
   acceptRequestRoute,

@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
 import Logout from './Logout';
-import { getAllMessageRoute, sendMessageRoute } from '../utils/APIRoutes';
+import { getMessagesRoute, addMessageRoute } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-function ChatContainer({ currentChat, currentUser, socket }) {
+function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
@@ -14,20 +14,21 @@ function ChatContainer({ currentChat, currentUser, socket }) {
   useEffect(() => {
     const handleSetMessages = async () => {
       if (currentChat) {
-        const response = await axios.post(getAllMessageRoute, {
-          from: currentUser._id,
-          to: currentChat._id,
-        });
-        setMessages(response.data);
+        const myId = currentUser._id;
+        const response = await axios.post(
+          `${getMessagesRoute}/${currentRoom}`,
+          { myId }
+        );
+        console.log(response);
+        setMessages(response.data.data);
       }
     };
     handleSetMessages();
   }, [currentChat]);
 
   const handleSendMsg = async msg => {
-    await axios.post(sendMessageRoute, {
-      from: currentUser._id,
-      to: currentChat._id,
+    await axios.post(`${addMessageRoute}/${currentRoom}`, {
+      userId: currentUser._id,
       message: msg,
     });
     socket.current.emit('send-msg', {
@@ -40,21 +41,21 @@ function ChatContainer({ currentChat, currentUser, socket }) {
     setMessages(msgs);
   };
 
-  useEffect(() => {
-    if (socket.current) {
-      socket.current.on('msg-recieve', msg => {
-        setArrivalMessages({ fromSelf: false, message: msg });
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (socket.current) {
+  //     socket.current.on('msg-recieve', msg => {
+  //       setArrivalMessages({ fromSelf: false, message: msg });
+  //     });
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
-  }, [arrivalMessages]);
+  // useEffect(() => {
+  //   arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
+  // }, [arrivalMessages]);
 
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
-  }, [messages]);
+  // useEffect(() => {
+  //   scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+  // }, [messages]);
 
   return (
     <>
@@ -91,7 +92,6 @@ function ChatContainer({ currentChat, currentUser, socket }) {
               );
             })}
           </div>
-          {/* <Message /> */}
           <ChatInput handleSendMsg={handleSendMsg} />
         </Container>
       )}
@@ -100,12 +100,11 @@ function ChatContainer({ currentChat, currentUser, socket }) {
 }
 
 const Container = styled.div`
-  padding-top: 1rem;
   gap: 0.1rem;
   overflow: hidden;
   .chat-header {
     background-color: rgba(249, 251, 255, 1);
-    height: 20%;
+    height: 16%;
     display: flex;
     justify-content: space-between;
     align-items: center;
