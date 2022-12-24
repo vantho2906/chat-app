@@ -1,84 +1,150 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { getAllContacts } from '../utils/APIRoutes';
+import axios from 'axios';
 
 function Message({ contacts }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
+  const [userChats, setUserChats] = useState([]);
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
   };
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
+    console.log(currentUser.username);
+    const handleUserChats = async () => {
+      const data = await axios.get(`${getAllContacts}/${currentUser.username}`);
+      console.log(data);
+      // data.data.data.map(async user => {
+      //   const item = await axios.get(`${getUserRoute}/${user.senderId}`);
+      //   setCurrentUserRequest(prev => [...prev, item.data.data]);
+      // });
+    };
+    handleUserChats();
+  }, []);
   return (
     <Container>
-      <div className="contacts">
-        {contacts.map((contact, index) => {
-          return (
-            <div
-              className={`contact ${
-                index === currentSelected ? 'selected' : ''
-              }`}
-              key={index}
-              onClick={() => changeCurrentChat(index, contact)}
-            >
-              <div className="avatar">
-                <img
-                  src={'data:image/png;base64, ' + contact.avatar.imageBase64}
-                  alt=""
-                />
-              </div>
-              <div className="username">
-                <h3>{contact.fullname}</h3>
-              </div>
+      <div className="search-user">
+        {userChats && userChats.length !== 0 ? (
+          <div className="contacts">
+            <div>
+              {userChats.map((contact, index) => {
+                return (
+                  <div className="contact" key={index}>
+                    <div className="avatar">
+                      <img
+                        src={
+                          'data:image/png;base64, ' + contact.avatar.imageBase64
+                        }
+                        alt=""
+                      />
+                    </div>
+                    <h3>{contact.fullname}</h3>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ) : (
+          <p>Nothing</p>
+        )}
       </div>
     </Container>
   );
 }
 
 const Container = styled.div`
-  .contacts {
+  .search-user {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    gap: 1rem;
-    margin-top: 2rem;
-    &::-webkit-scrollbar {
-      width: 0.2rem;
-      &-thumb {
-        background-color: black;
-        width: 0.1rem;
-        border-radius: 1rem;
-      }
-    }
-    .contact {
-      background-color: #ffffff30;
-      min-height: 4rem;
-      width: 90%;
-      cursor: pointer;
-      border-radius: 0.2rem;
-      padding: 0.4rem;
-      gap: 1rem;
-      align-items: center;
+    width: 100%;
+    .contacts {
+      width: 100%;
       display: flex;
-      transition: 0.5s ease-in-out;
-      .avatar {
-        img {
-          hegiht: 3rem;
-          width: 3rem;
-          object-fit: cover;
-          border-radius: 999rem;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+      margin-top: 1rem;
+      border-bottom: 1px solid #777777;
+      &::-webkit-scrollbar {
+        width: 0.2rem;
+        &-thumb {
+          background-color: black;
+          width: 0.1rem;
+          border-radius: 1rem;
         }
       }
-      .username {
-        h3 {
-          color: #777777;
-          font-weight: 400;
+      div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        .contact {
+          background-color: #ffffff30;
+          max-height: 4rem;
+          height: 4rem;
+          width: 100%;
+          cursor: pointer;
+          border-radius: 0.2rem;
+          padding: 0.4rem;
+          gap: 1rem;
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          // justify-content: space-between;
+          transition: 0.5s ease-in-out;
+          .avatar {
+            display: flex;
+            justify-content: flex-start;
+            height: 3rem;
+            width: 3rem;
+            margin-right: 1rem;
+            img {
+              height: 3rem;
+              width: 3rem;
+              object-fit: cover;
+              border-radius: 999rem;
+            }
+            
+          }
+          h3 {
+            color: #777777;
+            font-weight: 400;
+            display: flex;
+            justify-content: flex-start;
+            flex: 1;
+          }
+          .username {
+            margin-right: 0.4rem;
+            // width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            width: 1.5rem;
+            
+            div {
+              display: flex;
+              justify-content: flex-end;
+              cursor: pointer;
+              z-index: 2;
+              
+              div {
+                display: flex;
+                flex-direction: row;
+                font-size: 1.2rem;
+                gap: 1rem;
+              }
+            }
+          }
         }
+
+  }
+
+  @media screen and (min-width: 720px) and (max-width: 1080px) {
+    gap: 0.5rem;
+    .username {
+      h2 {
+        font-size: 1rem;
       }
-    }
-    .selected {
-      background-color: rgba(249, 251, 255, 1);
     }
   }
 `;
