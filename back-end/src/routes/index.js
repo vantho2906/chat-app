@@ -10,7 +10,7 @@ router.use('/upload', uploadRoute);
 router.use('/user', userRoute);
 router.use('/message', messageRoute);
 router.use('/otp', otpRoute);
-router.use('/invite,', invitationRoute);
+router.use('/invite', invitationRoute);
 router.use('/search', searchRoute);
 router.use('/', (req, res) => {
   res.status(404).send({ message: 'Not Found' });
