@@ -88,22 +88,28 @@ module.exports = {
         { userIds: { $elemMatch: { $in: user.friendIdsList } } },
       ],
     }).sort({ updatedAt: 'desc' });
-    if (chatRoom.length == 0)
+    if (chatRooms.length == 0)
       return res.status(400).send({ message: 'No contacts available' });
     let contacts = [];
-    chatRooms.map(chatRoom => {
+    let chatRoomIdList = [];
+    for (let i = 0; i < chatRooms.length; i++) {
       let friendId =
-        chatRoom.userIds[0] != id ? chatRoom.userIds[0] : chatRoom.userIds[1];
-      User.findById(friendId)
-        .select({ _id: 1, fullname: 1, avatar: 1 })
-        .exec((err, user) => {
-          user.chatRoomId = chatRoom._id.toString();
-          contacts.push(user);
-        });
-    });
+        chatRooms[i].userIds[0] != user.id
+          ? chatRooms[i].userIds[0]
+          : chatRooms[i].userIds[1];
+      const friend = await User.findById(friendId).select({
+        _id: 1,
+        fullname: 1,
+        avatar: 1,
+      });
+      if (!friend) return res.status(400).send('Friend User not found');
+      contacts.push(friend);
+      chatRoomIdList.push(chatRooms[i]._id.toString());
+    }
+    console.log(contacts);
     return res
       .status(200)
-      .send({ data: contacts, message: 'Get all contacts successfully!' });
+      .send({ data: {contacts: contacts, chatRoomIdList: chatRoomIdList}, message: 'Get all contacts successfully!' });
   },
 
   getUserById: async (req, res, next) => {
