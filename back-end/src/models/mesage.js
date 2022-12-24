@@ -87,6 +87,6 @@ class MessageModel {
       message: 'Delete message successfully',
     });
   }
-};
+}
 
 exports.MessageModel = MessageModel;

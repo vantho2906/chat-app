@@ -95,7 +95,10 @@ class UserModel {
     const user = await User.findById(userId);
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });
     user.password = undefined;
-    return new ResponseAPI(200, { data: user, message: 'Get user successfully' });
+    return new ResponseAPI(200, {
+      data: user,
+      message: 'Get user successfully',
+    });
   }
 
   static async getCurrentUser(userId) {

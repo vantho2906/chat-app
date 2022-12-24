@@ -7,9 +7,9 @@ module.exports = {
         const bodyRequest = req.body;
         const paramsRequest = req.params;
         const queryRequest = req.query;
-        let bodyHandle = args.body
-        let paramsHandle = args.params
-        let queryHandle = args.query
+        let bodyHandle = args.body;
+        let paramsHandle = args.params;
+        let queryHandle = args.query;
         let errorMissing = [];
         let errorValidator = [];
         for (let i = 0; i < bodyHandle.length; i++) {
@@ -17,7 +17,8 @@ module.exports = {
             errorMissing.push(`${bodyHandle[i].name} is missing`);
           }
           let result = bodyHandle[i].validator(
-            bodyHandle[i].name,bodyRequest[bodyHandle[i].name]
+            bodyHandle[i].name,
+            bodyRequest[bodyHandle[i].name]
           );
           if (result) {
             errorValidator.push(result);
@@ -27,7 +28,8 @@ module.exports = {
           if (!paramsRequest[paramsHandle[i].name]) {
             errorMissing.push(`${paramsHandle[i].name} is missing`);
           }
-          let result = paramsHandle[i].validator(paramsHandle[i].name,
+          let result = paramsHandle[i].validator(
+            paramsHandle[i].name,
             paramsRequest[paramsHandle[i].name]
           );
           if (result) {
@@ -38,7 +40,8 @@ module.exports = {
           if (!queryRequest[queryHandle[i].name]) {
             errorMissing.push(`${queryHandle[i].name} is missing`);
           }
-          let result = queryHandle[i].validator(queryHandle[i].name,
+          let result = queryHandle[i].validator(
+            queryHandle[i].name,
             queryRequest[queryHandle[i].name]
           );
           if (result) {

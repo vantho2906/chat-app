@@ -85,6 +85,6 @@ class otpModel {
       });
     }
   }
-};
+}
 
 exports.otpModel = otpModel;

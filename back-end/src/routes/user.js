@@ -1,4 +1,4 @@
-const {UserMiddleware} = require('../middlewares/user');
+const { UserMiddleware } = require('../middlewares/user');
 
 const router = require('express').Router();
 

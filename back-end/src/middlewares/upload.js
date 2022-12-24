@@ -1,4 +1,4 @@
-const { UploadModel } = require("../models/upload");
+const { UploadModel } = require('../models/upload');
 
 class UploadMiddleware {
   static async uploadAvatar(req, res, next) {

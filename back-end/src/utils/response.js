@@ -3,8 +3,12 @@ class ResponseAPI {
     this.statusCode = statusCode;
     this.data = data;
   }
-  getStatusCode() { return this.statusCode; }
-  getData() { return this.data; }
+  getStatusCode() {
+    return this.statusCode;
+  }
+  getData() {
+    return this.data;
+  }
 }
 
 exports.ResponseAPI = ResponseAPI;

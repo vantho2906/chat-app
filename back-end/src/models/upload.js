@@ -44,7 +44,9 @@ class UploadModel {
     for (let i = 0; i < files.length; i++) {
       const typeOfFile = files[i].mimetype.split('/')[1];
       if (!typeOfFile.match('/JPG|jpg|jpeg|png|gif/')) {
-        return new ResponseAPI(400, { message: 'Only image files are allowed' });
+        return new ResponseAPI(400, {
+          message: 'Only image files are allowed',
+        });
       }
     }
     upload.array('myImage', files.length);
@@ -61,6 +63,6 @@ class UploadModel {
       message: 'Upload images successfully',
     });
   }
-};
+}
 
 exports.UploadModel = UploadModel;

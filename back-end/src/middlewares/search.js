@@ -1,4 +1,3 @@
-
 class SearchMiddleware {
   static async findByFullname(req, res, next) {
     const { fullname } = req.body;

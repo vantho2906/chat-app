@@ -1,4 +1,4 @@
-const { FriendInvitationModel } = require("../models/friendInvitation");
+const { FriendInvitationModel } = require('../models/friendInvitation');
 
 class FriendInvitationMiddleware {
   static async sendFriendRequest(req, res, next) {

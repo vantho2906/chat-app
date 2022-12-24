@@ -1,4 +1,4 @@
-const  {otpMiddleware} = require('../middlewares/otp')
+const { otpMiddleware } = require('../middlewares/otp');
 
 const router = require('express').Router();
 
