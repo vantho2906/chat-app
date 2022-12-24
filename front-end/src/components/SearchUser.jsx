@@ -6,6 +6,7 @@ import {
   faCheck,
   faCircleXmark,
   faUserXmark,
+  faSeedling,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
@@ -14,29 +15,31 @@ import {
   getRequestRoute,
 } from '../utils/APIRoutes';
 function SearchUser() {
-  const [currentRequest, setCurrentRequest] = useState(undefined);
+  const [currentRequest, setCurrentRequest] = useState([]);
   const [searchUser, setSearchUser] = useState('');
   const [loadUserChats, setLoadUserChats] = useState([]);
   const handleSearchChange = e => {
     setSearchUser(e.target.value);
   };
-  useEffect(() => {
-    const handleRequest = async () => {
-      const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-      setCurrentRequest(data.data.data.invitationsSend);
-    };
-    handleRequest();
-  }, []);
+  // useEffect(() => {
+  //   const handleRequest = async () => {
+  //     const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
+  //     setCurrentRequest(data.data.data.invitationsSend);
+  //   };
+  //   handleRequest();
+  // }, []);
   useEffect(() => {
     const handleSearchUser = async () => {
-      let fullname = searchUser;
-      const data = await axios.post(searchUserByFullnameRoute, {
-        fullname,
-      });
-      if (data.data.data.length !== 0) {
-        const loader = data.data.data;
-        setLoadUserChats(loader);
-      } else {
+      try {
+        let fullname = searchUser;
+        const data = await axios.post(searchUserByFullnameRoute, {
+          fullname,
+        });
+        if (fullname && data.status === 200) {
+          const loader = data.data.data;
+          setLoadUserChats(loader);
+        }
+      } catch (err) {
         setLoadUserChats([]);
       }
     };
@@ -50,8 +53,8 @@ function SearchUser() {
       receiverId,
       myId,
     });
-    const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-    setCurrentRequest(data.data.data.invitationsSend);
+    // const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
+    // setCurrentRequest(data.data.data.invitations);
   };
 
   return (
@@ -94,17 +97,20 @@ function SearchUser() {
                           alt=""
                         />
                       </div>
+                      <h3>{contact.fullname}</h3>
                       <div className="username">
-                        <h3>{contact.fullname}</h3>
                         <div
                           onClick={() => {
                             handleSendRequest(contact._id);
                           }}
                         >
-                          {currentRequest.filter(
+                          {false &&
+                          currentRequest.filter(
                             sender => sender.receiverId === contact._id
                           ).length > 0 ? (
                             <FontAwesomeIcon icon={faUserXmark} size="1x" />
+                          ) : contact._id === currentUser._id ? (
+                            <FontAwesomeIcon icon={faSeedling} size="1x" />
                           ) : (
                             <FontAwesomeIcon icon={faUserPlus} size="1x" />
                           )}
@@ -183,11 +189,12 @@ const Container = styled.div`
       }
       div {
         width: 100%;
-        display: grid;
+        display: flex;
         gap: 0.5rem;
         .contact {
           background-color: #ffffff30;
-          min-height: 4rem;
+          max-height: 4rem;
+          height: 4rem;
           width: 100%;
           cursor: pointer;
           border-radius: 0.2rem;
@@ -195,31 +202,40 @@ const Container = styled.div`
           gap: 1rem;
           align-items: center;
           display: flex;
+          justify-content: space-between;
           transition: 0.5s ease-in-out;
           .avatar {
+            display: flex;
             justify-content: flex-start;
+            height: 3rem;
+            width: 3rem;
             img {
-              hegiht: 3rem;
+              height: 3rem;
               width: 3rem;
               object-fit: cover;
               border-radius: 999rem;
             }
+            
+          }
+          h3 {
+            color: #777777;
+            font-weight: 400;
           }
           .username {
             margin-right: 0.4rem;
-            width: 100%;
+            // width: 100%;
             display: flex;
             justify-content: flex-end;
-            h3 {
-              color: #777777;
-              font-weight: 400;
-              padding-right: 1rem;
-            }
+            width: 10px;
+            
             div {
               display: flex;
               justify-content: flex-end;
               cursor: pointer;
               z-index: 2;
+              svg {
+                font-weight: bold;
+              }
             }
           }
         }
