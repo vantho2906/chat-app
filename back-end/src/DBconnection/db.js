@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 mongoose.set('strictQuery', true);
-let connect = () => {
+let DBconnect = () => {
   mongoose
     .connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
@@ -13,4 +13,4 @@ let connect = () => {
     .catch(err => console.log(err.message));
 };
 
-module.exports = connect;
+module.exports = DBconnect;
