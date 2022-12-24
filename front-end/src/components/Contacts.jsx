@@ -57,7 +57,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               Notifications
             </h6>
           </div>
-          {navSelect === 'messages' && <Message contacts={contacts} />}
+          {navSelect === 'messages' && <Message changeChat={changeChat} />}
           {navSelect === 'search-friends' && <SearchUser />}
           {navSelect === 'notifications' && <Notifications />}
         </Container>

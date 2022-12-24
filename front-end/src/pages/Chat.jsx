@@ -14,6 +14,7 @@ function Chat() {
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
+  const [currentRoom, setCurrentRoom] = useState(undefined);
 
   // console.log(currentUser);
   // console.log(currentChat);
@@ -45,8 +46,9 @@ function Chat() {
   //   };
   //   checkCurrentUser();
   // }, [currentUser]);
-  const handleChatChange = chat => {
-    setCurrentChat(chat);
+  const handleChatChange = (chatRoomId, userChat) => {
+    setCurrentChat(userChat);
+    setCurrentRoom(chatRoomId);
   };
   return (
     <Container>
@@ -59,6 +61,7 @@ function Chat() {
         <ChatContainer
           currentChat={currentChat}
           currentUser={currentUser}
+          currentRoom={currentRoom}
           socket={socket}
         />
       </div>

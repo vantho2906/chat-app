@@ -53,7 +53,7 @@ function ChatInput({ handleSendMsg }) {
 
 const Container = styled.div`
   display: grid;
-  height: 20%;
+  height: 16%;
   grid-template-columns: 5% 95%;
   align-items: center;
   background-color: rgba(249, 251, 255, 1);

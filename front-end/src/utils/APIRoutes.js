@@ -19,6 +19,8 @@ export const getRequestRoute = `${host}/invite`;
 export const acceptRequestRoute = `${host}/invite/accept`;
 export const cancelledRequestRoute = `${host}/invite/cancelled`;
 
+export const getMessagesRoute = `${host}/message`;
+export const addMessageRoute = `${host}/message/add`;
+
 export const allUsersRoute = `${host}/user/allusers`;
-export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const getAllMessageRoute = `${host}/api/messages/getmsg`;
