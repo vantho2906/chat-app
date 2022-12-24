@@ -2,24 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const socket = require('socket.io');
 const app = express();
-const connection = require('./src/DBconnection/db');
-const routes = require('./src/routes/index');
+const connection = require('./DBconnection/db');
+const routes = require('./routes/index');
+const { socketConnect } = require('./models/socket');
 require('dotenv').config();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-connection();
-app.get('/index', async (req, res) => {
-  res.sendFile(__dirname + '/src/views/index.html');
-});
-app.use('/socket', (req, res) =>
-  res.sendFile(__dirname + '/src/views/test.html')
-);
-app.use('/', routes);
 
-app.get('/photo', async (req, res) => {
-  res.sendFile(__dirname + '/src/views/show.html');
-});
+connection();
+socketConnect()
+
+app.use('/', routes);
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server started on Port ${process.env.PORT}`);

@@ -1,9 +1,9 @@
-const { sendOTP, resendOTP, confirmOTP } = require('../controllers/otp');
+const  {otpMiddleware} = require('../middlewares/otp')
 
 const router = require('express').Router();
 
-router.post('/send', sendOTP);
-router.post('/resend', resendOTP);
-router.post('/confirm', confirmOTP);
+router.post('/send', otpMiddleware.sendOTP);
+router.post('/resend', otpMiddleware.resendOTP);
+router.post('/confirm', otpMiddleware.confirmOTP);
 
 module.exports = router;

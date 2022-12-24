@@ -1,15 +1,13 @@
-const {
-  getFriendRequests,
-  sendFriendRequest,
-  acceptFriendRequest,
-  cancelledFriendRequest,
-} = require('../controllers/friendInvitation');
+const { FriendInvitationMiddleware } = require('../middlewares/friendInvitation');
 
 const router = require('express').Router();
 
-router.get('/:userId', getFriendRequests);
-router.post('/send/', sendFriendRequest);
-router.post('/accept/:inviteId', acceptFriendRequest);
-router.post('/cancelled/:inviteId', cancelledFriendRequest);
+router.get('/:userId', FriendInvitationMiddleware.getFriendRequests);
+router.post('/send/', FriendInvitationMiddleware.sendFriendRequest);
+router.post('/accept/:inviteId', FriendInvitationMiddleware.acceptFriendRequest);
+router.post(
+  '/cancelled/:inviteId',
+  FriendInvitationMiddleware.cancelledFriendRequest
+);
 
 module.exports = router;

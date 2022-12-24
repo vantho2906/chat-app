@@ -1,4 +1,4 @@
-const { uploadAvatar, uploadMultipleImages } = require('../controllers/upload');
+const { UploadMiddleware } = require('../middlewares/upload');
 
 const multer = require('multer');
 const router = require('express').Router();
@@ -13,7 +13,7 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage: storage });
 
-router.post('/', upload.single('avatar'), uploadAvatar);
-router.post('/upload-multiple', uploadMultipleImages);
+router.post('/', upload.single('avatar'), UploadMiddleware.uploadAvatar);
+router.post('/upload-multiple', UploadMiddleware.uploadMultipleImages);
 
 module.exports = router;

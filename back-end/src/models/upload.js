@@ -1,6 +1,7 @@
 const multer = require('multer');
 const fs = require('fs-extra');
-const UserModel = require('../models/user');
+const UserModel = require('../entities/user');
+const { ResponseAPI } = require('../utils/response');
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'src/public');
@@ -10,12 +11,12 @@ let storage = multer.diskStorage({
   },
 });
 let upload = multer({ storage: storage });
-module.exports = {
-  uploadAvatar: async (req, res, next) => {
-    const user = await UserModel.findOne({ username: req.body.username });
-    if (!user) return res.status(400).send({ message: 'User not found' });
+class UploadModel {
+  static async uploadAvatar(username) {
+    const user = await UserModel.findOne({ username });
+    if (!user) return new ResponseAPI(400, { message: 'User not found' });
     if (!req.file)
-      return res.status(400).send({ message: 'Please upload a file' });
+      return new ResponseAPI(400, { message: 'Please upload a file' });
     let typeOfFile = req.file.mimetype.split('/')[1];
     if (typeOfFile.match('/JPG|jpg|jpeg|png|gif/')) {
       let img = fs.readFileSync(req.file.path);
@@ -27,25 +28,23 @@ module.exports = {
       user.avatar = avatar;
       await user.save();
       user.password = undefined;
-      res.status(200).send({
+      new ResponseAPI(200, {
         message: 'Upload image successfully',
         data: user,
       });
     } else {
-      return res.status(400).send({ message: 'Only image file is allowed' });
+      return new ResponseAPI(400, { message: 'Only image file is allowed' });
     }
-  },
+  }
 
-  uploadMultipleImages: (req, res, next) => {
+  static async uploadMultipleImages(req, res, next) {
     if (!req.files)
-      return res.status(400).send({ message: 'Please choose files' });
+      return new ResponseAPI(400, { message: 'Please choose files' });
     const files = req.files;
     for (let i = 0; i < files.length; i++) {
       const typeOfFile = files[i].mimetype.split('/')[1];
       if (!typeOfFile.match('/JPG|jpg|jpeg|png|gif/')) {
-        return res
-          .status(400)
-          .send({ message: 'Only image files are allowed' });
+        return new ResponseAPI(400, { message: 'Only image files are allowed' });
       }
     }
     upload.array('myImage', files.length);
@@ -58,8 +57,10 @@ module.exports = {
         image: encode_image,
       });
     }
-    return res.status(200).send({
+    return new ResponseAPI(200, {
       message: 'Upload images successfully',
     });
-  },
+  }
 };
+
+exports.UploadModel = UploadModel;
