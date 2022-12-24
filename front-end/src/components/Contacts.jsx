@@ -6,7 +6,7 @@ import axios from 'axios';
 import { getRequestRoute } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
 import Message from './Message';
-import Notification from './Notifications';
+import Notifications from './Notifications';
 
 function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -59,7 +59,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
           </div>
           {navSelect === 'messages' && <Message contacts={contacts} />}
           {navSelect === 'search-friends' && <SearchUser />}
-          {navSelect === 'notifications' && <Notification />}
+          {navSelect === 'notifications' && <Notifications />}
         </Container>
       )}
     </>

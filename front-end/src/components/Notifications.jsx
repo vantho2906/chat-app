@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserPlus,
   faCheck,
+  faXmark,
   faCircleXmark,
   faUserXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -12,58 +13,97 @@ import {
   sendRequestRoute,
   searchUserByFullnameRoute,
   getRequestRoute,
+  getUserRoute,
+  acceptRequestRoute,
+  cancelledRequestRoute,
 } from '../utils/APIRoutes';
 function Notification() {
-  const currentUser = JSON.parse(localStorage.getItem('chap-app-user'));
+  const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
   const [currentRequest, setCurrentRequest] = useState([]);
+  const [currentUserRequest, setCurrentUserRequest] = useState([]);
+  const [requestAccepted, setRequestAccepted] = useState([]);
+  const [requestCancelled, setRequestCancelled] = useState([]);
   useEffect(() => {
     const handleRequest = async () => {
       const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-      console.log(data);
-      setCurrentRequest(data.data.data.invitationsGet);
+      setCurrentRequest(prev => [...prev, ...data.data.data]);
+      data.data.data.map(async user => {
+        const item = await axios.get(`${getUserRoute}/${user.senderId}`);
+        setCurrentUserRequest(prev => [...prev, item.data.data]);
+      });
     };
     handleRequest();
   }, []);
-  console.log(currentRequest);
 
-  const handleSendRequest = async receiverId => {
-    const myId = currentUser._id;
-    await axios.post(sendRequestRoute, {
-      receiverId,
-      myId,
+  const handleAcceptedRequest = async id => {
+    let inviteId = '';
+    currentRequest.forEach(request => {
+      if (request.senderId === id) {
+        inviteId = request._id;
+        return;
+      }
     });
-    const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-    setCurrentRequest(data.data.data.invitationsSend);
+    console.log(inviteId);
+    const message = await axios.post(`${acceptRequestRoute}/${inviteId}`);
+    if (message.status === 200) {
+      setRequestAccepted(prev => [...prev, id]);
+    }
+  };
+
+  const handleCancelledRequest = async id => {
+    let inviteId = '';
+    currentRequest.forEach(request => {
+      if (request.senderId === id) {
+        inviteId = request._id;
+        return;
+      }
+    });
+    console.log(inviteId);
+    const message = await axios.post(`${cancelledRequestRoute}/${inviteId}`);
+    if (message.status === 200) {
+      setRequestCancelled(prev => [...prev, id]);
+    }
   };
 
   return (
     <Container>
-      {/* <div className="search-user">
-        {currentRequest && currentRequest.length !== 0 ? (
+      <div className="search-user">
+        {currentUserRequest && currentUserRequest.length !== 0 ? (
           <div className="contacts">
             <div>
-              {currentRequest.map((contact, index) => {
+              {currentUserRequest.map((contact, index) => {
                 return (
                   <div className="contact" key={index}>
                     <div className="avatar">
                       <img
                         src={
-                          "data:image/png;base64, " + contact.avatar.imageBase64
+                          'data:image/png;base64, ' + contact.avatar.imageBase64
                         }
                         alt=""
                       />
                     </div>
+                    <h3>{contact.fullname}</h3>
                     <div className="username">
-                      <h3>{contact.fullname}</h3>
-                      <div
-                        onClick={() => {
-                          handleSendRequest(contact._id);
-                        }}
-                      >
-                        {true ? (
-                          <FontAwesomeIcon icon={faUserXmark} size="1x" />
+                      <div>
+                        {requestAccepted.includes(contact._id) ? (
+                          <div>Accepted</div>
+                        ) : requestCancelled.includes(contact._id) ? (
+                          <div>Cancelled</div>
                         ) : (
-                          <FontAwesomeIcon icon={faUserPlus} size="1x" />
+                          <div>
+                            <FontAwesomeIcon
+                              onClick={() => handleAcceptedRequest(contact._id)}
+                              icon={faCheck}
+                              size="1x"
+                            />
+                            <FontAwesomeIcon
+                              onClick={() =>
+                                handleCancelledRequest(contact._id)
+                              }
+                              icon={faXmark}
+                              size="1x"
+                            />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -75,7 +115,7 @@ function Notification() {
         ) : (
           <p>Nothing</p>
         )}
-      </div> */}
+      </div>
     </Container>
   );
 }
@@ -103,11 +143,13 @@ const Container = styled.div`
       }
       div {
         width: 100%;
-        display: grid;
+        display: flex;
+        flex-direction: column;
         gap: 0.5rem;
         .contact {
           background-color: #ffffff30;
-          min-height: 4rem;
+          max-height: 4rem;
+          height: 4rem;
           width: 100%;
           cursor: pointer;
           border-radius: 0.2rem;
@@ -115,35 +157,52 @@ const Container = styled.div`
           gap: 1rem;
           align-items: center;
           display: flex;
+          flex-direction: row;
+          // justify-content: space-between;
           transition: 0.5s ease-in-out;
           .avatar {
+            display: flex;
             justify-content: flex-start;
+            height: 3rem;
+            width: 3rem;
+            margin-right: 1rem;
             img {
-              hegiht: 3rem;
+              height: 3rem;
               width: 3rem;
               object-fit: cover;
               border-radius: 999rem;
             }
+            
+          }
+          h3 {
+            color: #777777;
+            font-weight: 400;
+            display: flex;
+            justify-content: flex-start;
+            flex: 1;
           }
           .username {
             margin-right: 0.4rem;
-            width: 100%;
+            // width: 100%;
             display: flex;
             justify-content: flex-end;
-            h3 {
-              color: #777777;
-              font-weight: 400;
-              padding-right: 1rem;
-            }
+            width: 1.5rem;
+            
             div {
               display: flex;
               justify-content: flex-end;
               cursor: pointer;
               z-index: 2;
+              
+              div {
+                display: flex;
+                flex-direction: row;
+                font-size: 1.2rem;
+                gap: 1rem;
+              }
             }
           }
         }
-  }
 
   }
 

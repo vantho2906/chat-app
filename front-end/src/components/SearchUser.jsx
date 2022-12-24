@@ -46,9 +46,10 @@ function SearchUser() {
     handleSearchUser();
   }, [searchUser]);
 
-  const currentUser = JSON.parse(localStorage.getItem('chap-app-user'));
+  const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
   const handleSendRequest = async receiverId => {
     const myId = currentUser._id;
+    console.log(myId);
     await axios.post(sendRequestRoute, {
       receiverId,
       myId,
@@ -190,6 +191,7 @@ const Container = styled.div`
       div {
         width: 100%;
         display: flex;
+        flex-direction: column;
         gap: 0.5rem;
         .contact {
           background-color: #ffffff30;
@@ -202,13 +204,15 @@ const Container = styled.div`
           gap: 1rem;
           align-items: center;
           display: flex;
-          justify-content: space-between;
+          flex-direction: row;
+          // justify-content: space-between;
           transition: 0.5s ease-in-out;
           .avatar {
             display: flex;
             justify-content: flex-start;
             height: 3rem;
             width: 3rem;
+            margin-right: 1rem;
             img {
               height: 3rem;
               width: 3rem;
@@ -220,13 +224,16 @@ const Container = styled.div`
           h3 {
             color: #777777;
             font-weight: 400;
+            display: flex;
+            justify-content: flex-start;
+            flex: 1;
           }
           .username {
             margin-right: 0.4rem;
             // width: 100%;
             display: flex;
             justify-content: flex-end;
-            width: 10px;
+            width: 1.5rem;
             
             div {
               display: flex;

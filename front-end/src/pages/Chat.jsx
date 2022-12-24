@@ -20,10 +20,10 @@ function Chat() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (!localStorage.getItem('chap-app-user')) {
+      if (!localStorage.getItem('chat-app-user')) {
         navigate('/login');
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem('chap-app-user')));
+        setCurrentUser(await JSON.parse(localStorage.getItem('chat-app-user')));
       }
     };
     checkUser();
