@@ -12,19 +12,19 @@ class FriendInvitationMiddleware {
 
   static async getFriendRequests(req, res, next) {
     const userId = req.params.userId;
-    const result = await UploadModel.getFriendRequests(userId);
+    const result = await FriendInvitationModel.getFriendRequests(userId);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
   static async acceptFriendRequest(req, res, next) {
     const inviteId = req.params.inviteId;
-    const result = await UploadModel.acceptFriendRequest(inviteId);
+    const result = await FriendInvitationModel.acceptFriendRequest(inviteId);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
   static async cancelledFriendRequest(req, res, next) {
     const inviteId = req.params.inviteId;
-    const result = await UploadModel.cancelledFriendRequest(inviteId);
+    const result = await FriendInvitationModel.cancelledFriendRequest(inviteId);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 }

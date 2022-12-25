@@ -3,9 +3,9 @@ const Message = require('../entities/message');
 const { ResponseAPI } = require('../utils/response');
 
 class MessageModel {
-  static async getMessages(myId) {
+  static async getMessages(myId, chatRoomId) {
     // const { myId } = req.body;
-    const chatRoomId = req.params.chatRoomId;
+    // const chatRoomId = req.params.chatRoomId;
     const messages = await Message.find({
       chatRoomId: chatRoomId,
     }).sort({ updatedAt: 'asc' });

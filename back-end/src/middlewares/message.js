@@ -3,7 +3,8 @@ const { MessageModel } = require('../models/mesage');
 class MessageMiddleware {
   static async getMessages(req, res, next) {
     const { myId } = req.body;
-    const result = await MessageModel.getMessages(myId);
+    const chatRoomId = req.params.chatRoomId;
+    const result = await MessageModel.getMessages(myId, chatRoomId);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
@@ -33,8 +34,6 @@ class MessageMiddleware {
 
   static async deleteMessage(req, res, next) {
     const { msgId } = req.params;
-    if (message.trim() == '')
-      return res.status(400).send({ message: 'Message can not be empty' });
     const result = await MessageModel.deleteMessage(msgId);
     return res.status(result.getStatusCode()).send(result.getData());
   }
