@@ -1,4 +1,4 @@
-const { SearchModel } = require("../models/search");
+const { SearchModel } = require('../models/search');
 
 class SearchMiddleware {
   static async findByFullname(req, res, next) {

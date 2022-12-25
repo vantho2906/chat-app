@@ -32,11 +32,7 @@ class UserModel {
     return new ResponseAPI(200, { message: 'Skip this step successfully!' });
   }
 
-  static async changePassword(
-    email,
-    password,
-    newPassword,
-  ) {
+  static async changePassword(email, password, newPassword) {
     // const { email, password, newPassword, confirmNewPassword } = req.body;
     const user = await User.findOne({ email });
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });

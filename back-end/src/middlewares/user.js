@@ -44,11 +44,7 @@ class UserMiddleware {
       return res.status(400).send({
         message: 'Password and confirm password are not the same',
       });
-    const result = await UserModel.changePassword(
-      email,
-      password,
-      newPassword
-    );
+    const result = await UserModel.changePassword(email, password, newPassword);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
