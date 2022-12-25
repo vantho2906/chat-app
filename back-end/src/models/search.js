@@ -4,7 +4,9 @@ const { ResponseAPI } = require('../utils/response');
 class SearchModel {
   static async findByFullname(fullname) {
     // const { fullname } = req.body;
-    const users = await User.find({ fullname: { $regex: fullname } }).select({
+    const users = await User.find({
+      fullname: { $regex: fullname, $options: 'i' },
+    }).select({
       _id: 1,
       fullname: 1,
       avatar: 1,

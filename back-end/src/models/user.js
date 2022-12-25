@@ -78,7 +78,7 @@ class UserModel {
       contacts.push(friend);
       chatRoomIdList.push(chatRooms[i]._id.toString());
     }
-    console.log(contacts);
+    // console.log(contacts);
     return new ResponseAPI(200, {
       data: { contacts: contacts, chatRoomIdList: chatRoomIdList },
       message: 'Get all contacts successfully!',

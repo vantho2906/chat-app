@@ -13,6 +13,7 @@ module.exports = {
       },
     });
 
+    // const socket = io()
     io.on('connection', socket => {
       console.log('User connected!');
       // data: {
@@ -33,6 +34,11 @@ module.exports = {
       //   myId,
       //   receiverId,
       // }
+
+      //  client
+      socket.emit('send-msg', data)
+
+
       socket.on('send-friend-request', data => {
         const { myId, receiverId } = data;
         socket.join(receiverId);
