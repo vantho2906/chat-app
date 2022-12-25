@@ -44,3 +44,5 @@ class SearchModel {
     });
   }
 }
+
+exports.SearchModel = SearchModel;

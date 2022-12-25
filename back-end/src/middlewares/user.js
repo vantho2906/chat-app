@@ -47,8 +47,7 @@ class UserMiddleware {
     const result = await UserModel.changePassword(
       email,
       password,
-      newPassword,
-      confirmNewPassword
+      newPassword
     );
     return res.status(result.getStatusCode()).send(result.getData());
   }

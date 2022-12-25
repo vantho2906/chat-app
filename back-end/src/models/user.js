@@ -36,7 +36,6 @@ class UserModel {
     email,
     password,
     newPassword,
-    confirmNewPassword
   ) {
     // const { email, password, newPassword, confirmNewPassword } = req.body;
     const user = await User.findOne({ email });
