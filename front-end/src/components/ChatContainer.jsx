@@ -2,22 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
 import Logout from './Logout';
-import { getMessagesRoute, addMessageRoute } from '../utils/APIRoutes';
+import { getMessagesRoute, addMessageRoute, host } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
 
 function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
+  // const socket = useRef();
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
 
-  useEffect(() => {
-    if (currentUser) {
-      socket = io(host);
-      socket.emit('add-user', currentUser._id);
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     socket.current = io(host);
+  //   }
+  // }, [currentUser]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -36,23 +36,26 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
 
   const handleSendMsg = async msg => {
     socket.current.emit('send-msg', {
-      to: currentChat._id,
-      from: currentUser._id,
-      msg,
+      chatRoomId: currentRoom,
+      userId: currentUser._id,
+      message: msg,
     });
     await axios.post(`${addMessageRoute}/${currentRoom}`, {
       userId: currentUser._id,
       message: msg,
     });
 
-    const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
-    setMessages(msgs);
+    // const msgs = [...messages];
+    // msgs.push({ fromSelf: true, message: msg });
+    // setMessages(msgs);
   };
 
   if (socket.current) {
-    socket.current.on('msg-recieve', msg => {
-      setArrivalMessages({ fromSelf: false, message: msg });
+    socket.current.on('msg-recieve', data => {
+      setArrivalMessages({
+        fromSelf: currentUser === data.userId,
+        message: data.message,
+      });
     });
   }
 
