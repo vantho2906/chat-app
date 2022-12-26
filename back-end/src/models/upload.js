@@ -26,7 +26,7 @@ class UploadModel {
       user.avatar = avatar;
       await user.save();
       user.password = undefined;
-      new ResponseAPI(200, {
+      return new ResponseAPI(200, {
         message: 'Upload image successfully',
         data: user,
       });
