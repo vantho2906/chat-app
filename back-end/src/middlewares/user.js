@@ -62,7 +62,6 @@ class UserMiddleware {
       return res.status(400).send({ message: 'Email is invalid' });
     const result = await UserModel.forgotPassword(
       newPassword,
-      confirmNewPassword,
       email
     );
     return res.status(result.getStatusCode()).send(result.getData());

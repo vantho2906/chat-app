@@ -5,6 +5,7 @@ const {
 const router = require('express').Router();
 
 router.get('/:userId', FriendInvitationMiddleware.getFriendRequests);
+router.get('/me-send/:userId', FriendInvitationMiddleware.getAllRequestsUserSend);
 router.post('/send/', FriendInvitationMiddleware.sendFriendRequest);
 router.post(
   '/accept/:inviteId',
