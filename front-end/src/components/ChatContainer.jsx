@@ -7,17 +7,12 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
 
-function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
-  // const socket = useRef();
+function ChatContainer({ currentChat, currentUser, currentRoom }) {
+
+  const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
-
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     socket.current = io(host);
-  //   }
-  // }, [currentUser]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -27,37 +22,42 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
-        console.log(response);
+        // console.log(response);
         setMessages(response.data.data);
       }
     };
     handleSetMessages();
   }, [currentChat]);
 
+  useEffect(()=>{
+    const joinRoom = () => {
+      if(currentRoom) {
+        socket.emit('join-room', currentRoom);
+      }
+    }
+    joinRoom();
+  },[currentRoom])
+
   const handleSendMsg = async msg => {
-    socket.current.emit('send-msg', {
-      chatRoomId: currentRoom,
-      userId: currentUser._id,
+    socket.emit('send-msg', {
+      userId: currentChat._id,
       message: msg,
+      chatRoomId: currentRoom
     });
     await axios.post(`${addMessageRoute}/${currentRoom}`, {
       userId: currentUser._id,
       message: msg,
     });
-
-    // const msgs = [...messages];
-    // msgs.push({ fromSelf: true, message: msg });
-    // setMessages(msgs);
   };
 
-  if (socket.current) {
-    socket.current.on('msg-recieve', data => {
-      setArrivalMessages({
-        fromSelf: currentUser === data.userId,
-        message: data.message,
+  
+  useEffect(() => {
+      console.log(12);
+      socket.on('receive-msg', data => {
+        console.log(data);
+        setArrivalMessages({ fromSelf: currentUser._id !== data.userId, message: data.message });
       });
-    });
-  }
+  }, [socket])
 
   useEffect(() => {
     arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);

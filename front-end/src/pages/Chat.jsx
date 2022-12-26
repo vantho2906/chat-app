@@ -10,7 +10,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import AppContext from '../components/AppContext';
 
 function Chat() {
-  const socket = useRef();
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -27,27 +26,20 @@ function Chat() {
     };
     checkUser();
   }, []);
-  useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host);
-      // socket.current.emit('add-user', currentUser._id);
-    }
-  }, [currentUser]);
-
   const { notification } = useContext(AppContext);
-  console.log(notification);
+  // console.log(notification);
 
-  useEffect(() => {
-    const handleNotification = async () => {
-      if (currentUser) {
-        const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-        if (data.status === 200) {
-          notification = data.data.data.length;
-        }
-      }
-    };
-    handleNotification();
-  }, []);
+  // useEffect(() => {
+  //   const handleNotification = async () => {
+  //     if (currentUser) {
+  //       const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
+  //       if (data.status === 200) {
+  //         notification = data.data.data.length;
+  //       }
+  //     }
+  //   };
+  //   handleNotification();
+  // }, []);
 
   const handleChatChange = (chatRoomId, userChat) => {
     setCurrentChat(userChat);
@@ -65,7 +57,6 @@ function Chat() {
           currentChat={currentChat}
           currentUser={currentUser}
           currentRoom={currentRoom}
-          socket={socket}
         />
       </div>
     </Container>
