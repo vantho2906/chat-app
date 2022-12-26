@@ -1,13 +1,13 @@
 const { createServer } = require('http');
-const { Server } = require('socket.io');
+const socket = require('socket.io');
 const { MessageModel } = require('./mesage');
 const { FriendInvitationModel } = require('./friendInvitation');
 
 module.exports = {
   socketConnect: async (  ) => {
     const httpServer = createServer();
-    httpServer.listen(process.env.SOCKET_PORT);
-    const io = new Server(httpServer, {
+    const socketServer = httpServer.listen(process.env.SOCKET_PORT);
+    const io = socket(socketServer, {
       cors: {
         origin: ['http://localhost:3000', process.env.CLIENT_SOCKET_ENDPOINT],
         credentials: true,
