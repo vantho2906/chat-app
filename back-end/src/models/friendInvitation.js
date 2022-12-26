@@ -34,6 +34,19 @@ class FriendInvitationModel {
     });
   }
 
+  static async getAllRequestsUserSend(userId) {
+    const user = await User.findById(userId);
+    if (!user) return new ResponseAPI(400, { message: 'User not found' });
+    const invitations = await FriendInvitation.find({
+      senderId: userId,
+      status: InviteStatus.processing(),
+    }).sort({ updateAt: 'desc' });
+    return new ResponseAPI(200, {
+      message: 'Get friend requests successfully',
+      data: invitations,
+    });
+  }
+
   static async acceptFriendRequest(inviteId) {
     // const inviteId = req.params.inviteId;
     const invitation = await FriendInvitation.findById(inviteId);
