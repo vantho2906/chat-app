@@ -1,23 +1,21 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { allUsersRoute, host } from '../utils/APIRoutes';
+import { getRequestRoute, host } from '../utils/APIRoutes';
 import Contacts from '../components/Contacts';
 import ChatContainer from '../components/ChatContainer';
 import { io } from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css';
+import AppContext from '../components/AppContext';
 
 function Chat() {
-  const socket = useRef(null);
+  const socket = useRef();
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentRoom, setCurrentRoom] = useState(undefined);
-
-  // console.log(currentUser);
-  // console.log(currentChat);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -29,23 +27,28 @@ function Chat() {
     };
     checkUser();
   }, []);
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit('add-user', currentUser._id);
+    }
+  }, [currentUser]);
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     socket.current = io(host);
-  //     socket.current.emit("add-user", currentUser._id);
-  //   }
-  // }, [currentUser]);
+  const { notification } = useContext(AppContext);
+  console.log(notification);
 
-  // useEffect(() => {
-  //   const checkCurrentUser = async () => {
-  //     if (currentUser) {
-  //       const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-  //       setContacts(data.data);
-  //     }
-  //   };
-  //   checkCurrentUser();
-  // }, [currentUser]);
+  useEffect(() => {
+    const handleNotification = async () => {
+      if (currentUser) {
+        const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
+        if (data.status === 200) {
+          notification = data.data.data.length;
+        }
+      }
+    };
+    handleNotification();
+  }, []);
+
   const handleChatChange = (chatRoomId, userChat) => {
     setCurrentChat(userChat);
     setCurrentRoom(chatRoomId);

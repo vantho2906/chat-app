@@ -5,11 +5,19 @@ import Logout from './Logout';
 import { getMessagesRoute, addMessageRoute } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { io } from 'socket.io-client';
 
 function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
+
+  useEffect(() => {
+    if (currentUser) {
+      socket = io(host);
+      socket.emit('add-user', currentUser._id);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -27,35 +35,34 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   }, [currentChat]);
 
   const handleSendMsg = async msg => {
+    socket.current.emit('send-msg', {
+      to: currentChat._id,
+      from: currentUser._id,
+      msg,
+    });
     await axios.post(`${addMessageRoute}/${currentRoom}`, {
       userId: currentUser._id,
       message: msg,
     });
-    socket.current.emit('send-msg', {
-      to: currentChat._id,
-      from: currentUser._id,
-      message: msg,
-    });
+
     const msgs = [...messages];
     msgs.push({ fromSelf: true, message: msg });
     setMessages(msgs);
   };
 
-  // useEffect(() => {
-  //   if (socket.current) {
-  //     socket.current.on('msg-recieve', msg => {
-  //       setArrivalMessages({ fromSelf: false, message: msg });
-  //     });
-  //   }
-  // }, []);
+  if (socket.current) {
+    socket.current.on('msg-recieve', msg => {
+      setArrivalMessages({ fromSelf: false, message: msg });
+    });
+  }
 
-  // useEffect(() => {
-  //   arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
-  // }, [arrivalMessages]);
+  useEffect(() => {
+    arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
+  }, [arrivalMessages]);
 
-  // useEffect(() => {
-  //   scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
-  // }, [messages]);
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+  }, [messages]);
 
   return (
     <>
@@ -64,13 +71,15 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
           <div className="chat-header">
             <div className="user-details">
               <div className="avatar">
-                {/* <img
-                  src="https://fictionhorizon.com/wp-content/uploads/2021/08/1608125060_One-Piece-this-is-how-Luffy-would-be-if-he-1024x535.jpeg"
+                <img
+                  src={
+                    'data:image/png;base64, ' + currentChat.avatar.imageBase64
+                  }
                   alt=""
-                /> */}
+                />
               </div>
               <div className="username">
-                <h3>{currentChat.username}</h3>
+                <h3>{currentChat.fullname}</h3>
               </div>
             </div>
             <Logout />
@@ -104,17 +113,21 @@ const Container = styled.div`
   overflow: hidden;
   .chat-header {
     background-color: rgba(249, 251, 255, 1);
-    height: 16%;
+    height: 14%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2.1rem 2.2rem 0 2rem;
+    padding: 0 2rem;
     .user-details {
       display: flex;
       align-items: center;
+      gap: 1rem;
       .avatar {
-        .img {
+        img {
+          border-radius: 999rem;
+          width: 3rem;
           height: 3rem;
+          object-fit: cover;
         }
       }
       .username {

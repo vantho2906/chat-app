@@ -21,12 +21,10 @@ function ConfirmOTP() {
   };
   useEffect(() => {
     const handleSendOTP = async () => {
-      console.log(username, email);
       const data = await axios.post(sendOTPRoute, {
         username,
         email,
       });
-      console.log(data);
     };
     handleSendOTP();
   }, []);
@@ -34,14 +32,13 @@ function ConfirmOTP() {
   const handleResendOTP = async () => {
     const data = await axios.post(resendOTPRoute, {
       username,
-      phone,
+      email,
     });
     console.log(data);
   };
 
   const handleSubmitOTP = async e => {
     e.preventDefault();
-    console.log(OTPcode);
     const data = axios.post(confirmOTPRoute, {
       OTPcode,
       email,
@@ -52,7 +49,6 @@ function ConfirmOTP() {
     });
     console.log(data);
     data.then(res => {
-      console.log(res);
       if (res.status === 200) {
         console.log('successfully');
         navigate('/register/avatar', {

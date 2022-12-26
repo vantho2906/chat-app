@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getAllContacts } from '../utils/APIRoutes';
+import { getAllContacts, host } from '../utils/APIRoutes';
 import axios from 'axios';
 
 function Message({ changeChat }) {
@@ -23,7 +23,7 @@ function Message({ changeChat }) {
   return (
     <Container>
       <div className="search-user">
-        {userChats && userChats.length !== 0 ? (
+        {userChats ? (
           <div className="contacts">
             <div>
               {userChats.map((contact, index) => {

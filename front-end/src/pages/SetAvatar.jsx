@@ -30,8 +30,6 @@ function SetAvatar() {
     const avatar = new FormData();
     avatar.append('avatar', file);
     avatar.append('username', username);
-    console.log(avatar.get('avatar'));
-    console.log(username);
     const data = await axios.post(avatarRoute, avatar);
     if (data.status === 200) {
       localStorage.setItem('chap-app-user', JSON.stringify(data.data.data));

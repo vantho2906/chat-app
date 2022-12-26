@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {} from '@fortawesome/free-solid-svg-icons';
+import {
+  faBell,
+  faMagnifyingGlass,
+  faMessage,
+} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { getRequestRoute } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
@@ -17,6 +21,8 @@ function Contacts({ contacts, currentUser, changeChat }) {
     if (currentUser) {
       setCurrentUserImage(currentUser.avatar);
       setCurrentUserName(currentUser.fullname);
+      const notification = JSON.parse(localStorage.getItem('notifications'));
+      console.log(notification);
     }
   }, [currentUser]);
 
@@ -38,7 +44,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               }}
               className={`${navSelect === 'messages' ? 'selected' : ''}`}
             >
-              Messages
+              <FontAwesomeIcon icon={faMessage} size="2x" />
             </h6>
             <h6
               onClick={() => {
@@ -46,7 +52,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               }}
               className={`${navSelect === 'search-friends' ? 'selected' : ''}`}
             >
-              Search friends
+              <FontAwesomeIcon icon={faMagnifyingGlass} size="2x" />
             </h6>
             <h6
               onClick={() => {
@@ -54,7 +60,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               }}
               className={`${navSelect === 'notifications' ? 'selected' : ''}`}
             >
-              Notifications
+              <FontAwesomeIcon icon={faBell} size="2x" />
             </h6>
           </div>
           {navSelect === 'messages' && <Message changeChat={changeChat} />}
@@ -84,6 +90,7 @@ const Container = styled.div`
       height: 2.5rem;
       width: 2.5rem;
       max-inline-size: 100%;
+      object-fit: cover;
     }
   }
   .nav {
