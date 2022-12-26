@@ -16,6 +16,12 @@ class FriendInvitationMiddleware {
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
+  static async getAllRequestsUserSend(req, res, next) {
+    const userId = req.params.userId;
+    const result = await FriendInvitationModel.getAllRequestsUserSend(userId);
+    return res.status(result.getStatusCode()).send(result.getData());
+  }
+
   static async acceptFriendRequest(req, res, next) {
     const inviteId = req.params.inviteId;
     const result = await FriendInvitationModel.acceptFriendRequest(inviteId);

@@ -36,9 +36,10 @@ class UserModel {
     // const { email, password, newPassword, confirmNewPassword } = req.body;
     const user = await User.findOne({ email });
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });
-    if (user.password != password)
+    const isOldPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isOldPasswordValid)
       return new ResponseAPI(400, { message: 'Old Password is incorrect!' });
-    user.password = newPassword;
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     return new ResponseAPI(200, { message: 'Password changed successfully!' });
   }
@@ -46,7 +47,7 @@ class UserModel {
   static async forgotPassword(newPassword, email) {
     const user = await User.findOne({ email });
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });
-    user.password = newPassword;
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     return new ResponseAPI(200, { message: 'Change password successfully!' });
   }

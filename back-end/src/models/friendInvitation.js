@@ -28,6 +28,10 @@ class FriendInvitationModel {
       receiverId: userId,
       status: InviteStatus.processing(),
     }).sort({ updateAt: 'desc' });
+    if (invitations.length == 0)
+      return new ResponseAPI(400, {
+        message: 'No friend requests available',
+      });
     return new ResponseAPI(200, {
       message: 'Get friend requests successfully',
       data: invitations,
@@ -41,6 +45,10 @@ class FriendInvitationModel {
       senderId: userId,
       status: InviteStatus.processing(),
     }).sort({ updateAt: 'desc' });
+    if (invitations.length == 0)
+      return new ResponseAPI(400, {
+        message: 'No friend requests available',
+      });
     return new ResponseAPI(200, {
       message: 'Get friend requests successfully',
       data: invitations,
