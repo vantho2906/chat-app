@@ -11,6 +11,7 @@ import { getRequestRoute } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
 import Message from './Message';
 import Notifications from './Notifications';
+import Logout from './Logout';
 
 function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -36,6 +37,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               alt=""
             />
             <h3>{currentUser.fullname}</h3>
+            <Logout />
           </div>
           <div className="nav">
             <h6

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
-import Logout from './Logout';
 import { getMessagesRoute, addMessageRoute, host } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +21,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
-        // console.log(response);
+        console.log(response);
         setMessages(response.data.data);
       }
     };
@@ -55,7 +54,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
       console.log(12);
       socket.on('receive-msg', data => {
         console.log(data);
-        setArrivalMessages({ fromSelf: currentUser._id !== data.userId, message: data.message });
+        setArrivalMessages({fromSelf: currentUser._id !== data.userId, message: {message: data.message, updatedAt: Date.now()}});
       });
   }, [socket])
 
@@ -85,7 +84,6 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
                 <h3>{currentChat.fullname}</h3>
               </div>
             </div>
-            <Logout />
           </div>
           <div className="chat-messages">
             {messages.map(message => {
@@ -97,7 +95,8 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
                     }`}
                   >
                     <div className="content">
-                      <p>{message.message}</p>
+                      <p>{message.message.message}</p>
+                      <p>{message.message.updatedAt}</p>
                     </div>
                   </div>
                 </div>

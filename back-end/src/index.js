@@ -33,7 +33,7 @@ const io = socket(server, {
 
 global.onlineUsers = new Map();
 io.on('connection', socket => {
-  console.log('connected');
+  // console.log('connected');
   socket.on('join-room', (data) => {
     socket.join(data);
   })
