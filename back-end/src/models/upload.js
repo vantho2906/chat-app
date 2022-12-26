@@ -12,17 +12,15 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage: storage });
 class UploadModel {
-  static async uploadAvatar(username) {
+  static async uploadAvatar(username, file) {
     const user = await UserModel.findOne({ username });
     if (!user) return new ResponseAPI(400, { message: 'User not found' });
-    if (!req.file)
-      return new ResponseAPI(400, { message: 'Please upload a file' });
-    let typeOfFile = req.file.mimetype.split('/')[1];
+    let typeOfFile = file.mimetype.split('/')[1];
     if (typeOfFile.match('/JPG|jpg|jpeg|png|gif/')) {
-      let img = fs.readFileSync(req.file.path);
+      let img = fs.readFileSync(file.path);
       let encode_image = img.toString('base64');
       const avatar = {
-        contentType: req.file.mimetype,
+        contentType: file.mimetype,
         imageBase64: encode_image,
       };
       user.avatar = avatar;
