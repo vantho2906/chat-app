@@ -4,8 +4,9 @@ const { MessageModel } = require('./mesage');
 const { FriendInvitationModel } = require('./friendInvitation');
 
 module.exports = {
-  socketConnect: async () => {
+  socketConnect: async (  ) => {
     const httpServer = createServer();
+    httpServer.listen(process.env.SOCKET_PORT);
     const io = new Server(httpServer, {
       cors: {
         origin: ['http://localhost:3000', process.env.CLIENT_SOCKET_ENDPOINT],
@@ -13,7 +14,6 @@ module.exports = {
       },
     });
 
-    // const socket = io()
     io.on('connection', socket => {
       console.log('User connected!');
       // data: {
@@ -27,18 +27,13 @@ module.exports = {
         const result = MessageModel.addMessage(userId, message, chatRoomId);
         if (result.getStatusCode() == 400) {
           io.emit('send-msg-failed', result.getData());
-        } else io.to(chatRoomId).emit(data);
+        } else io.to(chatRoomId).emit('receive-msg', data);
       });
 
       // data: {
       //   myId,
       //   receiverId,
       // }
-
-      //  client
-      socket.emit('send-msg', data)
-
-
       socket.on('send-friend-request', data => {
         const { myId, receiverId } = data;
         socket.join(receiverId);
@@ -48,7 +43,7 @@ module.exports = {
         );
         if (result.getStatusCode() == 400) {
           io.emit('send-friend-request-failed', result.getData());
-        } else io.to(receiverId).emit(data);
+        } else io.to(receiverId).emit('receive-friend-request', data);
       });
     });
   },
