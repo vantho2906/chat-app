@@ -12,7 +12,7 @@ class MessageModel {
     const projectedMessages = messages.map(msg => {
       return {
         fromSelf: msg.senderId == myId,
-        message: msg.message,
+        message: msg,
       };
     });
     return new ResponseAPI(200, { data: projectedMessages });
