@@ -37,7 +37,8 @@ class otpModel {
       email: email,
     });
     const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
-    if (module.exports.sendEmail(email, text))
+    let check = await this.sendEmail(email, text)
+    if (check)
       return new ResponseAPI(200, { message: 'Send OTP successfully!' });
     return new ResponseAPI(400, { message: 'Send OTP failed!' });
   }
@@ -50,7 +51,8 @@ class otpModel {
       { code: OTPcode }
     );
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
-    if (module.exports.sendEmail(email, text) == true)
+    let check = await this.sendEmail(email, text);
+    if (check)
       return new ResponseAPI(200, { message: 'Send OTP successfully!' });
     return new ResponseAPI(400, { message: 'Send OTP failed!' });
   }
