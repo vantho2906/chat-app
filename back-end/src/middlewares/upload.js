@@ -2,8 +2,10 @@ const { UploadModel } = require('../models/upload');
 
 class UploadMiddleware {
   static async uploadAvatar(req, res, next) {
+    if (!req.file)
+      return new ResponseAPI(400, { message: 'Please upload a file' });
     const username = req.body.username;
-    const result = await UploadModel.uploadAvatar(username);
+    const result = await UploadModel.uploadAvatar(username, req.file);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 

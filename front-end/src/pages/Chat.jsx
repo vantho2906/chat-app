@@ -29,7 +29,7 @@ function Chat() {
   }, []);
   useEffect(() => {
     if (currentUser) {
-      socket.current = io(host);
+      socket.current = io('http://localhost:3030');
       // socket.current.emit('add-user', currentUser._id);
     }
   }, [currentUser]);
