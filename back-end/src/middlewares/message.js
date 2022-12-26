@@ -5,7 +5,7 @@ class MessageMiddleware {
     const { myId } = req.body;
     const chatRoomId = req.params.chatRoomId;
     const result = await MessageModel.getMessages(myId, chatRoomId);
-    return res.status(result.getStatusCode()).send(result.getData())
+    return res.status(result.getStatusCode()).send(result.getData());
   }
 
   static async getMessageById(req, res, next) {

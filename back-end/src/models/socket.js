@@ -4,7 +4,7 @@ const { MessageModel } = require('./mesage');
 const { FriendInvitationModel } = require('./friendInvitation');
 
 module.exports = {
-  socketConnect: async (  ) => {
+  socketConnect: async () => {
     const httpServer = createServer();
     const socketServer = httpServer.listen(process.env.SOCKET_PORT);
     const io = socket(socketServer, {
@@ -13,7 +13,6 @@ module.exports = {
         credentials: true,
       },
     });
-
     io.on('connection', socket => {
       console.log('User connected!');
       // data: {
@@ -21,10 +20,14 @@ module.exports = {
       //   message,
       //   senderId,
       // }
-      socket.on('send-msg', data => {
+      socket.on('send-msg', async data => {
         const { userId, message, chatRoomId } = data;
         socket.join(chatRoomId);
-        const result = MessageModel.addMessage(userId, message, chatRoomId);
+        const result = await MessageModel.addMessage(
+          userId,
+          message,
+          chatRoomId
+        );
         if (result.getStatusCode() == 400) {
           io.emit('send-msg-failed', result.getData());
         } else io.to(chatRoomId).emit('receive-msg', data);
@@ -34,10 +37,10 @@ module.exports = {
       //   myId,
       //   receiverId,
       // }
-      socket.on('send-friend-request', data => {
+      socket.on('send-friend-request', async data => {
         const { myId, receiverId } = data;
         socket.join(receiverId);
-        const result = FriendInvitationModel.sendFriendRequest(
+        const result = await FriendInvitationModel.sendFriendRequest(
           myId,
           receiverId
         );
