@@ -8,10 +8,11 @@ import { host } from '../utils/APIRoutes';
 
 function Logout({ socket }) {
   const navigate = useNavigate();
-  const handleClick = async () => {
-    socket.current.disconnect();
+  const handleClick = () => {
+    socket.current.disconnect(true);
     localStorage.clear();
     navigate('/login');
+    window.location.reload();
   };
   return (
     <Button onClick={handleClick}>
