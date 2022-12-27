@@ -23,7 +23,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
       setCurrentUserImage(currentUser.avatar);
       setCurrentUserName(currentUser.fullname);
       const notification = JSON.parse(localStorage.getItem('notifications'));
-      console.log(notification);
+      // console.log(notification);
     }
   }, [currentUser]);
 
@@ -32,11 +32,13 @@ function Contacts({ contacts, currentUser, changeChat }) {
       {currentUserName && (
         <Container>
           <div className="brand">
-            <img
-              src={'data:image/png;base64, ' + currentUserImage.imageBase64}
-              alt=""
-            />
-            <h3>{currentUser.fullname}</h3>
+            <div>
+              <img
+                src={'data:image/png;base64, ' + currentUserImage.imageBase64}
+                alt=""
+              />
+              <h3>{currentUser.fullname}</h3>
+            </div>
             <Logout />
           </div>
           <div className="nav">
@@ -66,7 +68,9 @@ function Contacts({ contacts, currentUser, changeChat }) {
             </h6>
           </div>
           {navSelect === 'messages' && <Message changeChat={changeChat} />}
-          {navSelect === 'search-friends' && <SearchUser />}
+          {navSelect === 'search-friends' && (
+            <SearchUser currentUser={currentUser} />
+          )}
           {navSelect === 'notifications' && <Notifications />}
         </Container>
       )}
@@ -85,8 +89,13 @@ const Container = styled.div`
   .brand {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 1rem;
+    div {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
     img {
       border-radius: 999rem;
       height: 2.5rem;

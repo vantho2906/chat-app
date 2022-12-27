@@ -15,7 +15,6 @@ function Message({ changeChat }) {
     const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
     const handleUserChats = async () => {
       const data = await axios.get(`${getAllContacts}/${currentUser.username}`);
-      console.log(data);
       setContacts(data.data.data);
       setUserChats(data.data.data.contacts);
     };
