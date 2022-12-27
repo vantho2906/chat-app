@@ -30,15 +30,28 @@ const io = socket(server, {
   },
 });
 
-
-global.onlineUsers = new Map();
+const onlineUsers = {};
 io.on('connection', socket => {
   // console.log('connected');
-  socket.on('join-room', (data) => {
+  socket.on('join-room', data => {
     socket.join(data);
-  })
+  });
 
   socket.on('send-msg', async data => {
-   socket.to(data.chatRoomId).emit('receive-msg', data);
+    socket.to(data.chatRoomId).emit('receive-msg', data);
+  });
+
+  socket.on('login', function (data) {
+    console.log('a user ' + data.userId + ' connected');
+    // saving userId to object with socket ID
+    onlineUsers[socket.id] = data.userId;
+    io.emit('onlineUser', onlineUsers);
+  });
+
+  socket.on('disconnect', function () {
+    console.log('user ' + onlineUsers[socket.id] + ' disconnected');
+    // remove saved socket from users object
+    delete onlineUsers[socket.id];
+    io.emit('onlineUser', onlineUsers);
   });
 });
