@@ -6,8 +6,8 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
 
-function ChatContainer({ currentChat, currentUser, currentRoom }) {
-  const socket = io.connect(host);
+function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
+  // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
@@ -29,14 +29,14 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
   useEffect(() => {
     const joinRoom = () => {
       if (currentRoom) {
-        socket.emit('join-room', currentRoom);
+        socket.current.emit('join-room', currentRoom);
       }
     };
     joinRoom();
   }, [currentRoom]);
 
   const handleSendMsg = async msg => {
-    socket.emit('send-msg', {
+    socket.current.emit('send-msg', {
       userId: currentChat._id,
       message: msg,
       chatRoomId: currentRoom,
@@ -45,16 +45,23 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
       userId: currentUser._id,
       message: msg,
     });
+    setMessages(prev => [
+      ...prev,
+      {
+        fromSelf: true,
+        message: { message: msg, updatedAt: Date.now() },
+      },
+    ]);
   };
 
   useEffect(() => {
-    socket.on('receive-msg', data => {
+    socket.current.on('receive-msg', data => {
       setArrivalMessages({
-        fromSelf: currentUser._id !== data.userId,
+        fromSelf: false,
         message: { message: data.message, updatedAt: Date.now() },
       });
     });
-  }, [socket]);
+  }, [socket.current]);
 
   useEffect(() => {
     arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
@@ -114,7 +121,11 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
         </Container>
       ) : (
         <Container>
-          <div className="home"></div>
+          <div className="home">
+            <h2 data-text="CHAT_APP" className="intro-text">
+              CHAT_APP
+            </h2>
+          </div>
         </Container>
       )}
     </>
@@ -129,6 +140,36 @@ const Container = styled.div`
     width: 100%;
     height: 100%;
     background-color: rgba(249, 251, 255, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .intro-text {
+      font-size: 4rem;
+      color: #fff;
+      -webkit-text-stroke: 0.2vw #000;
+      position: relative;
+    }
+    .intro-text::before {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #fff;
+      height: 100%;
+      -webkit-text-stroke: 0vw #fff;
+      overflow: hidden;
+      animation: animate 2s linear;
+    }
+
+    @keyframes animate {
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
+    }
   }
   .chat-header {
     background-color: rgba(249, 251, 255, 1);

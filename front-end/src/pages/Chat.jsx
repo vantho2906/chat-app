@@ -15,6 +15,8 @@ function Chat() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentRoom, setCurrentRoom] = useState(undefined);
+  const socket = useRef();
+  socket.current = io.connect(host);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -26,6 +28,7 @@ function Chat() {
         data.then(res => {
           setCurrentUser(res.data.data);
         });
+        socket.current.emit('login', { userId: user?._id });
       }
     };
     checkUser();
@@ -56,11 +59,13 @@ function Chat() {
           contacts={contacts}
           currentUser={currentUser}
           changeChat={handleChatChange}
+          socket={socket}
         />
         <ChatContainer
           currentChat={currentChat}
           currentUser={currentUser}
           currentRoom={currentRoom}
+          socket={socket}
         />
       </div>
     </Container>

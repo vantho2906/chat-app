@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getAllContacts, host } from '../utils/APIRoutes';
 import axios from 'axios';
 
-function Message({ changeChat }) {
+function Message({ changeChat, onlineUsers }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [userChats, setUserChats] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -36,6 +36,11 @@ function Message({ changeChat }) {
                     key={index}
                   >
                     <div className="avatar">
+                      {onlineUsers.includes(contact._id) ? (
+                        <div class="green_icon"></div>
+                      ) : (
+                        <div class="grey_icon"></div>
+                      )}
                       <img
                         src={
                           'data:image/png;base64, ' + contact.avatar.imageBase64
@@ -102,16 +107,37 @@ const Container = styled.div`
           .avatar {
             display: flex;
             justify-content: flex-start;
-            height: 3rem;
-            width: 3rem;
+            height: 4rem;
+            width: 4rem;
             margin-right: 1rem;
+            position: relative;
+            .green_icon{
+              background-color: #4cd137;
+              position: absolute;
+              right: 8px;
+              bottom: 10px;
+              height: 25px;
+              width: 25px;
+              border:5px solid white;
+              border-radius: 50%;
+            }
+            .grey_icon{
+              background-color: #ccc;
+              position: absolute;
+              right: 8px;
+              bottom: 10px;
+              height: 25px;
+              width: 25px;
+              border:5px solid white;
+              border-radius: 50%;
+            }
             img {
               height: 3rem;
               width: 3rem;
               object-fit: cover;
+              border: 5px solid white;
               border-radius: 999rem;
             }
-            
           }
           h3 {
             color: #777777;

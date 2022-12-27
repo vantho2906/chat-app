@@ -7,15 +7,17 @@ import {
   faMessage,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { getRequestRoute } from '../utils/APIRoutes';
+import { host } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
 import Message from './Message';
 import Notifications from './Notifications';
 import Logout from './Logout';
+import { io } from 'socket.io-client';
 
-function Contacts({ contacts, currentUser, changeChat }) {
+function Contacts({ contacts, currentUser, changeChat, socket }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [navSelect, setNavSelect] = useState('messages');
 
   useEffect(() => {
@@ -26,6 +28,13 @@ function Contacts({ contacts, currentUser, changeChat }) {
       // console.log(notification);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    socket.current.on('onlineUser', userId => {
+      const usersId = Object.values(userId);
+      setOnlineUsers(usersId);
+    });
+  }, [socket.current]);
 
   return (
     <>
@@ -39,7 +48,7 @@ function Contacts({ contacts, currentUser, changeChat }) {
               />
               <h3>{currentUser.fullname}</h3>
             </div>
-            <Logout />
+            <Logout socket={socket} />
           </div>
           <div className="nav">
             <h6
@@ -67,7 +76,9 @@ function Contacts({ contacts, currentUser, changeChat }) {
               <FontAwesomeIcon icon={faBell} size="2x" />
             </h6>
           </div>
-          {navSelect === 'messages' && <Message changeChat={changeChat} />}
+          {navSelect === 'messages' && (
+            <Message changeChat={changeChat} onlineUsers={onlineUsers} />
+          )}
           {navSelect === 'search-friends' && (
             <SearchUser currentUser={currentUser} />
           )}
