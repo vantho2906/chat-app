@@ -120,8 +120,7 @@ const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background-color: #a1e2d9;
-    opacity: 0.5;
+    background-color: background-color: rgba(161, 226, 217, 0.5);
     box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
     border-radius: 1rem;
     padding: 2rem 5rem;

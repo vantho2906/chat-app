@@ -7,20 +7,80 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import { avatarRoute } from '../utils/APIRoutes';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ImageCropDialog from '../components/ImageCropDialog';
 
 function SetAvatar() {
   const navigate = useNavigate();
   const [avatarName, setAvatarName] = useState('');
   const [avatarImage, setAvatarImage] = useState(null);
+  const [avatarImageCrop, setAvatarImageCrop] = useState(null);
   const [file, setFile] = useState(null);
+  const [selecteImg, setSelecteImg] = useState(false);
   const location = useLocation();
   const { username } = location.state;
 
+  const handleSelectImg = () => {
+    setSelecteImg(true);
+  };
+
+  const onCancel = () => {
+    setSelecteImg(false);
+  };
+
+  const resetImage = () => {
+    setCroppedImageFor();
+  };
+
+  const setCroppedImageFor = (crop, zoom, aspect, croppedImageUrl) => {
+    setAvatarImageCrop({
+      imageUrl: croppedImageUrl ? croppedImageUrl : avatarImage,
+      crop: crop,
+      zoom: zoom,
+      aspect: aspect,
+    });
+    console.log(croppedImageUrl);
+    handleImageCrop(croppedImageUrl);
+    setSelecteImg(false);
+  };
+
+  const handleImageCrop = url => {
+    const toDataURL = url =>
+      fetch(url)
+        .then(response => response.blob())
+        .then(
+          blob =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            })
+        );
+    function dataURLtoFile(dataurl, filename) {
+      var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    }
+    toDataURL(url).then(dataUrl => {
+      var fileData = dataURLtoFile(dataUrl, 'imageName.jpg');
+      console.log(fileData);
+      setFile(fileData);
+    });
+  };
+
   const handleChange = e => {
     setFile(e.target.files[0]);
+    console.log(e.target.files[0]);
     var reader = new FileReader();
     reader.onloadend = function () {
       setAvatarImage(reader.result);
+      setAvatarImageCrop({ imageUrl: reader.result });
     };
     reader.readAsDataURL(e.target.files[0]);
   };
@@ -28,6 +88,7 @@ function SetAvatar() {
   const handleSubmit = async e => {
     e.preventDefault();
     const avatar = new FormData();
+    console.log(file);
     avatar.append('avatar', file);
     avatar.append('username', username);
     const data = await axios.post(avatarRoute, avatar);
@@ -39,48 +100,70 @@ function SetAvatar() {
   };
 
   return (
-    <FormContainer>
-      <form
-        encType="multipart/form-data"
-        action="/upload"
-        method="post"
-        onSubmit={e => handleSubmit(e)}
-      >
-        <div className="brand">
-          <h1>Set Avatar</h1>
-        </div>
+    <>
+      {selecteImg && (
+        <ImageCropDialog
+          imageUrl={avatarImage}
+          cropInit={avatarImageCrop.crop}
+          zoomInit={avatarImageCrop.zoom}
+          aspectInit={avatarImageCrop.aspect}
+          onCancel={onCancel}
+          setCroppedImageFor={setCroppedImageFor}
+          resetImage={resetImage}
+        />
+      )}
+      <FormContainer>
+        <form
+          encType="multipart/form-data"
+          action="/upload"
+          method="post"
+          onSubmit={e => handleSubmit(e)}
+        >
+          <div className="brand">
+            <h1>Set Avatar</h1>
+          </div>
+          {!selecteImg && (
+            <div className="input-file">
+              <label htmlFor="file">
+                <FontAwesomeIcon icon={faImage} size="lg" />
+                <p>{avatarName ? `File: ${avatarName}` : 'Add an avatar'}</p>
+              </label>
+              <input
+                type="file"
+                id="file"
+                // name="avatar"
+                onChange={e => {
+                  setAvatarName(e.target.files[0].name);
+                  handleChange(e);
+                }}
+              />
 
-        <div className="input-file">
-          <label htmlFor="file">
-            <FontAwesomeIcon icon={faImage} size="lg" />
-            <p>{avatarName ? `File: ${avatarName}` : 'Add an avatar'}</p>
-          </label>
-          <input
-            type="file"
-            id="file"
-            // name="avatar"
-            onChange={e => {
-              setAvatarName(e.target.files[0].name);
-              handleChange(e);
-            }}
-          />
-
-          {avatarName && (
-            <FontAwesomeIcon
-              icon={faCircleXmark}
-              size="1x"
-              id="close-icon"
-              onClick={() => {
-                setAvatarName('');
-                setAvatarImage(null);
-              }}
-            />
+              {avatarName && (
+                <FontAwesomeIcon
+                  icon={faCircleXmark}
+                  size="1x"
+                  id="close-icon"
+                  onClick={() => {
+                    setAvatarName('');
+                    setAvatarImage(null);
+                    setAvatarImageCrop(null);
+                  }}
+                />
+              )}
+            </div>
           )}
-        </div>
-        <img src={avatarImage} alt="" />
-        <button type="submit">Confirm</button>
-      </form>
-    </FormContainer>
+
+          <img
+            onClick={() => {
+              handleSelectImg();
+            }}
+            src={avatarImageCrop?.imageUrl}
+            alt=""
+          />
+          <button type="submit">Confirm</button>
+        </form>
+      </FormContainer>
+    </>
   );
 }
 
