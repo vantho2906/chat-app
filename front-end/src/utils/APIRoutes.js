@@ -16,6 +16,7 @@ export const searchUserByFullnameRoute = `${host}/search/fullname`;
 
 export const sendRequestRoute = `${host}/invite/send/`;
 export const getRequestRoute = `${host}/invite`;
+export const getRequestSendedRoute = `${host}/invite/me-send`;
 export const acceptRequestRoute = `${host}/invite/accept`;
 export const cancelledRequestRoute = `${host}/invite/cancelled`;
 

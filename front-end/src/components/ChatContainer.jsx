@@ -6,9 +6,8 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
 
-function ChatContainer({ currentChat, currentUser, currentRoom }) {
-
-  const socket = io.connect(host);
+function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
+  // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const scrollRef = useRef();
@@ -21,42 +20,48 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
-        console.log(response);
         setMessages(response.data.data);
       }
     };
     handleSetMessages();
   }, [currentChat]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const joinRoom = () => {
-      if(currentRoom) {
-        socket.emit('join-room', currentRoom);
+      if (currentRoom) {
+        socket.current.emit('join-room', currentRoom);
       }
-    }
+    };
     joinRoom();
-  },[currentRoom])
+  }, [currentRoom]);
 
   const handleSendMsg = async msg => {
-    socket.emit('send-msg', {
+    socket.current.emit('send-msg', {
       userId: currentChat._id,
       message: msg,
-      chatRoomId: currentRoom
+      chatRoomId: currentRoom,
     });
     await axios.post(`${addMessageRoute}/${currentRoom}`, {
       userId: currentUser._id,
       message: msg,
     });
+    setMessages(prev => [
+      ...prev,
+      {
+        fromSelf: true,
+        message: { message: msg, updatedAt: Date.now() },
+      },
+    ]);
   };
 
-  
   useEffect(() => {
-      console.log(12);
-      socket.on('receive-msg', data => {
-        console.log(data);
-        setArrivalMessages({fromSelf: currentUser._id !== data.userId, message: {message: data.message, updatedAt: Date.now()}});
+    socket.current.on('receive-msg', data => {
+      setArrivalMessages({
+        fromSelf: false,
+        message: { message: data.message, updatedAt: Date.now() },
       });
-  }, [socket])
+    });
+  }, [socket.current]);
 
   useEffect(() => {
     arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
@@ -68,7 +73,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
 
   return (
     <>
-      {currentChat && (
+      {currentChat ? (
         <Container>
           <div className="chat-header">
             <div className="user-details">
@@ -87,6 +92,12 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
           </div>
           <div className="chat-messages">
             {messages.map(message => {
+              let utcDate = new Date(message.message.updatedAt).toUTCString();
+              const time = utcDate.split(' ');
+              let newtime = time[4].split(':');
+              newtime[0] = (+newtime[0] + +7) % 12;
+
+              const day = time[1] + ' ' + time[2] + ' ' + time[3];
               return (
                 <div key={uuidv4()} ref={scrollRef}>
                   <div
@@ -96,7 +107,10 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
                   >
                     <div className="content">
                       <p>{message.message.message}</p>
-                      <p>{message.message.updatedAt}</p>
+                      <div>
+                        <p className="date">{day}</p>
+                        <p className="date">{newtime[0] + ':' + newtime[1]}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -104,6 +118,14 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
             })}
           </div>
           <ChatInput handleSendMsg={handleSendMsg} />
+        </Container>
+      ) : (
+        <Container>
+          <div className="home">
+            <h2 data-text="CHAT_APP" className="intro-text">
+              CHAT_APP
+            </h2>
+          </div>
         </Container>
       )}
     </>
@@ -113,6 +135,42 @@ function ChatContainer({ currentChat, currentUser, currentRoom }) {
 const Container = styled.div`
   gap: 0.1rem;
   overflow: hidden;
+  .home {
+    background-color: purple;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(249, 251, 255, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .intro-text {
+      font-size: 4rem;
+      color: #fff;
+      -webkit-text-stroke: 0.2vw #000;
+      position: relative;
+    }
+    .intro-text::before {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #fff;
+      height: 100%;
+      -webkit-text-stroke: 0vw #fff;
+      overflow: hidden;
+      animation: animate 2s linear;
+    }
+
+    @keyframes animate {
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
+    }
+  }
   .chat-header {
     background-color: rgba(249, 251, 255, 1);
     height: 14%;
@@ -165,6 +223,10 @@ const Container = styled.div`
         font-size: 1.1rem;
         border-radius: 1rem;
         color: white;
+        .date {
+          font-size: 0.5rem;
+          opacity: 0.5;
+        }
       }
     }
   }
@@ -177,7 +239,8 @@ const Container = styled.div`
   .recieved {
     justify-content: flex-start;
     .content {
-      background-color: #b2b2b2;
+      background-color: #ccc;
+      color: #000 !important;
     }
   }
 `;

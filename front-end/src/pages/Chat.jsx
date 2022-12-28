@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getRequestRoute, host } from '../utils/APIRoutes';
+import { getUserRoute, host } from '../utils/APIRoutes';
 import Contacts from '../components/Contacts';
 import ChatContainer from '../components/ChatContainer';
 import { io } from 'socket.io-client';
@@ -15,13 +15,20 @@ function Chat() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentRoom, setCurrentRoom] = useState(undefined);
+  const socket = useRef();
+  socket.current = io.connect(host);
 
   useEffect(() => {
     const checkUser = async () => {
       if (!localStorage.getItem('chat-app-user')) {
         navigate('/login');
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem('chat-app-user')));
+        const user = await JSON.parse(localStorage.getItem('chat-app-user'));
+        const data = axios.get(`${getUserRoute}/${user._id}`);
+        data.then(res => {
+          setCurrentUser(res.data.data);
+        });
+        socket.current.emit('login', { userId: user?._id });
       }
     };
     checkUser();
@@ -52,11 +59,13 @@ function Chat() {
           contacts={contacts}
           currentUser={currentUser}
           changeChat={handleChatChange}
+          socket={socket}
         />
         <ChatContainer
           currentChat={currentChat}
           currentUser={currentUser}
           currentRoom={currentRoom}
+          socket={socket}
         />
       </div>
     </Container>

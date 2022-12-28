@@ -3,31 +3,36 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserPlus,
-  faCheck,
   faCircleXmark,
-  faUserXmark,
   faSeedling,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
   sendRequestRoute,
   searchUserByFullnameRoute,
-  getRequestRoute,
+  getRequestSendedRoute,
+  getUserRoute,
 } from '../utils/APIRoutes';
-function SearchUser() {
+function SearchUser({ currentUser }) {
+  // const [currentUser, setCurrentUser] = useState(undefined);
   const [currentRequest, setCurrentRequest] = useState([]);
   const [searchUser, setSearchUser] = useState('');
   const [loadUserChats, setLoadUserChats] = useState([]);
+
   const handleSearchChange = e => {
     setSearchUser(e.target.value);
   };
-  // useEffect(() => {
-  //   const handleRequest = async () => {
-  //     const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-  //     setCurrentRequest(data.data.data.invitationsSend);
-  //   };
-  //   handleRequest();
-  // }, []);
+  useEffect(() => {
+    const handleRequest = async () => {
+      try {
+        const res = await axios.get(
+          `${getRequestSendedRoute}/${currentUser._id}`
+        );
+        setCurrentRequest(res.data.data);
+      } catch (err) {}
+    };
+    handleRequest();
+  }, []);
   useEffect(() => {
     const handleSearchUser = async () => {
       try {
@@ -35,6 +40,7 @@ function SearchUser() {
         const data = await axios.post(searchUserByFullnameRoute, {
           fullname,
         });
+
         if (fullname && data.status === 200) {
           const loader = data.data.data;
           setLoadUserChats(loader);
@@ -46,16 +52,13 @@ function SearchUser() {
     handleSearchUser();
   }, [searchUser]);
 
-  const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
   const handleSendRequest = async receiverId => {
     const myId = currentUser._id;
-    console.log(myId);
     await axios.post(sendRequestRoute, {
       receiverId,
       myId,
     });
-    // const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
-    // setCurrentRequest(data.data.data.invitations);
+    setCurrentRequest(prev => [...prev, { receiverId: receiverId }]);
   };
 
   return (
@@ -97,25 +100,26 @@ function SearchUser() {
                           }
                           alt=""
                         />
+                        <h3>{contact.fullname}</h3>
                       </div>
-                      <h3>{contact.fullname}</h3>
                       <div className="username">
-                        <div
-                          onClick={() => {
-                            handleSendRequest(contact._id);
-                          }}
-                        >
-                          {false &&
-                          currentRequest.filter(
+                        {currentUser.friendIdsList.includes(contact._id) ? (
+                          <p>Friend</p>
+                        ) : currentRequest.filter(
                             sender => sender.receiverId === contact._id
                           ).length > 0 ? (
-                            <FontAwesomeIcon icon={faUserXmark} size="1x" />
-                          ) : contact._id === currentUser._id ? (
-                            <FontAwesomeIcon icon={faSeedling} size="1x" />
-                          ) : (
-                            <FontAwesomeIcon icon={faUserPlus} size="1x" />
-                          )}
-                        </div>
+                          <p>Sended</p>
+                        ) : contact._id === currentUser._id ? (
+                          <FontAwesomeIcon icon={faSeedling} size="1x" />
+                        ) : (
+                          <FontAwesomeIcon
+                            onClick={() => {
+                              handleSendRequest(contact._id);
+                            }}
+                            icon={faUserPlus}
+                            size="1x"
+                          />
+                        )}
                       </div>
                     </div>
                   );
@@ -205,39 +209,35 @@ const Container = styled.div`
           align-items: center;
           display: flex;
           flex-direction: row;
-          // justify-content: space-between;
+          justify-content: space-between;
           transition: 0.5s ease-in-out;
           .avatar {
             display: flex;
-            justify-content: flex-start;
+            flex-direction: row;
+            align-items: center;
             height: 3rem;
-            width: 3rem;
-            margin-right: 1rem;
             img {
               height: 3rem;
               width: 3rem;
               object-fit: cover;
               border-radius: 999rem;
             }
-            
+            h3 {
+              color: #777777;
+              font-weight: 400;
+              display: flex;
+              justify-content: flex-start;
+              flex: 1;
+            }
           }
-          h3 {
-            color: #777777;
-            font-weight: 400;
-            display: flex;
-            justify-content: flex-start;
-            flex: 1;
-          }
+          
           .username {
-            margin-right: 0.4rem;
-            // width: 100%;
+            align-items: center;
             display: flex;
             justify-content: flex-end;
-            width: 1.5rem;
-            
+            width: 4rem;
             div {
               display: flex;
-              justify-content: flex-end;
               cursor: pointer;
               z-index: 2;
               svg {

@@ -7,15 +7,17 @@ import {
   faMessage,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { getRequestRoute } from '../utils/APIRoutes';
+import { host } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
 import Message from './Message';
 import Notifications from './Notifications';
 import Logout from './Logout';
+import { io } from 'socket.io-client';
 
-function Contacts({ contacts, currentUser, changeChat }) {
+function Contacts({ contacts, currentUser, changeChat, socket }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [navSelect, setNavSelect] = useState('messages');
 
   useEffect(() => {
@@ -23,21 +25,30 @@ function Contacts({ contacts, currentUser, changeChat }) {
       setCurrentUserImage(currentUser.avatar);
       setCurrentUserName(currentUser.fullname);
       const notification = JSON.parse(localStorage.getItem('notifications'));
-      console.log(notification);
+      // console.log(notification);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    socket.current.on('onlineUser', userId => {
+      const usersId = Object.values(userId);
+      setOnlineUsers(usersId);
+    });
+  }, [socket.current]);
 
   return (
     <>
       {currentUserName && (
         <Container>
           <div className="brand">
-            <img
-              src={'data:image/png;base64, ' + currentUserImage.imageBase64}
-              alt=""
-            />
-            <h3>{currentUser.fullname}</h3>
-            <Logout />
+            <div>
+              <img
+                src={'data:image/png;base64, ' + currentUserImage.imageBase64}
+                alt=""
+              />
+              <h3>{currentUser.fullname}</h3>
+            </div>
+            <Logout socket={socket} />
           </div>
           <div className="nav">
             <h6
@@ -65,8 +76,12 @@ function Contacts({ contacts, currentUser, changeChat }) {
               <FontAwesomeIcon icon={faBell} size="2x" />
             </h6>
           </div>
-          {navSelect === 'messages' && <Message changeChat={changeChat} />}
-          {navSelect === 'search-friends' && <SearchUser />}
+          {navSelect === 'messages' && (
+            <Message changeChat={changeChat} onlineUsers={onlineUsers} />
+          )}
+          {navSelect === 'search-friends' && (
+            <SearchUser currentUser={currentUser} />
+          )}
           {navSelect === 'notifications' && <Notifications />}
         </Container>
       )}
@@ -85,8 +100,13 @@ const Container = styled.div`
   .brand {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 1rem;
+    div {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
     img {
       border-radius: 999rem;
       height: 2.5rem;
