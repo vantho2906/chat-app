@@ -30,15 +30,14 @@ const io = socket(server, {
   },
 });
 
-
 global.onlineUsers = new Map();
 io.on('connection', socket => {
   // console.log('connected');
-  socket.on('join-room', (data) => {
+  socket.on('join-room', data => {
     socket.join(data);
-  })
+  });
 
   socket.on('send-msg', async data => {
-   socket.to(data.chatRoomId).emit('receive-msg', data);
+    socket.to(data.chatRoomId).emit('receive-msg', data);
   });
 });
