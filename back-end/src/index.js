@@ -5,17 +5,13 @@ const DBconnection = require('./DBconnection/db');
 const routes = require('./routes/index');
 const { socketConnect } = require('./models/socket');
 require('dotenv').config();
-const { createServer } = require('http');
-const socket = require('socket.io');
-const { MessageModel } = require('../src/models/mesage');
-const { FriendInvitationModel } = require('../src/models/friendInvitation');
+
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 DBconnection();
-// socketConnect();
 
 app.use('/', routes);
 
@@ -23,35 +19,4 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Server started on Port ${process.env.PORT}`);
 });
 
-const io = socket(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  },
-});
-
-const onlineUsers = {};
-io.on('connection', socket => {
-  // console.log('connected');
-  socket.on('join-room', data => {
-    socket.join(data);
-  });
-
-  socket.on('send-msg', async data => {
-    socket.to(data.chatRoomId).emit('receive-msg', data);
-  });
-
-  socket.on('login', function (data) {
-    console.log('a user ' + data.userId + ' connected');
-    // saving userId to object with socket ID
-    onlineUsers[socket.id] = data.userId;
-    io.emit('onlineUser', onlineUsers);
-  });
-
-  socket.on('disconnect', function () {
-    console.log('user ' + onlineUsers[socket.id] + ' disconnected');
-    // remove saved socket from users object
-    delete onlineUsers[socket.id];
-    io.emit('onlineUser', onlineUsers);
-  });
-});
+socketConnect(server);

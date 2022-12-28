@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   fullname: {
     type: String,
     required: true,
+    max: 100
   },
   username: {
     type: String,
@@ -38,6 +39,9 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  offlineAt: {
+    type: Date,
+  }
 });
 
 module.exports = mongoose.model('User', userSchema);

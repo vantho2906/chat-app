@@ -2,41 +2,57 @@ const { createServer } = require('http');
 const socket = require('socket.io');
 const { MessageModel } = require('./mesage');
 const { FriendInvitationModel } = require('./friendInvitation');
+const { UserModel } = require('./user');
+const User = require('../entities/user');
 
 module.exports = {
-  socketConnect: async () => {
-    const httpServer = createServer();
-    const socketServer = httpServer.listen(process.env.SOCKET_PORT);
-    const io = socket(socketServer, {
+  socketConnect: async server => {
+    const io = socket(server, {
       cors: {
-        origin: ['http://localhost:3000', process.env.CLIENT_SOCKET_ENDPOINT],
+        origin: 'http://localhost:3000',
         credentials: true,
       },
     });
+    const onlineUsers = {};
+    const offlineUsersTime = {} // key is id of user, value is time offline
     io.on('connection', socket => {
-      console.log('User connected!');
-      // data: {
-      //   chatRoomId,
-      //   message,
-      //   senderId,
-      // }
-      socket.on('send-msg', async data => {
-        const { userId, message, chatRoomId } = data;
-        socket.join(chatRoomId);
-        const result = await MessageModel.addMessage(
-          userId,
-          message,
-          chatRoomId
-        );
-        if (result.getStatusCode() == 400) {
-          io.emit('send-msg-failed', result.getData());
-        } else io.to(chatRoomId).emit('receive-msg', data);
+      // console.log('connected');
+      socket.on('join-room', data => {
+        socket.join(data);
       });
 
-      // data: {
-      //   myId,
-      //   receiverId,
-      // }
+      socket.on('send-msg', async data => {
+        socket.to(data.chatRoomId).emit('receive-msg', data);
+      });
+
+      socket.on('login', function (data) {
+        console.log('a user ' + data.userId + ' connected');
+        // saving userId to object with socket ID
+        onlineUsers[socket.id] = data.userId;
+        delete offlineUsersTime[data.userId]
+        io.emit('onlineUser', {
+          onlineUsers: onlineUsers,
+          offlineUsersTime: offlineUsersTime,
+        });
+      });
+
+      socket.on('disconnect', async function () {
+        console.log('user ' + onlineUsers[socket.id] + ' disconnected');
+        offlineUsersTime[onlineUsers[socket.id]] = new Date()
+        // remove saved socket from users object
+        delete onlineUsers[socket.id];
+        io.emit('onlineUser', {
+          onlineUsers: onlineUsers,
+          offlineUsersTime: offlineUsersTime,
+        });
+        const user = await User.findById(onlineUsers[socket.id]);
+        if (user) {
+          user.offlineAt = new Date();
+          await user.save();
+        }
+        // io.emit('onlineUser', onlineUsers)
+      });
+
       socket.on('send-friend-request', async data => {
         const { myId, receiverId } = data;
         socket.join(receiverId);
