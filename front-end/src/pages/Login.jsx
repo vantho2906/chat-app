@@ -70,7 +70,7 @@ function Login() {
       <FormContainer>
         <form onSubmit={e => handleSubmit(e)}>
           <div className="brand">
-            <h1>Chap-app</h1>
+            <h1>Chat-app</h1>
           </div>
           <input
             type="tel"

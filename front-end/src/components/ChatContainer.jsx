@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
-import { getMessagesRoute, addMessageRoute } from '../utils/APIRoutes';
+import {
+  getMessagesRoute,
+  addMessageRoute,
+  getUserRoute,
+} from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,8 +13,8 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
-  const [offlineUsersTime, setOfflineUsersTime] = useState(null);
-  const [date, setDate] = useState(0);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [date, setDate] = useState(null);
   const scrollRef = useRef();
   const [seconds, setSeconds] = useState(0);
 
@@ -19,12 +23,43 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
       setSeconds(seconds => seconds + 1);
     }, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (currentChat?._id && !onlineUsers.includes(currentChat._id)) {
+      const data = axios.get(`${getUserRoute}/${currentChat._id}`);
+      console.log(data);
+      data.then(res => {
+        console.log(res);
+        let utcDate = new Date(res.data.data.offlineAt);
+        let now = new Date();
+        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
+        setSeconds(0);
+      });
+    } else {
+      setDate(null);
+    }
   }, [currentChat]);
 
   useEffect(() => {
     socket.current.on('onlineUser', data => {
-      setOfflineUsersTime(data.offlineUsersTime);
-      setSeconds(0);
+      const usersId = Object.values(data.onlineUsers);
+      setOnlineUsers(usersId);
+      if (currentChat?._id && !usersId.includes(currentChat._id)) {
+        const data = axios.get(`${getUserRoute}/${currentChat._id}`);
+        console.log(data);
+        data.then(res => {
+          console.log(res);
+          let utcDate = new Date(res.offlineAt);
+          let now = new Date();
+          setDate(
+            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+          );
+          setSeconds(0);
+        });
+      } else {
+        setDate(null);
+      }
     });
   }, [socket.current]);
 
@@ -40,14 +75,6 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
       }
     };
 
-    const handleSetDate = () => {
-      if (currentChat?._id && offlineUsersTime[currentChat._id]) {
-        let utcDate = new Date(offlineUsersTime[currentChat._id]);
-        let now = new Date();
-        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
-      }
-    };
-    handleSetDate();
     handleSetMessages();
   }, [currentChat]);
 
@@ -117,7 +144,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
               </div>
 
               <div className="offline-time">
-                {date && offlineUsersTime[currentChat._id] ? (
+                {date ? (
                   date + Math.floor(seconds / 60) < 5 ? (
                     <h6>
                       Offlined {date + Math.floor(seconds / 60)} minutes ago

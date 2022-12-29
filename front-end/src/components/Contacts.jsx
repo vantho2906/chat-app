@@ -34,7 +34,6 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
 
   useEffect(() => {
     socket.current.on('onlineUser', data => {
-      console.log(data);
       const usersId = Object.values(data.onlineUsers);
       setOnlineUsers(usersId);
     });
@@ -93,7 +92,7 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
             <Message changeChat={changeChat} onlineUsers={onlineUsers} />
           )}
           {navSelect === 'search-friends' && (
-            <SearchUser currentUser={currentUser} onlineUsers={onlineUsers} />
+            <SearchUser currentUser={currentUser} />
           )}
           {navSelect === 'notifications' && <Notifications />}
         </Container>
