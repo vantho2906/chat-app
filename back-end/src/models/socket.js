@@ -14,7 +14,7 @@ module.exports = {
       },
     });
     const onlineUsers = {};
-    const offlineUsersTime = {} // key is id of user, value is time offline
+    const offlineUsersTime = {}; // key is id of user, value is time offline
     io.on('connection', socket => {
       // console.log('connected');
       socket.on('join-room', data => {
@@ -29,7 +29,7 @@ module.exports = {
         console.log('a user ' + data.userId + ' connected');
         // saving userId to object with socket ID
         onlineUsers[socket.id] = data.userId;
-        delete offlineUsersTime[data.userId]
+        delete offlineUsersTime[data.userId];
         io.emit('onlineUser', {
           onlineUsers: onlineUsers,
           offlineUsersTime: offlineUsersTime,
@@ -38,18 +38,19 @@ module.exports = {
 
       socket.on('disconnect', async function () {
         console.log('user ' + onlineUsers[socket.id] + ' disconnected');
-        offlineUsersTime[onlineUsers[socket.id]] = new Date()
+        offlineUsersTime[onlineUsers[socket.id]] = new Date();
         // remove saved socket from users object
-        delete onlineUsers[socket.id];
-        io.emit('onlineUser', {
-          onlineUsers: onlineUsers,
-          offlineUsersTime: offlineUsersTime,
-        });
         const user = await User.findById(onlineUsers[socket.id]);
         if (user) {
           user.offlineAt = new Date();
           await user.save();
         }
+        delete onlineUsers[socket.id];
+        io.emit('onlineUser', {
+          onlineUsers: onlineUsers,
+          offlineUsersTime: offlineUsersTime,
+        });
+
         // io.emit('onlineUser', onlineUsers)
       });
 
