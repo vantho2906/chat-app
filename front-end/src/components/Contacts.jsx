@@ -19,6 +19,10 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
   const [navSelect, setNavSelect] = useState('messages');
   const [menu, setMenu] = useState(false);
 
+  const handleSetMenu = () => {
+    setMenu(!menu);
+  };
+
   useEffect(() => {
     if (currentUser) {
       setCurrentUserImage(currentUser.avatar);
@@ -44,13 +48,14 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
           fullname={currentUser.fullname}
           username={currentUser.username}
           socket={socket}
+          handleSetMenu={handleSetMenu}
         />
       ) : (
         <Container>
           <div className="brand">
             <div>
               <img
-                onClick={() => setMenu(true)}
+                onClick={() => handleSetMenu()}
                 src={'data:image/png;base64, ' + currentUserImage?.imageBase64}
                 alt=""
               />

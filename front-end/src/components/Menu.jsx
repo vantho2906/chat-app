@@ -1,13 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faImage,
+  faRightFromBracket,
+  faArrowLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
-function Menu({ avatar, fullname, username, socket }) {
+function Menu({ avatar, fullname, username, socket, handleSetMenu }) {
   const navigate = useNavigate();
   return (
     <Container>
+      <div
+        onClick={() => {
+          handleSetMenu();
+        }}
+        className="back-btn"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+      </div>
       <div className="brand">
         <img src={'data:image/png;base64, ' + avatar.imageBase64} alt="" />
         <h3>{fullname}</h3>
@@ -50,7 +62,26 @@ const Container = styled.div`
   overflow: hidden;
   padding: 2rem 1rem;
   gap: 3rem;
+  position: relative;
 
+  .back-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    position: absolute;
+    background: transparent;
+    box-shadow: -2px 2px 5px rgb(119 119 119 / 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    top: 0;
+    left: 0;
+    margin: 1rem 0 0 1rem;
+  }
+  .back-btn:hover {
+    opacity: 0.6;
+    cursor: pointer;
+  }
   .brand {
     display: flex;
     flex-direction: column;

@@ -10,7 +10,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
   const [offlineUsersTime, setOfflineUsersTime] = useState(null);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(0);
   const scrollRef = useRef();
   const [seconds, setSeconds] = useState(0);
 
@@ -19,11 +19,12 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
       setSeconds(seconds => seconds + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentChat]);
 
   useEffect(() => {
     socket.current.on('onlineUser', data => {
       setOfflineUsersTime(data.offlineUsersTime);
+      setSeconds(0);
     });
   }, [socket.current]);
 
@@ -118,7 +119,9 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
               <div className="offline-time">
                 {date && offlineUsersTime[currentChat._id] ? (
                   date + Math.floor(seconds / 60) < 5 ? (
-                    <h6>Offlined few minutes ago</h6>
+                    <h6>
+                      Offlined {date + Math.floor(seconds / 60)} minutes ago
+                    </h6>
                   ) : date + Math.floor(seconds / 60) < 60 ? (
                     <h6>
                       Offlined {date + Math.floor(seconds / 60)} minutes ago
@@ -281,6 +284,9 @@ const Container = styled.div`
         .date {
           font-size: 0.8rem;
           opacity: 0.7;
+        }
+        div {
+          margin-top: 0.4rem;
         }
       }
     }
