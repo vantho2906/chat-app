@@ -18,48 +18,48 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   const scrollRef = useRef();
   const [seconds, setSeconds] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds(seconds => seconds + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setSeconds(seconds => seconds + 1);
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // useEffect(() => {
+  //   if (currentChat?._id && !onlineUsers.includes(currentChat._id)) {
+  //     const data = axios.get(`${getUserRoute}/${currentChat._id}`);
+  //     console.log(data);
+  //     data.then(res => {
+  //       console.log(res);
+  //       let utcDate = new Date(res.data.data.offlineAt);
+  //       let now = new Date();
+  //       setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
+  //       setSeconds(0);
+  //     });
+  //   } else {
+  //     setDate(null);
+  //   }
+  // }, [currentChat]);
 
   useEffect(() => {
-    if (currentChat?._id && !onlineUsers.includes(currentChat._id)) {
-      const data = axios.get(`${getUserRoute}/${currentChat._id}`);
-      console.log(data);
-      data.then(res => {
-        console.log(res);
-        let utcDate = new Date(res.data.data.offlineAt);
-        let now = new Date();
-        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
-        setSeconds(0);
-      });
-    } else {
-      setDate(null);
-    }
-  }, [currentChat]);
-
-  useEffect(() => {
-    socket.current.on('onlineUser', data => {
+    socket.current?.on('onlineUser', data => {
       const usersId = Object.values(data.onlineUsers);
       setOnlineUsers(usersId);
-      if (currentChat?._id && !usersId.includes(currentChat._id)) {
-        const data = axios.get(`${getUserRoute}/${currentChat._id}`);
-        console.log(data);
-        data.then(res => {
-          console.log(res);
-          let utcDate = new Date(res.offlineAt);
-          let now = new Date();
-          setDate(
-            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
-          );
-          setSeconds(0);
-        });
-      } else {
-        setDate(null);
-      }
+      // if (currentChat?._id && !usersId.includes(currentChat._id)) {
+      //   const data = axios.get(`${getUserRoute}/${currentChat._id}`);
+      //   console.log(data);
+      //   data.then(res => {
+      //     console.log(res);
+      //     let utcDate = new Date(res.offlineAt);
+      //     let now = new Date();
+      //     setDate(
+      //       Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+      //     );
+      //     setSeconds(0);
+      //   });
+      // } else {
+      //   setDate(null);
+      // }
     });
   }, [socket.current]);
 
@@ -88,7 +88,7 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   }, [currentRoom]);
 
   const handleSendMsg = async msg => {
-    socket.current.emit('send-msg', {
+    socket.current?.emit('send-msg', {
       userId: currentChat._id,
       message: msg,
       chatRoomId: currentRoom,
@@ -108,14 +108,12 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
 
   // const handleDate
 
-  useEffect(() => {
-    socket.current.on('receive-msg', data => {
-      setArrivalMessages({
-        fromSelf: false,
-        message: { message: data.message, updatedAt: Date.now() },
-      });
+  socket.current?.on('receive-msg', data => {
+    setArrivalMessages({
+      fromSelf: false,
+      message: { message: data.message, updatedAt: Date.now() },
     });
-  }, [socket.current]);
+  });
 
   useEffect(() => {
     arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);

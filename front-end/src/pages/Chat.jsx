@@ -16,7 +16,12 @@ function Chat() {
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentRoom, setCurrentRoom] = useState(undefined);
   const socket = useRef();
-  socket.current = io.connect(host);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const checkUser = async () => {

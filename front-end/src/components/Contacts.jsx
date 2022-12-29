@@ -33,7 +33,7 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
   }, [currentUser]);
 
   useEffect(() => {
-    socket.current.on('onlineUser', data => {
+    socket.current?.on('onlineUser', data => {
       const usersId = Object.values(data.onlineUsers);
       setOnlineUsers(usersId);
     });
