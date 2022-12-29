@@ -35,18 +35,18 @@ function Login() {
     e.preventDefault();
     if (handleValidation()) {
       const { phone, password } = values;
-      const data = await axios.post(loginRoute, {
-        phone,
-        password,
-      });
-      if (data.status === 400) {
-        toast.error(data.msg, toastOptions);
+      try {
+        const data = await axios.post(loginRoute, {
+          phone,
+          password,
+        });
+        if (data.status === 200) {
+          localStorage.setItem('chat-app-user', JSON.stringify(data.data.data));
+          navigate('/');
+        }
+      } catch (err) {
+        toast.error('Wrong phone number or password', toastOptions);
       }
-      if (data.status === 200) {
-        localStorage.setItem('chat-app-user', JSON.stringify(data.data.data));
-        navigate('/');
-      }
-    } else {
     }
   };
 
@@ -128,7 +128,7 @@ const FormContainer = styled.div`
       background-color: transparent;
       padding: 1rem;
       border: 0.1rem solid #777777;
-      color: #777777;
+      color: #000;
       border-radius: 0.4rem;
       width: 100%;
       font-size: 1rem;

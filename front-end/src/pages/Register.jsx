@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
@@ -94,7 +94,8 @@ function Register() {
       (phone[1] !== '3' &&
         phone[1] !== '5' &&
         phone[1] !== '7' &&
-        phone[1] !== '8')
+        phone[1] !== '8' &&
+        phone[1] !== '9')
     ) {
       toast.error('Phone number invalid', toastOptions);
       return false;
@@ -197,7 +198,7 @@ const FormContainer = styled.div`
       background-color: transparent;
       padding: 1rem;
       border: 0.1rem solid #777777;
-      color: #777777;
+      color: #000;
       border-radius: 0.4rem;
       width: 100%;
       font-size: 1rem;
@@ -217,7 +218,7 @@ const FormContainer = styled.div`
       background-color: transparent;
       padding: 1rem;
       border: 0.1rem solid #777777;
-      color: #777777;
+      color: #000;
       border-radius: 0.4rem;
       width: 100%;
       font-size: 1rem;

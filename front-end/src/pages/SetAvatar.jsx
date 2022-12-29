@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faImage } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleXmark,
+  faImage,
+  faArrowLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,7 +21,15 @@ function SetAvatar() {
   const [file, setFile] = useState(null);
   const [selecteImg, setSelecteImg] = useState(false);
   const location = useLocation();
-  const { username } = location.state;
+  const { back, username } = location.state;
+  console.log(back);
+  const toastOptions = {
+    position: 'bottom-right',
+    autoClose: 8000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: 'dark',
+  };
 
   const handleSelectImg = () => {
     setSelecteImg(true);
@@ -38,7 +50,6 @@ function SetAvatar() {
       zoom: zoom,
       aspect: aspect,
     });
-    console.log(croppedImageUrl);
     handleImageCrop(croppedImageUrl);
     setSelecteImg(false);
   };
@@ -87,15 +98,18 @@ function SetAvatar() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const avatar = new FormData();
-    console.log(file);
-    avatar.append('avatar', file);
-    avatar.append('username', username);
-    const data = await axios.post(avatarRoute, avatar);
-    if (data.status === 200) {
-      localStorage.setItem('chap-app-user', JSON.stringify(data.data.data));
-      navigate('/');
+    if (file) {
+      const avatar = new FormData();
+      avatar.append('avatar', file);
+      avatar.append('username', username);
+      const data = await axios.post(avatarRoute, avatar);
+      if (data.status === 200) {
+        localStorage.setItem('chap-app-user', JSON.stringify(data.data.data));
+        navigate('/');
+      } else {
+      }
     } else {
+      toast.error('Please set up your avatar', toastOptions);
     }
   };
 
@@ -112,17 +126,23 @@ function SetAvatar() {
           resetImage={resetImage}
         />
       )}
-      <FormContainer>
-        <form
-          encType="multipart/form-data"
-          action="/upload"
-          method="post"
-          onSubmit={e => handleSubmit(e)}
-        >
-          <div className="brand">
-            <h1>Set Avatar</h1>
-          </div>
-          {!selecteImg && (
+      {!selecteImg && (
+        <FormContainer>
+          <form
+            encType="multipart/form-data"
+            action="/upload"
+            method="post"
+            onSubmit={e => handleSubmit(e)}
+          >
+            {back && (
+              <div onClick={() => navigate('/')} className="back-btn">
+                <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+              </div>
+            )}
+
+            <div className="brand">
+              <h1>Set Avatar</h1>
+            </div>
             <div className="input-file">
               <label htmlFor="file">
                 <FontAwesomeIcon icon={faImage} size="lg" />
@@ -151,18 +171,19 @@ function SetAvatar() {
                 />
               )}
             </div>
-          )}
 
-          <img
-            onClick={() => {
-              handleSelectImg();
-            }}
-            src={avatarImageCrop?.imageUrl}
-            alt=""
-          />
-          <button type="submit">Confirm</button>
-        </form>
-      </FormContainer>
+            <img
+              onClick={() => {
+                handleSelectImg();
+              }}
+              src={avatarImageCrop?.imageUrl}
+              alt=""
+            />
+            <button type="submit">Confirm</button>
+          </form>
+        </FormContainer>
+      )}
+      <ToastContainer />
     </>
   );
 }
@@ -176,6 +197,7 @@ const FormContainer = styled.div`
   gap: 1rem;
   align-items: center;
   background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
+
   .brand {
     display: flex;
     align-items: center;
@@ -196,6 +218,25 @@ const FormContainer = styled.div`
     border-radius: 1rem;
     padding: 2rem 5rem;
     align-items: center;
+    position: relative;
+    .back-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      position: absolute;
+      background: transparent;
+      box-shadow: -2px 2px 5px rgb(119 119 119 / 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      top: 0;
+      left: 0;
+      margin: 1rem 0 0 1rem;
+    }
+    .back-btn:hover {
+      opacity: 0.6;
+      cursor: pointer;
+    }
     img {
       width: 10rem;
       height: 10rem;

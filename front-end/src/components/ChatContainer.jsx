@@ -1,16 +1,31 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
-import { getMessagesRoute, addMessageRoute, host } from '../utils/APIRoutes';
+import { getMessagesRoute, addMessageRoute } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { io } from 'socket.io-client';
 
 function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
+  const [offlineUsersTime, setOfflineUsersTime] = useState(null);
+  const [date, setDate] = useState('');
   const scrollRef = useRef();
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds(seconds => seconds + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    socket.current.on('onlineUser', data => {
+      setOfflineUsersTime(data.offlineUsersTime);
+    });
+  }, [socket.current]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -23,6 +38,15 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
         setMessages(response.data.data);
       }
     };
+
+    const handleSetDate = () => {
+      if (currentChat?._id && offlineUsersTime[currentChat._id]) {
+        let utcDate = new Date(offlineUsersTime[currentChat._id]);
+        let now = new Date();
+        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
+      }
+    };
+    handleSetDate();
     handleSetMessages();
   }, [currentChat]);
 
@@ -53,6 +77,8 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
       },
     ]);
   };
+
+  // const handleDate
 
   useEffect(() => {
     socket.current.on('receive-msg', data => {
@@ -87,6 +113,35 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
               </div>
               <div className="username">
                 <h3>{currentChat.fullname}</h3>
+              </div>
+
+              <div className="offline-time">
+                {date && offlineUsersTime[currentChat._id] ? (
+                  date + Math.floor(seconds / 60) < 5 ? (
+                    <h6>Offlined few minutes ago</h6>
+                  ) : date + Math.floor(seconds / 60) < 60 ? (
+                    <h6>
+                      Offlined {date + Math.floor(seconds / 60)} minutes ago
+                    </h6>
+                  ) : Math.floor((date + Math.floor(seconds / 60)) / 60) <
+                    24 ? (
+                    <h6>
+                      Offlined{' '}
+                      {Math.floor((date + Math.floor(seconds / 60)) / 60)} hours
+                      ago
+                    </h6>
+                  ) : (
+                    <h6>
+                      Offlined{' '}
+                      {Math.floor(
+                        (date + Math.floor(seconds / 60)) / (60 * 24)
+                      )}{' '}
+                      days ago
+                    </h6>
+                  )
+                ) : (
+                  <h6></h6>
+                )}
               </div>
             </div>
           </div>
@@ -224,8 +279,8 @@ const Container = styled.div`
         border-radius: 1rem;
         color: white;
         .date {
-          font-size: 0.5rem;
-          opacity: 0.5;
+          font-size: 0.8rem;
+          opacity: 0.7;
         }
       }
     }

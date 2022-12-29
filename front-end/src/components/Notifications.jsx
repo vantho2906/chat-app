@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUserPlus,
-  faCheck,
-  faXmark,
-  faCircleXmark,
-  faUserXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
   getRequestRoute,
@@ -123,6 +117,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
     .contacts {
       width: 100%;
       display: flex;

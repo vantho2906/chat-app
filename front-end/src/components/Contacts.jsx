@@ -6,19 +6,18 @@ import {
   faMagnifyingGlass,
   faMessage,
 } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
-import { host } from '../utils/APIRoutes';
 import SearchUser from './SearchUser';
 import Message from './Message';
 import Notifications from './Notifications';
 import Logout from './Logout';
-import { io } from 'socket.io-client';
+import Menu from './Menu';
 
 function Contacts({ contacts, currentUser, changeChat, socket }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [navSelect, setNavSelect] = useState('messages');
+  const [menu, setMenu] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -30,23 +29,32 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
   }, [currentUser]);
 
   useEffect(() => {
-    socket.current.on('onlineUser', userId => {
-      const usersId = Object.values(userId);
+    socket.current.on('onlineUser', data => {
+      console.log(data);
+      const usersId = Object.values(data.onlineUsers);
       setOnlineUsers(usersId);
     });
   }, [socket.current]);
 
   return (
     <>
-      {currentUserName && (
+      {currentUserName && menu ? (
+        <Menu
+          avatar={currentUser.avatar}
+          fullname={currentUser.fullname}
+          username={currentUser.username}
+          socket={socket}
+        />
+      ) : (
         <Container>
           <div className="brand">
             <div>
               <img
-                src={'data:image/png;base64, ' + currentUserImage.imageBase64}
+                onClick={() => setMenu(true)}
+                src={'data:image/png;base64, ' + currentUserImage?.imageBase64}
                 alt=""
               />
-              <h3>{currentUser.fullname}</h3>
+              <h3>{currentUser?.fullname}</h3>
             </div>
             <Logout socket={socket} />
           </div>
@@ -80,7 +88,7 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
             <Message changeChat={changeChat} onlineUsers={onlineUsers} />
           )}
           {navSelect === 'search-friends' && (
-            <SearchUser currentUser={currentUser} />
+            <SearchUser currentUser={currentUser} onlineUsers={onlineUsers} />
           )}
           {navSelect === 'notifications' && <Notifications />}
         </Container>
@@ -118,6 +126,7 @@ const Container = styled.div`
   .nav {
     display: flex;
     // justify-content: space-between;
+    margin-top: 0.5rem;
     cursor: pointer;
     h6 {
       display: flex;

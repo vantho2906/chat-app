@@ -11,7 +11,6 @@ import {
   sendRequestRoute,
   searchUserByFullnameRoute,
   getRequestSendedRoute,
-  getUserRoute,
 } from '../utils/APIRoutes';
 function SearchUser({ currentUser }) {
   // const [currentUser, setCurrentUser] = useState(undefined);
@@ -140,7 +139,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    
+    height: 100%;
     .search-input {
       display: flex;
       align-items: center;

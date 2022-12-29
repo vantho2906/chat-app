@@ -34,6 +34,9 @@ function ConfirmOTP() {
       username,
       email,
     });
+    if (data.status === 200) {
+      toast.success('OTP code has ben resend', toastOptions);
+    }
     console.log(data);
   };
 
@@ -47,7 +50,6 @@ function ConfirmOTP() {
       phone,
       password,
     });
-    console.log(data);
     data.then(res => {
       if (res.status === 200) {
         console.log('successfully');
