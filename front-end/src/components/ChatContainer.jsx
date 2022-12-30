@@ -9,12 +9,19 @@ import {
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
+function ChatContainer({
+  currentChat,
+  currentUser,
+  currentRoom,
+  socket,
+  onlineUsers,
+  offlineUsersTime,
+}) {
   // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
   const [arrivalMessages, setArrivalMessages] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const [date, setDate] = useState(null);
+  // const [online, setOnline] = useState(onlineUsers);
+  const [date, setDate] = useState(0);
   const scrollRef = useRef();
   const [minutes, setMinutes] = useState(1);
 
@@ -26,42 +33,41 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
   }, []);
 
   useEffect(() => {
-    if (currentChat?._id && !onlineUsers.includes(currentChat._id)) {
-      const data = axios.get(`${getUserRoute}/${currentChat._id}`);
-      console.log(data);
-      data.then(res => {
-        console.log(res);
-        let utcDate = new Date(res.data.data.offlineAt);
+    // console.log(offlineUsersTime);
+    // if (currentChat?._id)
+    //   console.log(Date.now() - Date(offlineUsersTime[currentChat._id]));
+    if (currentChat?._id) {
+      const handleDate = () => {
+        let utcDate = new Date(offlineUsersTime[currentChat._id]);
         let now = new Date();
-        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
-        setMinutes(1);
-      });
+        // console.log(
+        //   Math.max(
+        //     1,
+        //     Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+        //   )
+        // );
+        setDate(
+          Math.max(
+            1,
+            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+          )
+        );
+        setMinutes(0);
+      };
+      handleDate();
     } else {
-      setDate(null);
+      setDate(false);
     }
   }, [currentChat]);
 
   useEffect(() => {
-    socket.current?.on('onlineUser', data => {
-      const usersId = Object.values(data.onlineUsers);
-      setOnlineUsers(usersId);
-      if (currentChat?._id && !usersId.includes(currentChat._id)) {
-        const data = axios.get(`${getUserRoute}/${currentChat._id}`);
-        console.log(data);
-        data.then(res => {
-          console.log(res);
-          let utcDate = new Date(res.offlineAt);
-          let now = new Date();
-          setDate(
-            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
-          );
-          setMinutes(1);
-        });
-      } else {
-        setDate(null);
-      }
-    });
-  }, [socket.current]);
+    if (currentChat?._id && !onlineUsers?.includes(currentChat._id)) {
+      setDate(1);
+      setMinutes(0);
+    } else {
+      setDate(null);
+    }
+  }, [onlineUsers]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -142,28 +148,29 @@ function ChatContainer({ currentChat, currentUser, currentRoom, socket }) {
               </div>
 
               <div className="offline-time">
-                {date ? (
-                  date + Math.floor(minutes) < 5 ? (
-                    <h6>Offlined {date + Math.floor(minutes)} minutes ago</h6>
-                  ) : date + Math.floor(minutes) < 60 ? (
-                    <h6>Offlined {date + Math.floor(minutes)} minutes ago</h6>
-                  ) : Math.floor((date + Math.floor(minutes)) / 60) < 24 ? (
+                {date && !onlineUsers?.includes(currentChat._id) ? (
+                  Math.floor(Math.floor(date) + minutes) < 5 ? (
+                    <h6>Offlined {date + minutes} minutes ago</h6>
+                  ) : Math.floor(date + minutes) < 60 ? (
+                    <h6>Offlined {Math.floor(date + minutes)} minutes ago</h6>
+                  ) : Math.floor((date + minutes) / 60) < 24 ? (
                     <h6>
-                      Offlined {Math.floor((date + Math.floor(minutes)) / 60)}{' '}
-                      hours ago
+                      Offlined {Math.floor((date + minutes) / 60)} hours ago
                     </h6>
                   ) : (
                     <h6>
-                      Offlined{' '}
-                      {Math.floor(
-                        (date + Math.floor(minutes)) / (60 * 24)
-                      )}{' '}
-                      days ago
+                      Offlined {Math.floor((date + minutes) / (60 * 24))} days
+                      ago
                     </h6>
                   )
                 ) : (
                   <h6></h6>
                 )}
+                {/* {onlineUsers && onlineUsers.includes(currentChat._id) ? (
+                  <h6>Online</h6>
+                ) : (
+                  <h6>Offline</h6>
+                )} */}
               </div>
             </div>
           </div>
