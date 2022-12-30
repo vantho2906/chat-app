@@ -20,6 +20,7 @@ function Chat() {
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
+      socket.current?.emit('login', { userId: currentUser?._id });
     }
   }, [currentUser]);
 
@@ -33,7 +34,8 @@ function Chat() {
         data.then(res => {
           setCurrentUser(res.data.data);
         });
-        socket.current.emit('login', { userId: user?._id });
+        console.log(user._id);
+        socket.current?.emit('login', { userId: user?._id });
       }
     };
     checkUser();
