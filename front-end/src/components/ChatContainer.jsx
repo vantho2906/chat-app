@@ -15,6 +15,7 @@ function ChatContainer({
   currentRoom,
   socket,
   onlineUsers,
+  offlineUsersTime,
 }) {
   // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
@@ -32,34 +33,41 @@ function ChatContainer({
   }, []);
 
   useEffect(() => {
+    // console.log(offlineUsersTime);
+    // if (currentChat?._id)
+    //   console.log(Date.now() - Date(offlineUsersTime[currentChat._id]));
     if (currentChat?._id) {
-      const data = axios.get(`${getUserRoute}/${currentChat._id}`);
-      data.then(res => {
-        let utcDate = new Date(res.data.data.offlineAt);
+      const handleDate = () => {
+        let utcDate = new Date(offlineUsersTime[currentChat._id]);
         let now = new Date();
-        setDate(Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60)));
-        setMinutes(1);
-      });
+        // console.log(
+        //   Math.max(
+        //     1,
+        //     Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+        //   )
+        // );
+        setDate(
+          Math.max(
+            1,
+            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+          )
+        );
+        setMinutes(0);
+      };
+      handleDate();
     } else {
       setDate(false);
     }
   }, [currentChat]);
 
   useEffect(() => {
-    socket.current?.on('onlineUser', data => {
-      const usersId = Object.values(data.onlineUsers);
-      if (
-        currentChat?._id &&
-        !usersId?.includes(currentChat._id) &&
-        !onlineUsers?.includes(currentChat._id)
-      ) {
-        setDate(1);
-        setMinutes(0);
-      } else {
-        setDate(null);
-      }
-    });
-  }, [socket.current]);
+    if (currentChat?._id && !onlineUsers?.includes(currentChat._id)) {
+      setDate(1);
+      setMinutes(0);
+    } else {
+      setDate(null);
+    }
+  }, [onlineUsers]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
@@ -158,6 +166,11 @@ function ChatContainer({
                 ) : (
                   <h6></h6>
                 )}
+                {/* {onlineUsers && onlineUsers.includes(currentChat._id) ? (
+                  <h6>Online</h6>
+                ) : (
+                  <h6>Offline</h6>
+                )} */}
               </div>
             </div>
           </div>

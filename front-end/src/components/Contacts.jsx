@@ -12,10 +12,10 @@ import Notifications from './Notifications';
 import Logout from './Logout';
 import Menu from './Menu';
 
-function Contacts({ contacts, currentUser, changeChat, socket }) {
+function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  // const [onlineUsers, setOnlineUsers] = useState([]);
   const [navSelect, setNavSelect] = useState('messages');
   const [menu, setMenu] = useState(false);
 
@@ -32,12 +32,12 @@ function Contacts({ contacts, currentUser, changeChat, socket }) {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    socket.current?.on('onlineUser', data => {
-      const usersId = Object.values(data.onlineUsers);
-      setOnlineUsers(usersId);
-    });
-  }, [socket.current]);
+  // useEffect(() => {
+  //   socket.current?.on('onlineUser', data => {
+  //     const usersId = Object.values(data.onlineUsers);
+  //     setOnlineUsers(usersId);
+  //   });
+  // }, [socket.current]);
 
   return (
     <>

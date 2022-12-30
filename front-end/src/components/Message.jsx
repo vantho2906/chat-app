@@ -36,7 +36,7 @@ function Message({ changeChat, onlineUsers }) {
                     key={index}
                   >
                     <div className="avatar">
-                      {onlineUsers.includes(contact._id) ? (
+                      {onlineUsers && onlineUsers?.includes(contact._id) ? (
                         <div class="green_icon"></div>
                       ) : (
                         <div class="grey_icon"></div>

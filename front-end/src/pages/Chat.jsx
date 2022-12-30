@@ -17,12 +17,19 @@ function Chat() {
   const [currentRoom, setCurrentRoom] = useState(undefined);
   // const [isOnline, setIsOnline] = useState(undefined);
   const [onlineUsers, setOnlineUsers] = useState(undefined);
+  const [offlineUsersTime, setOfflineUsersTime] = useState(undefined);
   const socket = useRef();
 
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
       socket.current.emit('login', { userId: currentUser._id });
+      socket.current.on('onlineUser', data => {
+        const usersId = Object.values(data.onlineUsers);
+        // console.log(usersId);
+        setOnlineUsers(usersId);
+        setOfflineUsersTime(data.offlineUsersTime);
+      });
     }
   }, [currentUser]);
 
@@ -60,12 +67,6 @@ function Chat() {
     setCurrentRoom(chatRoomId);
   };
 
-  useEffect(() => {
-    socket.current?.on('onlineUser', data => {
-      const usersId = Object.values(data.onlineUsers);
-      setOnlineUsers(usersId);
-    });
-  }, [socket.current]);
   return (
     <Container>
       <div className="container">
@@ -74,13 +75,14 @@ function Chat() {
           currentUser={currentUser}
           changeChat={handleChatChange}
           socket={socket}
+          onlineUsers={onlineUsers}
         />
         <ChatContainer
           currentChat={currentChat}
           currentUser={currentUser}
           currentRoom={currentRoom}
           socket={socket}
-          // isOnline={isOnline}
+          offlineUsersTime={offlineUsersTime}
           onlineUsers={onlineUsers}
         />
       </div>
