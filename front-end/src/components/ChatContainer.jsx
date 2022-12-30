@@ -140,7 +140,7 @@ function ChatContainer({
               </div>
 
               <div className="offline-time">
-                {!onlineUsers?.includes(currentChat._id) ? (
+                {date && !onlineUsers?.includes(currentChat._id) ? (
                   Math.floor(Math.floor(date) + minutes) < 5 ? (
                     <h6>Offlined {date + minutes} minutes ago</h6>
                   ) : Math.floor(date + minutes) < 60 ? (
