@@ -27,9 +27,9 @@ module.exports = {
 
       socket.on('login', function (data) {
         console.log('a user ' + data.userId + ' connected');
-        // saving userId to object with socket ID
         onlineUsers[socket.id] = data.userId;
         delete offlineUsersTime[data.userId];
+        // saving userId to object with socket ID
         io.emit('onlineUser', {
           onlineUsers: onlineUsers,
           offlineUsersTime: offlineUsersTime,
