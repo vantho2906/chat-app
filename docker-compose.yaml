@@ -12,7 +12,7 @@ services:
       - chat_app
     volumes:
       - file-data:/app/back-end/src/public
-    # restart: always
+    restart: always
 
   fe:
     container_name: chat_app_fe
@@ -23,7 +23,7 @@ services:
       - 3000:3000
     networks:
       - chat_app
-    # restart: always
+    restart: always
 volumes:
   file-data:
 
