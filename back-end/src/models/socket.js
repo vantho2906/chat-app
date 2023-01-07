@@ -15,6 +15,7 @@ module.exports = {
     });
     const onlineUsers = {};
     const offlineUsersTime = {}; // key is id of user, value is time offline
+    const globalUsers = {};
     io.on('connection', socket => {
       // console.log('connected');
       socket.on('join-room', data => {
@@ -29,6 +30,7 @@ module.exports = {
         console.log('a user ' + data.userId + ' connected');
         // saving userId to object with socket ID
         onlineUsers[socket.id] = data.userId;
+        globalUsers[data.userId] = socket.id;
         delete offlineUsersTime[data.userId];
         io.emit('onlineUser', {
           onlineUsers: onlineUsers,
@@ -45,8 +47,8 @@ module.exports = {
           user.offlineAt = new Date();
           await user.save();
         }
-        delete onlineUsers[socket.id];
-        io.emit('onlineUser', {
+        await delete onlineUsers[socket.id];
+        await io.emit('onlineUser', {
           onlineUsers: onlineUsers,
           offlineUsersTime: offlineUsersTime,
         });
@@ -55,15 +57,10 @@ module.exports = {
       });
 
       socket.on('send-friend-request', async data => {
-        const { myId, receiverId } = data;
-        socket.join(receiverId);
-        const result = await FriendInvitationModel.sendFriendRequest(
-          myId,
-          receiverId
-        );
-        if (result.getStatusCode() == 400) {
-          io.emit('send-friend-request-failed', result.getData());
-        } else io.to(receiverId).emit('receive-friend-request', data);
+        console.log(data.receiverId, data.myId);
+        socket
+          .to(globalUsers[data.receiverId])
+          .emit('get-friend-request', data.myId);
       });
     });
   },
