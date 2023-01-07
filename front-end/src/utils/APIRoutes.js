@@ -1,4 +1,4 @@
-export const host = 'http://localhost:5001';
+export const host = process.env.PROXY_API || 'http://localhost:5001';
 
 export const registerRoute = `${host}/user/register`;
 export const avatarRoute = `${host}/upload`;

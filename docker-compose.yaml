@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  be:
+    container_name: chat_app_be
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    networks:
+      - chat_app
+    volumes:
+      - file-data:/app/back-end/src/public
+    restart: always
+
+  fe:
+    container_name: chat_app_fe
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports: 
+      - 3000:3000
+    networks:
+      - chat_app
+    restart: always
+volumes:
+  file-data:
+
+networks:
+  chat_app:
+    driver: bridge
