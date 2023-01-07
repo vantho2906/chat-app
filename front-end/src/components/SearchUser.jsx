@@ -12,7 +12,7 @@ import {
   searchUserByFullnameRoute,
   getRequestSendedRoute,
 } from '../utils/APIRoutes';
-function SearchUser({ currentUser }) {
+function SearchUser({ currentUser, socket }) {
   // const [currentUser, setCurrentUser] = useState(undefined);
   const [currentRequest, setCurrentRequest] = useState([]);
   const [searchUser, setSearchUser] = useState('');
@@ -54,6 +54,10 @@ function SearchUser({ currentUser }) {
   const handleSendRequest = async receiverId => {
     const myId = currentUser._id;
     await axios.post(sendRequestRoute, {
+      receiverId,
+      myId,
+    });
+    socket.current.emit('send-friend-request', {
       receiverId,
       myId,
     });

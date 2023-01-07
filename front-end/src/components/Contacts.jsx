@@ -18,6 +18,7 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
   // const [onlineUsers, setOnlineUsers] = useState([]);
   const [navSelect, setNavSelect] = useState('messages');
   const [menu, setMenu] = useState(false);
+  const [numberNotes, setNumberNotes] = useState(0);
 
   const handleSetMenu = () => {
     setMenu(!menu);
@@ -31,6 +32,14 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
       // console.log(notification);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on('get-friend-request', data => {
+        setNumberNotes(prev => prev + 1);
+      });
+    }
+  }, [socket.current]);
 
   // useEffect(() => {
   //   socket.current?.on('onlineUser', data => {
@@ -82,19 +91,25 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
             <h6
               onClick={() => {
                 setNavSelect('notifications');
+                setNumberNotes(0);
               }}
-              className={`${navSelect === 'notifications' ? 'selected' : ''}`}
+              className={`note ${
+                navSelect === 'notifications' ? 'selected' : ''
+              }`}
             >
               <FontAwesomeIcon icon={faBell} size="2x" />
+              {numberNotes !== 0 && (
+                <div className="number-notes">{numberNotes}</div>
+              )}
             </h6>
           </div>
           {navSelect === 'messages' && (
             <Message changeChat={changeChat} onlineUsers={onlineUsers} />
           )}
           {navSelect === 'search-friends' && (
-            <SearchUser currentUser={currentUser} />
+            <SearchUser currentUser={currentUser} socket={socket} />
           )}
-          {navSelect === 'notifications' && <Notifications />}
+          {navSelect === 'notifications' && <Notifications socket={socket} />}
         </Container>
       )}
     </>
@@ -132,6 +147,26 @@ const Container = styled.div`
     // justify-content: space-between;
     margin-top: 0.5rem;
     cursor: pointer;
+    .note {
+      position: relative;
+      // div {
+      //   position: absolute;
+      //   background-color: res;
+      // }
+      .number-notes {
+        position: absolute;
+        background-color: red;
+        color: white;
+        width: 10px;
+        height: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 999rem;
+        top: 2px;
+        right: 36px;
+      }
+    }
     h6 {
       display: flex;
       justify-content: center;

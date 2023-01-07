@@ -47,6 +47,7 @@ function Chat() {
     };
     checkUser();
   }, []);
+
   const { notification } = useContext(AppContext);
   // console.log(notification);
 

@@ -9,7 +9,7 @@ import {
   acceptRequestRoute,
   cancelledRequestRoute,
 } from '../utils/APIRoutes';
-function Notification() {
+function Notification({ socket }) {
   const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
   const [currentRequest, setCurrentRequest] = useState([]);
   const [currentUserRequest, setCurrentUserRequest] = useState([]);

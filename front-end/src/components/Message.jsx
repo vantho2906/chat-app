@@ -14,7 +14,9 @@ function Message({ changeChat, onlineUsers }) {
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
     const handleUserChats = async () => {
-      const data = await axios.get(`${getAllContacts}/${currentUser.username}`);
+      const data = await axios.get(
+        `${getAllContacts}/${currentUser?.username}`
+      );
       setContacts(data.data.data);
       setUserChats(data.data.data.contacts);
     };

@@ -80,14 +80,14 @@ function SetAvatar() {
     }
     toDataURL(url).then(dataUrl => {
       var fileData = dataURLtoFile(dataUrl, 'imageName.jpg');
-      console.log(fileData);
+      // console.log(fileData);
       setFile(fileData);
     });
   };
 
   const handleChange = e => {
     setFile(e.target.files[0]);
-    console.log(e.target.files[0]);
+    // console.log(e.target.files[0]);
     var reader = new FileReader();
     reader.onloadend = function () {
       setAvatarImage(reader.result);
