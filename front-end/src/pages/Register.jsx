@@ -5,8 +5,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { registerRoute } from '../utils/APIRoutes';
+import { useDispatch } from 'react-redux';
+import { register } from '../redux/actions/authAction';
 
 function Register() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [values, setValues] = useState({
     fullname: '',
@@ -26,82 +29,21 @@ function Register() {
     theme: 'dark',
   };
 
-  // useEffect(() => {
-  //   if (localStorage.getItem("chat-app-user")) {
-  //     navigate("/");
-  //   }
-  // }, []);
-
   const handleSubmit = async e => {
     e.preventDefault();
-    if (handleValidation()) {
-      const { username, phone, email, password, confirmPassword, fullname } =
-        values;
-      const data = await axios.post(registerRoute, {
-        phone,
-        username,
-        password,
-        confirmPassword,
-        email,
-      });
-      // const { message } = await axios.post(avatarRoute, {
-      //   id,
-      // });
-      if (data.status === 400) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === 200) {
-        // localStorage.setItem("chat-app-user", JSON.stringify(data.data));
-        navigate('/register/confirmOTP', {
-          state: {
-            username: username,
-            email: email,
-            phone: phone,
-            password: password,
-            fullname: fullname,
-          },
-        });
-      }
-    } else {
-    }
-  };
+    const { username, phone, email, password, confirmPassword, fullname } =
+      values;
 
-  const handleValidation = () => {
-    const { username, email, phone, password, confirmPassword } = values;
-    if (password !== confirmPassword) {
-      toast.error(
-        'Password and confirm password should be same.',
-        toastOptions
-      );
-      return false;
-    } else if (username.length < 3) {
-      toast.error('Username should be greater than 3 characters', toastOptions);
-      return false;
-    } else if (password.length < 8) {
-      toast.error('Password should be greater than 8 characters', toastOptions);
-      return false;
-    } else if (email === '') {
-      toast.error('Email must be required', toastOptions);
-      return false;
-    } else if (phone === '') {
-      toast.error('Phone must be required', toastOptions);
-      return false;
-    } else if (phone.length !== 10) {
-      toast.error('Phone must have 10 numbers', toastOptions);
-      return false;
-    } else if (
-      phone[0] !== '0' ||
-      (phone[1] !== '3' &&
-        phone[1] !== '5' &&
-        phone[1] !== '7' &&
-        phone[1] !== '8' &&
-        phone[1] !== '9')
-    ) {
-      toast.error('Phone number invalid', toastOptions);
-      return false;
-    }
-
-    return true;
+    dispatch(register(values));
+    navigate('/confirmOTP', {
+      state: {
+        username: username,
+        email: email,
+        phone: phone,
+        password: password,
+        fullname: fullname,
+      },
+    });
   };
 
   const handleChange = e => {
@@ -112,151 +54,73 @@ function Register() {
     });
   };
   return (
-    <>
-      <FormContainer>
-        <form enctype="multipart/form-data" onSubmit={e => handleSubmit(e)}>
-          <div className="brand">
-            <h1>Chat-app</h1>
-          </div>
+    <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-bl from-[#79C7C5] to-[#F9FBFF]">
+      <form
+        className="flex flex-col w-[350px] h-[450px] bg-[#F9FBFF] bg-opacity-50 rounded-xl items-center gap-2 py-3 justify-center px-14"
+        enctype="multipart/form-data"
+        onSubmit={e => handleSubmit(e)}
+      >
+        <div className="text-3xl">
+          <h1>Chat-app</h1>
+        </div>
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="text"
+          placeholder="Fullname"
+          name="fullname"
+          onChange={e => handleChange(e)}
+        />
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="text"
+          placeholder="Username"
+          name="username"
+          onChange={e => handleChange(e)}
+        />
+        <div className="flex gap-2">
           <input
-            type="text"
-            placeholder="Fullname"
-            name="fullname"
-            onChange={e => handleChange(e)}
-          />
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={e => handleChange(e)}
-          />
-          <input
+            className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
             type="email"
             placeholder="Email"
             name="email"
             onChange={e => handleChange(e)}
           />
           <input
+            className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
             type="tel"
             placeholder="Phone"
             name="phone"
             onChange={e => handleChange(e)}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={e => handleChange(e)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            onChange={e => handleChange(e)}
-          />
+        </div>
 
-          <button type="submit">Create User</button>
-          <span>
-            Already have an account ? <Link to="/login">Login</Link>{' '}
-          </span>
-        </form>
-      </FormContainer>
-      <ToastContainer />
-    </>
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="password"
+          placeholder="Password"
+          name="password"
+          onChange={e => handleChange(e)}
+        />
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="password"
+          placeholder="Confirm Password"
+          name="confirmPassword"
+          onChange={e => handleChange(e)}
+        />
+
+        <button
+          className="w-full h-[40px] rounded-xl hover:bg-opacity-80 bg-[#777777] text-white"
+          type="submit"
+        >
+          Create User
+        </button>
+        <span>
+          Already have an account? <Link to="/login">Login</Link>{' '}
+        </span>
+      </form>
+    </div>
   );
 }
-
-const FormContainer = styled.div`
-  witdh: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem;
-  align-items: center;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-
-    h1 {
-      color: #777777;
-      text-transform: uppercase;
-    }
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: rgba(161, 226, 217, 0.5);
-    box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
-    border-radius: 1rem;
-    padding: 2rem 5rem;
-    input {
-      background-color: transparent;
-      padding: 1rem;
-      border: 0.1rem solid #777777;
-      color: #000;
-      border-radius: 0.4rem;
-      width: 100%;
-      font-size: 1rem;
-      &:focus {
-        border: 0.1rem solid #000000;
-        outline: none;
-      }
-    }
-    #file {
-      display: none;
-    }
-    #input-file {
-      position: relative;
-    }
-    label {
-      display: flex;
-      background-color: transparent;
-      padding: 1rem;
-      border: 0.1rem solid #777777;
-      color: #000;
-      border-radius: 0.4rem;
-      width: 100%;
-      font-size: 1rem;
-      text-transform: none;
-      align-items: center;
-      &:focus {
-        border: 0.1rem solid #000000;
-        outline: none;
-      }
-
-      p {
-        padding-left: 1rem;
-      }
-    }
-    #close-icon {
-      position: absolute;
-      right: -1.5rem;
-      top: 1rem;
-    }
-    button {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 0.4rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      font-weight: bold;
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-    span {
-      font-weight: bold;
-      text-transform: uppercase;
-      a {
-        text-decoration: none;
-      }
-    }
-  }
-`;
 
 export default Register;

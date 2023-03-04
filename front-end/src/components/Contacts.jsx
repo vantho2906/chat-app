@@ -11,6 +11,7 @@ import Message from './Message';
 import Notifications from './Notifications';
 import Logout from './Logout';
 import Menu from './Menu';
+import Navigation from './Navigation';
 
 function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -49,7 +50,7 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
   // }, [socket.current]);
 
   return (
-    <>
+    <div className="w-[30%] py-5 px-3 bg-[#F9FBFF] bg-opacity-50 h-[95%] rounded-l-xl overflow-hidden">
       {currentUserName && menu ? (
         <Menu
           avatar={currentUser.avatar}
@@ -59,49 +60,21 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
           handleSetMenu={handleSetMenu}
         />
       ) : (
-        <Container>
-          <div className="brand">
-            <div>
-              <img
-                onClick={() => handleSetMenu()}
-                src={'data:image/png;base64, ' + currentUserImage?.imageBase64}
-                alt=""
-              />
-              <h3>{currentUser?.fullname}</h3>
+        <div>
+          <div className="flex flex-col space-x-4 mb-5 items-center gap-2">
+            {/* <img
+              onClick={() => handleSetMenu()}
+              src={'data:image/png;base64, ' + currentUserImage?.imageBase64}
+              alt=""
+              className="w-8 h-8 rounded-full"
+            /> */}
+            <div className="text-3xl text-[#F9FBFF] h-[50px] w-[50px] flex items-center justify-center m-auto rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+              <p>{currentUser?.fullname[0]}</p>
             </div>
-            <Logout socket={socket} />
-          </div>
-          <div className="nav">
-            <h6
-              onClick={() => {
-                setNavSelect('messages');
-              }}
-              className={`${navSelect === 'messages' ? 'selected' : ''}`}
-            >
-              <FontAwesomeIcon icon={faMessage} size="2x" />
-            </h6>
-            <h6
-              onClick={() => {
-                setNavSelect('search-friends');
-              }}
-              className={`${navSelect === 'search-friends' ? 'selected' : ''}`}
-            >
-              <FontAwesomeIcon icon={faMagnifyingGlass} size="2x" />
-            </h6>
-            <h6
-              onClick={() => {
-                setNavSelect('notifications');
-                setNumberNotes(0);
-              }}
-              className={`note ${
-                navSelect === 'notifications' ? 'selected' : ''
-              }`}
-            >
-              <FontAwesomeIcon icon={faBell} size="2x" />
-              {numberNotes !== 0 && (
-                <div className="number-notes">{numberNotes}</div>
-              )}
-            </h6>
+            <div className="text-2xl text-[#79C7C5] font-normal">
+              {currentUser?.fullname}
+            </div>
+            {/* <Logout socket={socket} /> */}
           </div>
           {navSelect === 'messages' && (
             <Message changeChat={changeChat} onlineUsers={onlineUsers} />
@@ -110,132 +83,11 @@ function Contacts({ contacts, currentUser, changeChat, socket, onlineUsers }) {
             <SearchUser currentUser={currentUser} socket={socket} />
           )}
           {navSelect === 'notifications' && <Notifications socket={socket} />}
-        </Container>
+        </div>
       )}
-    </>
+      <Navigation navSelect={navSelect} setNavSelect={setNavSelect} />
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: grid;
-  grid-template-rows: 8% 8% 84%;
-  background-color: rgba(249, 251, 255, 0.5);
-  box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
-  overflow: hidden;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
-  .brand {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    div {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    img {
-      border-radius: 999rem;
-      height: 2.5rem;
-      width: 2.5rem;
-      max-inline-size: 100%;
-      object-fit: cover;
-    }
-  }
-  .nav {
-    display: flex;
-    // justify-content: space-between;
-    margin-top: 0.5rem;
-    cursor: pointer;
-    .note {
-      position: relative;
-      // div {
-      //   position: absolute;
-      //   background-color: res;
-      // }
-      .number-notes {
-        position: absolute;
-        background-color: red;
-        color: white;
-        width: 10px;
-        height: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 999rem;
-        top: 2px;
-        right: 36px;
-      }
-    }
-    h6 {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-width: 33.3%;
-      color: #777777;
-      text-transform: uppercase;
-      border-radius: 2rem;
-      gap: 4px;
-    }
-    .selected {
-      background-color: #79c7c5;
-    }
-  }
-  
-  }
-  .contacts {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    gap: 1rem;
-    margin-top: 2rem;
-    &::-webkit-scrollbar {
-      width: 0.2rem;
-      &-thumb {
-        background-color: black;
-        width: 0.1rem;
-        border-radius: 1rem;
-      }
-    }
-    .contact {
-      background-color: #ffffff30;
-      min-height: 4rem;
-      width: 90%;
-      cursor: pointer;
-      border-radius: 0.2rem;
-      padding: 0.4rem;
-      gap: 1rem;
-      align-items: center;
-      display: flex;
-      transition: 0.5s ease-in-out;
-      .avatar {
-        img {
-          hegiht: 3rem;
-          width: 3rem;
-          object-fit: cover;
-          border-radius: 999rem;
-        }
-      }
-      .username {
-        h3 {
-          color: #777777;
-          font-weight: 400;
-        }
-      }
-    }
-    .selected {
-      background-color: rgba(249, 251, 255, 1);
-    }
-  }
-  @media screen and (min-width: 720px) and (max-width: 1080px) {
-    gap: 0.5rem;
-    .username {
-      h2 {
-        font-size: 1rem;
-      }
-    }
-  }
-`;
 
 export default Contacts;

@@ -23,44 +23,42 @@ function Message({ changeChat, onlineUsers }) {
     handleUserChats();
   }, []);
   return (
-    <Container>
-      <div className="search-user">
-        {userChats ? (
-          <div className="contacts">
-            <div>
-              {userChats.map((contact, index) => {
-                return (
-                  <div
-                    className={`contact ${
-                      index === currentSelected ? 'selected' : ''
-                    }`}
-                    onClick={() => changeCurrentChat(index, contact)}
-                    key={index}
-                  >
-                    <div className="avatar">
-                      {onlineUsers && onlineUsers?.includes(contact._id) ? (
-                        <div class="green_icon"></div>
-                      ) : (
-                        <div class="grey_icon"></div>
-                      )}
-                      <img
-                        src={
-                          'data:image/png;base64, ' + contact.avatar.imageBase64
-                        }
-                        alt=""
-                      />
-                    </div>
-                    <h3>{contact.fullname}</h3>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <p>Nothing</p>
-        )}
-      </div>
-    </Container>
+    <div className="overflow-y-scroll h-[200px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
+      {userChats ? (
+        <div className="flex flex-col gap-3">
+          {userChats.map((contact, index) => {
+            return (
+              <div
+                className={`flex px-4 h-16 space-y-2 border-b-[#79C7C5] border-b-[1px] ${
+                  index === currentSelected ? 'selected' : ''
+                }`}
+                onClick={() => changeCurrentChat(index, contact)}
+                key={index}
+              >
+                {/* <div className="avatar">
+                  {onlineUsers && onlineUsers?.includes(contact._id) ? (
+                    <div class="green_icon"></div>
+                  ) : (
+                    <div class="grey_icon"></div>
+                  )}
+                  <img
+                    className="w-[40px] h-[40px] rounded-full object-cover"
+                    src={'data:image/png;base64, ' + contact.avatar.imageBase64}
+                    alt=""
+                  />
+                </div> */}
+                <div className="space-y-2">
+                  <h3 className="text-[#777777]">{contact.fullname}</h3>
+                  <p className="text-[#79C7C5]">Last message</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p>Nothing</p>
+      )}
+    </div>
   );
 }
 

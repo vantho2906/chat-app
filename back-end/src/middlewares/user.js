@@ -1,10 +1,21 @@
 const { UserModel } = require('../models/user');
 const { ControllerService } = require('../utils/decorators');
+const { Token } = require('../utils/generateToken');
+const jwt = require('jsonwebtoken');
 
 class UserMiddleware {
   static async login(req, res, next) {
     const { phone, password } = req.body;
     const result = await UserModel.login(phone, password);
+    if (result.getStatusCode() === 200) {
+      const refresh_token = Token.generateRefreshToken({
+        id: result.data.data._id,
+      });
+      await res.cookie('refreshtoken', refresh_token, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+    }
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
@@ -60,11 +71,15 @@ class UserMiddleware {
       });
     if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))
       return res.status(400).send({ message: 'Email is invalid' });
-    const result = await UserModel.forgotPassword(
-      newPassword,
-      email
-    );
+    const result = await UserModel.forgotPassword(newPassword, email);
     return res.status(result.getStatusCode()).send(result.getData());
+  }
+
+  static async refreshToken(req, res, next) {
+    const rf_token = req.cookies.refreshtoken;
+    console.log(rf_token);
+    const result = UserModel.refreshToken(rf_token);
+    res.status(result.getStatusCode()).send(result.getData());
   }
 
   static async getAllContacts(req, res, next) {

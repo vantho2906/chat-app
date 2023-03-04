@@ -8,9 +8,13 @@ import ChatContainer from '../components/ChatContainer';
 import { io } from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css';
 import AppContext from '../components/AppContext';
+import { useDispatch } from 'react-redux';
+import Menu from '../components/Menu';
+import Navigation from '../components/Navigation';
 
 function Chat() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
@@ -23,6 +27,7 @@ function Chat() {
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
+      dispatch({ type: 'SOCKET', payload: socket.current });
       socket.current.emit('login', { userId: currentUser._id });
       socket.current.on('onlineUser', data => {
         const usersId = Object.values(data.onlineUsers);
@@ -33,22 +38,20 @@ function Chat() {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      if (!localStorage.getItem('chat-app-user')) {
-        navigate('/login');
-      } else {
-        const user = await JSON.parse(localStorage.getItem('chat-app-user'));
-        const data = axios.get(`${getUserRoute}/${user._id}`);
-        data.then(res => {
-          setCurrentUser(res.data.data);
-        });
-      }
-    };
-    checkUser();
-  }, []);
-
-  const { notification } = useContext(AppContext);
+  // useEffect(() => {
+  //   const checkUser = async () => {
+  //     if (!localStorage.getItem('logged')) {
+  //       navigate('/login');
+  //     } else {
+  //       const user = await JSON.parse(localStorage.getItem('logged'));
+  //       const data = axios.get(`${getUserRoute}/${user._id}`);
+  //       data.then(res => {
+  //         setCurrentUser(res.data.data);
+  //       });
+  //     }
+  //   };
+  //   checkUser();
+  // }, []);
   // console.log(notification);
 
   // useEffect(() => {
@@ -69,48 +72,43 @@ function Chat() {
   };
 
   return (
-    <Container>
-      <div className="container">
-        <Contacts
-          contacts={contacts}
-          currentUser={currentUser}
-          changeChat={handleChatChange}
-          socket={socket}
-          onlineUsers={onlineUsers}
-        />
-        <ChatContainer
-          currentChat={currentChat}
-          currentUser={currentUser}
-          currentRoom={currentRoom}
-          socket={socket}
-          offlineUsersTime={offlineUsersTime}
-          onlineUsers={onlineUsers}
-        />
-      </div>
-    </Container>
+    <div className="flex flex-row items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-r from-[#79C7C5] to-[#F9FBFF] px-[50px] py-[30px]">
+      <Contacts
+        contacts={contacts}
+        currentUser={currentUser}
+        changeChat={handleChatChange}
+        socket={socket}
+        onlineUsers={onlineUsers}
+      />
+      <ChatContainer
+        currentChat={currentChat}
+        currentUser={currentUser}
+        currentRoom={currentRoom}
+        socket={socket}
+        offlineUsersTime={offlineUsersTime}
+        onlineUsers={onlineUsers}
+      />
+    </div>
   );
 }
 
-const Container = styled.div`
-  witdh: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
-  .container {
-    border-radius: 10px;
-    overflow: hidden;
-    height: 85vh;
-    width: 85vw;
-    display: grid;
-    grid-template-columns: 30% 70%;
-    @media screen and (min-width: 720px) and (max-width: 1080px) {
-      grid-template-columns: 35% 65%;
-    }
-  }
-`;
+// const Container = styled.div`
+//   witdh: 100vw;
+//   height: 100vh;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   gap: 1rem;
+//   align-items: center;
+//   background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
+//   .container {
+//     border-radius: 10px;
+//     overflow: hidden;
+//     height: 85vh;
+//     width: 120vw;
+//     display: grid;
+//     grid-template-columns: 30% 70%;
+//   }
+// `;
 
 export default Chat;

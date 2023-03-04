@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   fullname: {
     type: String,
     required: true,
-    max: 100
+    max: 100,
   },
   username: {
     type: String,
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    // required: true,
     unique: true,
   },
   password: {
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
   },
   offlineAt: {
     type: Date,
-  }
+  },
 });
 
 module.exports = mongoose.model('User', userSchema);

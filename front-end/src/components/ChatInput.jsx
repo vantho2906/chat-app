@@ -26,28 +26,30 @@ function ChatInput({ handleSendMsg }) {
   };
 
   return (
-    <Container>
-      <div className="button-container">
-        <div className="emoji">
+    <div className="h-[16%] w-full bg-[#F9FBFF]">
+      {/* <div className="emoji">
           <FontAwesomeIcon
             icon={faFaceSmile}
             onClick={handleEmojiPickerHideShow}
           />
           {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
-        </div>
-      </div>
-      <form className="input-container" onSubmit={e => sendChat(e)}>
+        </div> */}
+      <form
+        className="flex flex-row justify-center items-center h-full w-full px-4"
+        onSubmit={e => sendChat(e)}
+      >
         <input
           type="text"
           placeholder="Type your message here"
           value={msg}
           onChange={e => setMsg(e.target.value)}
+          className="h-full outline-none flex justify-start w-[90%] placeholder:text-[#79C7C5] text-[#777777]"
         />
-        <button className="submit">
+        <button className="h-full w-[10%] text-[#79C7C5]">
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
       </form>
-    </Container>
+    </div>
   );
 }
 
@@ -57,7 +59,6 @@ const Container = styled.div`
   grid-template-columns: 5% 95%;
   align-items: center;
   background-color: rgba(249, 251, 255, 1);
-  padding: 0 2rem;
   padding-bottom: 0.3rem;
   .button-container {
     display: flex;

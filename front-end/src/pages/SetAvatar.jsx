@@ -104,7 +104,6 @@ function SetAvatar() {
       avatar.append('username', username);
       const data = await axios.post(avatarRoute, avatar);
       if (data.status === 200) {
-        localStorage.setItem('chap-app-user', JSON.stringify(data.data.data));
         navigate('/');
       } else {
       }

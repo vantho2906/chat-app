@@ -6,8 +6,7 @@ const routes = require('./routes/index');
 const { socketConnect } = require('./models/socket');
 require('dotenv').config();
 
-
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

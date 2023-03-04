@@ -3,6 +3,7 @@ export const host = process.env.PROXY_API || 'http://localhost:5001';
 export const registerRoute = `${host}/user/register`;
 export const avatarRoute = `${host}/upload`;
 export const loginRoute = `${host}/user/login`;
+export const refreshTokenRoute = `${host}/user/refresh_token`;
 export const getUserRoute = `${host}/user`;
 
 export const getAllContacts = `${host}/user/get-contacts`;

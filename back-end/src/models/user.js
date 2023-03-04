@@ -2,17 +2,27 @@ const { ResponseAPI } = require('../utils/response');
 const User = require('../entities/user');
 const ChatRoom = require('../entities/chatRoom');
 const bcrypt = require('bcrypt');
+const { Token } = require('../utils/generateToken');
 
 class UserModel {
   static async login(phone, password) {
     const user = await User.findOne({ phone: phone });
-    if (!user)
+    if (!user) {
       return new ResponseAPI(400, { message: 'Incorrect Phone or Password' });
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return new ResponseAPI(400, { message: 'Incorrect Phone or Password' });
     user.password = undefined;
-    return new ResponseAPI(200, { message: 'Login successfully', data: user });
+
+    const access_token = Token.generateAccessToken({ id: user._id });
+    return access_token.then(value => {
+      return new ResponseAPI(200, {
+        message: 'Login successfully',
+        access_token: value,
+        data: user,
+      });
+    });
   }
 
   static async register(phone, email, username, password, confirmPassword) {
@@ -50,6 +60,21 @@ class UserModel {
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     return new ResponseAPI(200, { message: 'Change password successfully!' });
+  }
+  static async refreshToken(rf_token) {
+    if (!rf_token) return ResponseAPI(400, { msg: 'Please login now!' });
+    const decode = jwt.verify(rf_token, `${process.env.REFRESH_TOKEN_SECRET}`);
+    if (!decode) return ResponseAPI(400, { msg: 'Please login now!' });
+    console.log(decode);
+    if (decode['id']) {
+      const user = await UserModel.findById(decode['id']).select('-password');
+      if (!user)
+        return ResponseAPI(400, { msg: 'This account does not exist.' });
+
+      const access_token = generateAccessToken({ id: user._id });
+      return ResponseAPI(200, { access_token, user });
+    }
+    return ResponseAPI(200, { message: 'success' });
   }
 
   static async getAllContacts(username) {

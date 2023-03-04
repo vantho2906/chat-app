@@ -8,6 +8,7 @@ import {
 } from '../utils/APIRoutes';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import logoHome from './logo/logoHome.png';
 
 function ChatContainer({
   currentChat,
@@ -132,49 +133,43 @@ function ChatContainer({
   return (
     <>
       {currentChat ? (
-        <Container>
-          <div className="chat-header">
-            <div className="user-details">
-              <div className="avatar">
-                <img
-                  src={
-                    'data:image/png;base64, ' + currentChat.avatar.imageBase64
-                  }
-                  alt=""
-                />
-              </div>
-              <div className="username">
-                <h3>{currentChat.fullname}</h3>
-              </div>
-
-              <div className="offline-time">
-                {date && !onlineUsers?.includes(currentChat._id) ? (
-                  Math.floor(Math.floor(date) + minutes) < 5 ? (
-                    <h6>Offlined {date + minutes} minutes ago</h6>
-                  ) : Math.floor(date + minutes) < 60 ? (
-                    <h6>Offlined {Math.floor(date + minutes)} minutes ago</h6>
-                  ) : Math.floor((date + minutes) / 60) < 24 ? (
-                    <h6>
-                      Offlined {Math.floor((date + minutes) / 60)} hours ago
-                    </h6>
-                  ) : (
-                    <h6>
-                      Offlined {Math.floor((date + minutes) / (60 * 24))} days
-                      ago
-                    </h6>
-                  )
+        <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg">
+          <div className="chat-header bg-[#F9FBFF] w-full flex flex-row px-4 py-2 justify-between">
+            <div className="user-details flex flex-row items-center space-x-4">
+              <img
+                src={'data:image/png;base64, ' + currentChat.avatar.imageBase64}
+                alt=""
+                className="w-[50px] h-[50px] rounded-full border-black border-[1px]"
+              />
+              <p className="text-xl text-[#777777]">{currentChat.fullname}</p>
+            </div>
+            <div className="flex items-center">
+              {date && !onlineUsers?.includes(currentChat._id) ? (
+                Math.floor(Math.floor(date) + minutes) < 5 ? (
+                  <h6>Offlined {date + minutes} minutes ago</h6>
+                ) : Math.floor(date + minutes) < 60 ? (
+                  <h6>Offlined {Math.floor(date + minutes)} minutes ago</h6>
+                ) : Math.floor((date + minutes) / 60) < 24 ? (
+                  <h6>
+                    Offlined {Math.floor((date + minutes) / 60)} hours ago
+                  </h6>
                 ) : (
-                  <h6></h6>
-                )}
-                {/* {onlineUsers && onlineUsers.includes(currentChat._id) ? (
+                  <h6>
+                    Offlined {Math.floor((date + minutes) / (60 * 24))} days ago
+                  </h6>
+                )
+              ) : (
+                <h6></h6>
+              )}
+            </div>
+
+            {/* {onlineUsers && onlineUsers.includes(currentChat._id) ? (
                   <h6>Online</h6>
                 ) : (
                   <h6>Offline</h6>
                 )} */}
-              </div>
-            </div>
           </div>
-          <div className="chat-messages">
+          <div className="chat-messages h-[70%] px-4 py-4 space-y-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded">
             {messages.map(message => {
               let utcDate = new Date(message.message.updatedAt).toUTCString();
               const time = utcDate.split(' ');
@@ -183,153 +178,40 @@ function ChatContainer({
 
               const day = time[1] + ' ' + time[2] + ' ' + time[3];
               return (
-                <div key={uuidv4()} ref={scrollRef}>
-                  <div
-                    className={`message ${
-                      message.fromSelf ? 'sended' : 'recieved'
-                    }`}
-                  >
-                    <div className="content">
-                      <p>{message.message.message}</p>
-                      <div>
-                        <p className="date">{day}</p>
-                        <p className="date">{newtime[0] + ':' + newtime[1]}</p>
-                      </div>
-                    </div>
+                <div
+                  key={uuidv4()}
+                  ref={scrollRef}
+                  className={`message flex flex-col p-1 ${
+                    message.fromSelf ? 'sended' : 'recieved'
+                  } bg-[#b2b2b2] w-fit min-w-[5rem]  rounded-xl `}
+                >
+                  <p className="max-w-[15rem] break-words text-[16px] text-[#e9e9e9]">
+                    {message.message.message}
+                  </p>
+                  <div className="text-[10px] text-[#e9e9e9]">
+                    <p className="date">{day}</p>
+                    <p className="date">{newtime[0] + ':' + newtime[1]}</p>
                   </div>
                 </div>
               );
             })}
           </div>
           <ChatInput handleSendMsg={handleSendMsg} />
-        </Container>
+        </div>
       ) : (
-        <Container>
-          <div className="home">
-            <h2 data-text="CHAT_APP" className="intro-text">
-              CHAT_APP
-            </h2>
-          </div>
-        </Container>
+        <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg flex items-center justify-center space-x-3">
+          <img
+            src={logoHome}
+            alt=""
+            className="w-[100px] h-[100px] flex items-center content-center"
+          />
+          <h2 data-text="CHAT_APP" className="text-6xl font-light">
+            CHAT_APP
+          </h2>
+        </div>
       )}
     </>
   );
 }
-
-const Container = styled.div`
-  gap: 0.1rem;
-  overflow: hidden;
-  .home {
-    background-color: purple;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(249, 251, 255, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .intro-text {
-      font-size: 4rem;
-      color: #fff;
-      -webkit-text-stroke: 0.2vw #000;
-      position: relative;
-    }
-    .intro-text::before {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      color: #fff;
-      height: 100%;
-      -webkit-text-stroke: 0vw #fff;
-      overflow: hidden;
-      animation: animate 2s linear;
-    }
-
-    @keyframes animate {
-      0% {
-        width: 0;
-      }
-      100% {
-        width: 100%;
-      }
-    }
-  }
-  .chat-header {
-    background-color: rgba(249, 251, 255, 1);
-    height: 14%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-    .user-details {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      .avatar {
-        img {
-          border-radius: 999rem;
-          width: 3rem;
-          height: 3rem;
-          object-fit: cover;
-        }
-      }
-      .username {
-        h3 {
-          color: black;
-        }
-      }
-    }
-  }
-  .chat-messages {
-    padding: 1rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    height: 70%;
-    overflow: auto;
-    &::-webkit-scrollbar {
-      width: 0.2rem;
-      &-thumb {
-        background-color: black;
-        width: 0.1rem;
-        border-radius: 1rem;
-      }
-    }
-    background-color: rgba(249, 251, 255, 0.85);
-    .message {
-      display: flex;
-      align-items: center;
-      .content {
-        max-width: 40%;
-        overflow-wrap: break-word;
-        padding: 1rem;
-        font-size: 1.1rem;
-        border-radius: 1rem;
-        color: white;
-        .date {
-          font-size: 0.8rem;
-          opacity: 0.7;
-        }
-        div {
-          margin-top: 0.4rem;
-        }
-      }
-    }
-  }
-  .sended {
-    justify-content: flex-end;
-    .content {
-      background-color: #79c7c5;
-    }
-  }
-  .recieved {
-    justify-content: flex-start;
-    .content {
-      background-color: #ccc;
-      color: #000 !important;
-    }
-  }
-`;
 
 export default ChatContainer;

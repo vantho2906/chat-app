@@ -5,13 +5,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { loginRoute } from '../utils/APIRoutes';
+import { login } from '../redux/actions/authAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [values, setValues] = useState({
     phone: '',
     password: '',
   });
+
+  const { auth } = useSelector(state => state);
+
+  console.log(auth);
+
+  // useEffect(() => {
+  //   if (auth) {
+  //     navigate('/');
+  //   }
+  // }, [auth]);
 
   const toastOptions = {
     position: 'bottom-right',
@@ -34,16 +47,10 @@ function Login() {
   const handleSubmit = async e => {
     e.preventDefault();
     if (handleValidation()) {
-      const { phone, password } = values;
       try {
-        const data = await axios.post(loginRoute, {
-          phone,
-          password,
-        });
-        if (data.status === 200) {
-          localStorage.setItem('chat-app-user', JSON.stringify(data.data.data));
-          navigate('/');
-        }
+        dispatch(login(values));
+        localStorage.setItem('logged', 'fe1');
+        navigate('/');
       } catch (err) {
         toast.error('Wrong phone number or password', toastOptions);
       }
@@ -66,96 +73,40 @@ function Login() {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
   return (
-    <>
-      <FormContainer>
-        <form onSubmit={e => handleSubmit(e)}>
-          <div className="brand">
-            <h1>Chat-app</h1>
-          </div>
-          <input
-            type="tel"
-            placeholder="Phone"
-            name="phone"
-            onChange={e => handleChange(e)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={e => handleChange(e)}
-          />
+    <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-bl from-[#79C7C5] to-[#F9FBFF]">
+      <form
+        className="flex flex-col w-[350px] h-[250px] bg-[#F9FBFF] bg-opacity-50 rounded-xl items-center gap-2 py-3 justify-center px-14"
+        onSubmit={e => handleSubmit(e)}
+      >
+        <div className="text-3xl">
+          <h1>Chat-app</h1>
+        </div>
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="tel"
+          placeholder="Phone"
+          name="phone"
+          onChange={e => handleChange(e)}
+        />
+        <input
+          className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-lg p-2"
+          type="password"
+          placeholder="Password"
+          name="password"
+          onChange={e => handleChange(e)}
+        />
 
-          <button type="submit">Login</button>
-          <span>
-            Don't have an account ? <Link to="/register">Register</Link>{' '}
-          </span>
-        </form>
-      </FormContainer>
-      <ToastContainer />
-    </>
+        <button
+          className="w-full h-[40px] rounded-xl hover:bg-opacity-80 bg-[#777777] text-white"
+          type="submit"
+        >
+          Login
+        </button>
+        <span className="text-[#777777]">
+          Don't have an account ? <Link to="/register">Register</Link>{' '}
+        </span>
+      </form>
+    </div>
   );
 }
-
-const FormContainer = styled.div`
-  witdh: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-
-    h1 {
-      color: #777777;
-      text-transform: uppercase;
-    }
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    background-color: background-color: rgba(161, 226, 217, 0.5);
-    box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
-    border-radius: 1rem;
-    padding: 2rem 5rem;
-    input {
-      background-color: transparent;
-      padding: 1rem;
-      border: 0.1rem solid #777777;
-      color: #000;
-      border-radius: 0.4rem;
-      width: 100%;
-      font-size: 1rem;
-      &:focus {
-        border: 0.1rem solid #000000;
-        outline: none;
-      }
-    }
-    button {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 0.4rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      font-weight: bold;
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-    span {
-      font-weight: bold;
-      text-transform: uppercase;
-      a {
-        text-decoration: none;
-      }
-    }
-  }
-`;
-
 export default Login;
