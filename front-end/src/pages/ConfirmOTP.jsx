@@ -9,7 +9,7 @@ import {
   confirmOTPRoute,
 } from '../utils/APIRoutes';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { confirmOTP, resendOTP, sendOTP } from '../redux/actions/OTPAction';
 
 function ConfirmOTP() {
@@ -17,6 +17,7 @@ function ConfirmOTP() {
   const dispatch = useDispatch();
   const [OTPcode, setOTPcode] = useState('');
   const location = useLocation();
+  const { otp } = useSelector(state => state);
   const { username, email, phone, password, fullname } = location.state;
 
   const handleChange = e => {
@@ -29,12 +30,19 @@ function ConfirmOTP() {
     handleSendOTP();
   }, []);
 
+  useEffect(() => {
+    if (otp.check) {
+      navigate('/login');
+    }
+  }, [otp]);
+
   const handleResendOTP = async () => {
     dispatch(resendOTP({ username: username, email: email }));
   };
 
   const handleSubmitOTP = async e => {
     e.preventDefault();
+
     dispatch(
       confirmOTP({
         OTPcode: OTPcode,
@@ -45,11 +53,7 @@ function ConfirmOTP() {
         password: password,
       })
     );
-    navigate('/');
-    localStorage.setItem(
-      'chap-app-user',
-      JSON.stringify({ username, fullname })
-    );
+
     // const data = axios.post(confirmOTPRoute, {
     //   OTPcode,
     //   email,
@@ -68,14 +72,6 @@ function ConfirmOTP() {
     //     });
     //   }
     // });
-  };
-
-  const toastOptions = {
-    position: 'bottom-right',
-    autoClose: 8000,
-    pauseOnHover: true,
-    draggable: true,
-    theme: 'dark',
   };
 
   return (
@@ -110,70 +106,4 @@ function ConfirmOTP() {
     </div>
   );
 }
-
-const FormContainer = styled.div`
-  witdh: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-
-    h1 {
-      color: #777777;
-      text-transform: uppercase;
-    }
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: #a1e2d9;
-    opacity: 0.5;
-    box-shadow: -5px 5px 10px rgb(119 119 119 / 50%);
-    border-radius: 1rem;
-    padding: 2rem 5rem;
-    input {
-      background-color: transparent;
-      padding: 1rem;
-      border: 0.1rem solid #777777;
-      color: #777777;
-      border-radius: 0.4rem;
-      width: 100%;
-      font-size: 1rem;
-      &:focus {
-        border: 0.1rem solid #000000;
-        outline: none;
-      }
-    }
-    span {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: -10px;
-      :hover {
-        opacity: 0.8;
-        cursor: pointer;
-      }
-    }
-    button {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 0.4rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      font-weight: bold;
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-  }
-`;
-
 export default ConfirmOTP;

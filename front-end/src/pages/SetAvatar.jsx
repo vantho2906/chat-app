@@ -12,6 +12,7 @@ import axios from 'axios';
 import { avatarRoute } from '../utils/APIRoutes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ImageCropDialog from '../components/ImageCropDialog';
+import { useSelector } from 'react-redux';
 
 function SetAvatar() {
   const navigate = useNavigate();
@@ -20,9 +21,8 @@ function SetAvatar() {
   const [avatarImageCrop, setAvatarImageCrop] = useState(null);
   const [file, setFile] = useState(null);
   const [selecteImg, setSelecteImg] = useState(false);
-  const location = useLocation();
-  const { back, username } = location.state;
-  console.log(back);
+  const { auth } = useSelector(state => state);
+
   const toastOptions = {
     position: 'bottom-right',
     autoClose: 8000,
@@ -101,8 +101,9 @@ function SetAvatar() {
     if (file) {
       const avatar = new FormData();
       avatar.append('avatar', file);
-      avatar.append('username', username);
+      avatar.append('username', auth.username);
       const data = await axios.post(avatarRoute, avatar);
+      console.log(data);
       if (data.status === 200) {
         navigate('/');
       } else {
@@ -117,9 +118,9 @@ function SetAvatar() {
       {selecteImg && (
         <ImageCropDialog
           imageUrl={avatarImage}
-          cropInit={avatarImageCrop.crop}
-          zoomInit={avatarImageCrop.zoom}
-          aspectInit={avatarImageCrop.aspect}
+          cropInit={avatarImageCrop?.crop}
+          zoomInit={avatarImageCrop?.zoom}
+          aspectInit={avatarImageCrop?.aspect}
           onCancel={onCancel}
           setCroppedImageFor={setCroppedImageFor}
           resetImage={resetImage}
@@ -133,11 +134,9 @@ function SetAvatar() {
             method="post"
             onSubmit={e => handleSubmit(e)}
           >
-            {back && (
-              <div onClick={() => navigate('/')} className="back-btn">
-                <FontAwesomeIcon icon={faArrowLeft} size="lg" />
-              </div>
-            )}
+            <div onClick={() => navigate('/')} className="back-btn">
+              <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+            </div>
 
             <div className="brand">
               <h1>Set Avatar</h1>

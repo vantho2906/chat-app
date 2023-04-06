@@ -17,7 +17,7 @@ function App() {
   }, [dispatch]);
   return (
     <Router>
-      {/* <Alert /> */}
+      <Alert />
       <Routes>
         {/* <Route path="/register" element={<Register />} />
         <Route path="/register/confirmOTP" element={<ConfirmOTP />} />

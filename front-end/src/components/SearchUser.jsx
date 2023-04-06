@@ -13,8 +13,7 @@ import {
   getRequestSendedRoute,
 } from '../utils/APIRoutes';
 import { useSelector } from 'react-redux';
-function SearchUser({ currentUser, socket }) {
-  // const [currentUser, setCurrentUser] = useState(undefined);
+function SearchUser({ socket }) {
   const [currentRequest, setCurrentRequest] = useState([]);
   const [searchUser, setSearchUser] = useState('');
   const [loadUserChats, setLoadUserChats] = useState([]);
@@ -27,9 +26,7 @@ function SearchUser({ currentUser, socket }) {
   useEffect(() => {
     const handleRequest = async () => {
       try {
-        const res = await axios.get(
-          `${getRequestSendedRoute}/${currentUser._id}`
-        );
+        const res = await axios.get(`${getRequestSendedRoute}/${auth._id}`);
         setCurrentRequest(res.data.data);
       } catch (err) {}
     };
@@ -55,11 +52,12 @@ function SearchUser({ currentUser, socket }) {
   }, [searchUser]);
 
   const handleSendRequest = async receiverId => {
-    const myId = currentUser._id;
-    await axios.post(sendRequestRoute, {
+    const myId = auth._id;
+    const res = await axios.post(sendRequestRoute, {
       receiverId,
       myId,
     });
+    console.log(res);
     socket.current.emit('send-friend-request', {
       receiverId,
       myId,
@@ -68,7 +66,7 @@ function SearchUser({ currentUser, socket }) {
   };
 
   return (
-    <div className="search-user w-full">
+    <div className="w-full">
       <div className="search-input w-full flex flex-row items-center h-10 bg-[#F9FBFF] rounded-xl overflow-hidden">
         <input
           type="tel"
@@ -113,13 +111,13 @@ function SearchUser({ currentUser, socket }) {
                       <h3>{contact.fullname}</h3>
                     </div>
                     <div className="username flex flex-row flex-1 justify-end mr-2">
-                      {currentUser.friendIdsList.includes(contact._id) ? (
+                      {auth.friendIdsList.includes(contact._id) ? (
                         <p>Friend</p>
                       ) : currentRequest.filter(
                           sender => sender.receiverId === contact._id
                         ).length > 0 ? (
                         <p>Sended</p>
-                      ) : contact._id === currentUser._id ? (
+                      ) : contact._id === auth._id ? (
                         <FontAwesomeIcon icon={faSeedling} size="1x" />
                       ) : (
                         <FontAwesomeIcon
@@ -128,6 +126,7 @@ function SearchUser({ currentUser, socket }) {
                           }}
                           icon={faUserPlus}
                           size="1x"
+                          className="cursor-pointer"
                         />
                       )}
                     </div>

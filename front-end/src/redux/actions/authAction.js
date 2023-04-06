@@ -17,37 +17,55 @@ export const register = userRegister => async dispatch => {
     dispatch({ type: 'ALERT', payload: { loading: false } });
     dispatch({ type: 'ALERT', payload: { success: 'success' } });
   } catch (err) {
-    dispatch({ type: 'ALERT', payload: { errors: err.response.data.msg } });
+    console.log(err);
+    dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
   }
 };
 
 export const login = userLogin => async dispatch => {
   try {
     dispatch({ type: 'ALERT', payload: { loading: true } });
-    console.log(123);
     const res = await postAPI(loginRoute, userLogin);
-    console.log(res);
-    dispatch({ type: 'AUTH', payload: res.data });
+    dispatch({
+      type: 'AUTH',
+      payload: { ...res.data.data, access_token: res.data.access_token },
+    });
     dispatch({ type: 'ALERT', payload: { loading: false } });
-    dispatch({ type: 'ALERT', payload: { success: 'success' } });
+    dispatch({ type: 'ALERT', payload: { success: 'Login success' } });
   } catch (err) {
-    dispatch({ type: 'ALERT', payload: { errors: err.response.data.msg } });
+    console.log(err);
+    dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
+  }
+};
+
+export const logout = () => async dispatch => {
+  try {
+    dispatch({ type: 'ALERT', payload: { loading: true } });
+    dispatch({
+      type: 'AUTH',
+      payload: {},
+    });
+    localStorage.clear();
+
+    dispatch({ type: 'ALERT', payload: { loading: false } });
+    dispatch({ type: 'ALERT', payload: { success: 'Logout success' } });
+  } catch (err) {
+    dispatch({ type: 'ALERT', payload: { errors: err } });
   }
 };
 
 export const refreshToken = () => async dispatch => {
-  const logged = localStorage.getItem('logged');
-  if (logged !== 'fe1') {
-    return;
-  }
+  // const logged = localStorage.getItem('logged');
+  // if (logged !== 'fe1') {
+  //   return;
+  // }
 
   try {
     dispatch({ type: 'ALERT', payload: { loading: true } });
 
     const res = await getAPI(refreshTokenRoute);
-    console.log(res);
 
-    dispatch({ type: 'AUTH', payload: res.data });
+    dispatch({ type: 'AUTH', payload: res.data.user });
 
     dispatch({ type: 'ALERT', payload: {} });
   } catch (err) {

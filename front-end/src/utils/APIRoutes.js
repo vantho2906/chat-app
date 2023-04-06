@@ -3,10 +3,11 @@ export const host = process.env.PROXY_API || 'http://localhost:5001';
 export const registerRoute = `${host}/user/register`;
 export const avatarRoute = `${host}/upload`;
 export const loginRoute = `${host}/user/login`;
-export const refreshTokenRoute = `${host}/user/refresh_token`;
+export const refreshTokenRoute = `${host}/refresh_token`;
 export const getUserRoute = `${host}/user`;
-
+export const changeInfoRoute = `${host}/user/change-info`;
 export const getAllContacts = `${host}/user/get-contacts`;
+export const getFriendList = `${host}/user/get-friendlist`;
 
 export const sendOTPRoute = `${host}/otp/send`;
 export const resendOTPRoute = `${host}/otp/resend`;
@@ -23,6 +24,8 @@ export const cancelledRequestRoute = `${host}/invite/cancelled`;
 
 export const getMessagesRoute = `${host}/message`;
 export const addMessageRoute = `${host}/message/add`;
+
+export const createChatroomRoute = `${host}/chatroom/create`;
 
 export const allUsersRoute = `${host}/user/allusers`;
 export const getAllMessageRoute = `${host}/api/messages/getmsg`;

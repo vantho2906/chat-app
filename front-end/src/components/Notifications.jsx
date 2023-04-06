@@ -9,15 +9,17 @@ import {
   acceptRequestRoute,
   cancelledRequestRoute,
 } from '../utils/APIRoutes';
-function Notification({ socket }) {
-  const currentUser = JSON.parse(localStorage.getItem('chat-app-user'));
+import { useSelector } from 'react-redux';
+const Notification = () => {
   const [currentRequest, setCurrentRequest] = useState([]);
   const [currentUserRequest, setCurrentUserRequest] = useState([]);
   const [requestAccepted, setRequestAccepted] = useState([]);
   const [requestCancelled, setRequestCancelled] = useState([]);
+  const { socket } = useSelector(state => state);
+  const { auth } = useSelector(state => state);
   useEffect(() => {
     const handleRequest = async () => {
-      const data = await axios.get(`${getRequestRoute}/${currentUser._id}`);
+      const data = await axios.get(`${getRequestRoute}/${auth?._id}`);
       setCurrentRequest(prev => [...prev, ...data.data.data]);
       data.data.data.map(async user => {
         const item = await axios.get(`${getUserRoute}/${user.senderId}`);
@@ -59,50 +61,56 @@ function Notification({ socket }) {
 
   return (
     <Container>
-      <div className="search-user">
+      <div className="search-user w-full">
         {currentUserRequest && currentUserRequest.length !== 0 ? (
-          <div className="contacts">
-            <div>
-              {currentUserRequest.map((contact, index) => {
-                return (
-                  <div className="contact" key={index}>
-                    <div className="avatar">
+          <div className="flex flex-col gap-2 overflow-y-scroll h-[160px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
+            {currentUserRequest.map((contact, index) => {
+              return (
+                <div
+                  className="contact flex flex-row bg-[#ffffff30] max-h-[4rem] h-[4rem] w-full rounded-md p-3 items-center justify-between"
+                  key={index}
+                >
+                  <div className="flex flex-row items-center justify-center gap-3">
+                    {contact.avatar ? (
                       <img
                         src={
                           'data:image/png;base64, ' + contact.avatar.imageBase64
                         }
                         alt=""
+                        className="rounded-full h-[50px] w-[50px]"
                       />
-                    </div>
-                    <h3>{contact.fullname}</h3>
-                    <div className="username">
-                      <div>
-                        {requestAccepted.includes(contact._id) ? (
-                          <div>Accepted</div>
-                        ) : requestCancelled.includes(contact._id) ? (
-                          <div>Cancelled</div>
-                        ) : (
-                          <div>
-                            <FontAwesomeIcon
-                              onClick={() => handleAcceptedRequest(contact._id)}
-                              icon={faCheck}
-                              size="1x"
-                            />
-                            <FontAwesomeIcon
-                              onClick={() =>
-                                handleCancelledRequest(contact._id)
-                              }
-                              icon={faXmark}
-                              size="1x"
-                            />
-                          </div>
-                        )}
+                    ) : (
+                      <div className="text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex items-center justify-center m-auto rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                        <p>{contact?.fullname[0]}</p>
                       </div>
-                    </div>
+                    )}
+
+                    <h1 className="text-lg">{contact.fullname}</h1>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="username">
+                    {requestAccepted.includes(contact._id) ? (
+                      <div className="text-lg">Accepted</div>
+                    ) : requestCancelled.includes(contact._id) ? (
+                      <div className="text-lg">Cancelled</div>
+                    ) : (
+                      <div className="flex flex-row gap-3">
+                        <FontAwesomeIcon
+                          onClick={() => handleAcceptedRequest(contact._id)}
+                          icon={faCheck}
+                          className="text-2xl cursor-pointer"
+                        />
+                        <FontAwesomeIcon
+                          onClick={() => handleCancelledRequest(contact._id)}
+                          icon={faXmark}
+                          className="text-2xl cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p>Nothing</p>
@@ -110,7 +118,7 @@ function Notification({ socket }) {
       </div>
     </Container>
   );
-}
+};
 
 const Container = styled.div`
   .search-user {

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Loading from './Loading';
+import LogoutAlert from './LogoutAlert';
 import Toast from './Toast';
+import AddGroup from './AddGroup';
 export const Alert = () => {
   const { alert } = useSelector(state => state);
   return (
@@ -13,6 +15,8 @@ export const Alert = () => {
       {alert.success && (
         <Toast title="Success" body={alert.success} bgColor="bg-success" />
       )}
+      {alert.logout && <LogoutAlert />}
+      {alert.addGroup && <AddGroup />}
     </div>
   );
 };

@@ -9,116 +9,120 @@ import {
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import logoHome from './logo/logoHome.png';
+import { useSelector } from 'react-redux';
 
 function ChatContainer({
   currentChat,
-  currentUser,
   currentRoom,
-  socket,
   onlineUsers,
   offlineUsersTime,
 }) {
-  // const socket = io.connect(host);
   const [messages, setMessages] = useState([]);
-  const [arrivalMessages, setArrivalMessages] = useState(null);
+  const [arrivalMessages, setArrivalMessages] = useState('');
   // const [online, setOnline] = useState(onlineUsers);
   const [date, setDate] = useState(0);
   const scrollRef = useRef();
   const [minutes, setMinutes] = useState(1);
+  const { auth, socket } = useSelector(state => state);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMinutes(minutes => minutes + 1);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setMinutes(minutes => minutes + 1);
+  //   }, 60000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    // console.log(offlineUsersTime);
-    // if (currentChat?._id)
-    //   console.log(Date.now() - Date(offlineUsersTime[currentChat._id]));
-    if (currentChat?._id) {
-      const handleDate = () => {
-        let utcDate = new Date(offlineUsersTime[currentChat._id]);
-        let now = new Date();
-        // console.log(
-        //   Math.max(
-        //     1,
-        //     Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
-        //   )
-        // );
-        setDate(
-          Math.max(
-            1,
-            Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
-          )
-        );
-        setMinutes(0);
-      };
-      handleDate();
-    } else {
-      setDate(false);
-    }
-  }, [currentChat]);
+  // useEffect(() => {
+  //   // console.log(offlineUsersTime);
+  //   // if (currentChat?._id)
+  //   //   console.log(Date.now() - Date(offlineUsersTime[currentChat._id]));
+  //   if (currentChat?._id) {
+  //     const handleDate = () => {
+  //       let utcDate = new Date(offlineUsersTime[currentChat._id]);
+  //       let now = new Date();
+  //       // console.log(
+  //       //   Math.max(
+  //       //     1,
+  //       //     Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+  //       //   )
+  //       // );
+  //       setDate(
+  //         Math.max(
+  //           1,
+  //           Math.floor((now.getTime() - utcDate.getTime()) / (1000 * 60))
+  //         )
+  //       );
+  //       setMinutes(0);
+  //     };
+  //     handleDate();
+  //   } else {
+  //     setDate(false);
+  //   }
+  // }, [currentChat]);
 
-  useEffect(() => {
-    if (currentChat?._id && !onlineUsers?.includes(currentChat._id)) {
-      setDate(1);
-      setMinutes(0);
-    } else {
-      setDate(null);
-    }
-  }, [onlineUsers]);
+  // useEffect(() => {
+  //   if (currentChat?._id && !onlineUsers?.includes(currentChat._id)) {
+  //     setDate(1);
+  //     setMinutes(0);
+  //   } else {
+  //     setDate(null);
+  //   }
+  // }, [onlineUsers]);
 
   useEffect(() => {
     const handleSetMessages = async () => {
       if (currentChat) {
-        const myId = currentUser._id;
+        const myId = auth._id;
         const response = await axios.post(
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
+        console.log(response.data.data);
         setMessages(response.data.data);
       }
     };
 
     handleSetMessages();
-  }, [currentChat]);
+  }, [currentChat, auth]);
 
   useEffect(() => {
     const joinRoom = () => {
       if (currentRoom) {
-        socket.current.emit('join-room', currentRoom);
+        socket.emit('join-room', currentRoom);
       }
     };
     joinRoom();
   }, [currentRoom]);
 
   const handleSendMsg = async msg => {
-    socket.current?.emit('send-msg', {
-      userId: currentChat._id,
+    socket.emit('send-msg', {
+      sender: auth,
       message: msg,
       chatRoomId: currentRoom,
     });
     await axios.post(`${addMessageRoute}/${currentRoom}`, {
-      userId: currentUser._id,
+      userId: auth._id,
       message: msg,
     });
     setMessages(prev => [
       ...prev,
       {
         fromSelf: true,
-        message: { message: msg, updatedAt: Date.now() },
+        message: msg,
+        sender: auth,
+        updatedAt: Date.now(),
       },
     ]);
   };
 
-  // const handleDate
+  // // const handleDate
 
-  socket.current?.on('receive-msg', data => {
+  socket?.on('receive-msg', data => {
     setArrivalMessages({
       fromSelf: false,
-      message: { message: data.message, updatedAt: Date.now() },
+      message: data.message,
+      sender: data.sender,
+      updatedAt: Date.now(),
     });
   });
 
@@ -127,21 +131,77 @@ function ChatContainer({
   }, [arrivalMessages]);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+    scrollRef?.current?.scrollIntoView({ behaviour: 'smooth' });
   }, [messages]);
 
   return (
     <>
       {currentChat ? (
         <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg">
-          <div className="chat-header bg-[#F9FBFF] w-full flex flex-row px-4 py-2 justify-between">
+          <div className="bg-[#F9FBFF] w-full flex flex-row px-4 py-2 justify-between">
             <div className="user-details flex flex-row items-center space-x-4">
-              <img
-                src={'data:image/png;base64, ' + currentChat.avatar.imageBase64}
-                alt=""
-                className="w-[50px] h-[50px] rounded-full border-black border-[1px]"
-              />
-              <p className="text-xl text-[#777777]">{currentChat.fullname}</p>
+              {currentChat.length == 2 ? (
+                <div className="relative text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex rounded-full">
+                  <div className="z-10 absolute top-0 left-0">
+                    {currentChat[0].avatar ? (
+                      <img
+                        className="w-[36px] h-[36px] rounded-full border-[#79C7C5] border-[2px] object-cover "
+                        src={
+                          'data:image/png;base64, ' +
+                          currentChat[0].avatar.imageBase64
+                        }
+                        alt=""
+                      />
+                    ) : (
+                      <div className="text-3xl text-[rgb(249,251,255)] h-[36px] w-[36px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                        <p>{currentChat[0]?.fullname[0]}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 left-3">
+                    {currentChat[1].avatar ? (
+                      <img
+                        className="w-[36px] h-[36px] rounded-full border-[#79C7C5] border-[2px] object-cover "
+                        src={
+                          'data:image/png;base64, ' +
+                          currentChat[1].avatar.imageBase64
+                        }
+                        alt=""
+                      />
+                    ) : (
+                      <div className="text-3xl text-[rgb(249,251,255)] h-[36px] w-[36px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                        <p>{currentChat[1]?.fullname[0]}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {currentChat[0].avartar ? (
+                    <img
+                      className="w-[50px] h-[50px] rounded-full border-[#79C7C5] border-[2px] object-cover "
+                      src={
+                        'data:image/png;base64, ' +
+                        currentChat[0].avatar.imageBase64
+                      }
+                      alt=""
+                    />
+                  ) : (
+                    <div className="text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex items-center justify-center m-auto rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                      <p>{currentChat[0]?.fullname[0]}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <p className="text-xl text-[#777777]">
+                {currentChat.length == 2
+                  ? currentChat[0].fullname +
+                    ',' +
+                    currentChat[1].fullname +
+                    '...'
+                  : currentChat[0].fullname}
+              </p>
             </div>
             <div className="flex items-center">
               {date && !onlineUsers?.includes(currentChat._id) ? (
@@ -169,32 +229,57 @@ function ChatContainer({
                   <h6>Offline</h6>
                 )} */}
           </div>
-          <div className="chat-messages h-[70%] px-4 py-4 space-y-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded">
-            {messages.map(message => {
-              let utcDate = new Date(message.message.updatedAt).toUTCString();
-              const time = utcDate.split(' ');
-              let newtime = time[4].split(':');
-              newtime[0] = (+newtime[0] + +7) % 12;
+          <div className="chat-messages h-[73%] px-4 py-4 space-y-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded">
+            {messages &&
+              messages.map(message => {
+                let utcDate = new Date(message.updatedAt).toUTCString();
+                const time = utcDate.split(' ');
+                let newtime = time[4].split(':');
+                newtime[0] = (+newtime[0] + +7) % 12;
 
-              const day = time[1] + ' ' + time[2] + ' ' + time[3];
-              return (
-                <div
-                  key={uuidv4()}
-                  ref={scrollRef}
-                  className={`message flex flex-col p-1 ${
-                    message.fromSelf ? 'sended' : 'recieved'
-                  } bg-[#b2b2b2] w-fit min-w-[5rem]  rounded-xl `}
-                >
-                  <p className="max-w-[15rem] break-words text-[16px] text-[#e9e9e9]">
-                    {message.message.message}
-                  </p>
-                  <div className="text-[10px] text-[#e9e9e9]">
-                    <p className="date">{day}</p>
-                    <p className="date">{newtime[0] + ':' + newtime[1]}</p>
+                const day = time[1] + ' ' + time[2] + ' ' + time[3];
+                return (
+                  <div
+                    key={uuidv4()}
+                    ref={scrollRef}
+                    className={`message flex w-full relative items-end gap-1 ${
+                      message.fromSelf ? 'flex-row-reverse' : 'flex-row'
+                    }`}
+                  >
+                    <div className="shadow-lg">
+                      {message.sender.avatar ? (
+                        <img
+                          src={
+                            'data:image/png;base64, ' +
+                            message.sender.avatar?.imageBase64
+                          }
+                          alt=""
+                          className="flex w-[20px] h-[20px] border-[1px] border-[#79C7C5] rounded-full"
+                        />
+                      ) : (
+                        <div className="text-xl text-[rgb(249,251,255)] h-[20px] w-[20px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                          <p>{currentChat[0]?.fullname[0]}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className={`max-w-[30%] break-words flex flex-col p-1 ${
+                        message.fromSelf
+                          ? 'bg-[#79c7c5] text-[#e9e9e9]'
+                          : 'bg-[#97b6e2] text-[#e9e9e9]'
+                      }  min-w-[5rem] rounded-xl`}
+                    >
+                      <p className="break-words text-[16px]">
+                        {message.message}
+                      </p>
+                      <div className="text-[10px]">
+                        <p className="date">{day}</p>
+                        <p className="date">{newtime[0] + ':' + newtime[1]}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
           <ChatInput handleSendMsg={handleSendMsg} />
         </div>
