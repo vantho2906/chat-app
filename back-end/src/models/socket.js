@@ -23,7 +23,7 @@ module.exports = {
       });
 
       socket.on('send-msg', async data => {
-        socket.to(data.chatRoomId).emit('receive-msg', data);
+        socket.broadcast.to(data.chatRoomId).emit('receive-msg', data);
       });
 
       socket.on('login', function (data) {

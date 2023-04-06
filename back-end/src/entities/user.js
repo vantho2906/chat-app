@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  chatroom: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Chatroom',
+    },
+  ],
   offlineAt: {
     type: Date,
   },

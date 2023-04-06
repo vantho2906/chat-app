@@ -15,7 +15,9 @@ class UserModel {
       return new ResponseAPI(400, { message: 'Incorrect Phone or Password' });
     user.password = undefined;
 
-    const access_token = Token.generateAccessToken({ id: user._id });
+    const access_token = Token.generateAccessToken({
+      id: user._id,
+    });
     return access_token.then(value => {
       return new ResponseAPI(200, {
         message: 'Login successfully',
@@ -54,6 +56,17 @@ class UserModel {
     return new ResponseAPI(200, { message: 'Password changed successfully!' });
   }
 
+  static async changeInfo(fullname, password, username, id) {
+    const user = await User.findByIdAndUpdate(id, {
+      password: password,
+      username: username,
+      fullname: fullname,
+    });
+    if (!user) return new ResponseAPI(400, { message: 'User not found!' });
+
+    return new ResponseAPI(200, { message: 'Password changed successfully!' });
+  }
+
   static async forgotPassword(newPassword, email) {
     const user = await User.findOne({ email });
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });
@@ -61,48 +74,63 @@ class UserModel {
     await user.save();
     return new ResponseAPI(200, { message: 'Change password successfully!' });
   }
-  static async refreshToken(rf_token) {
-    if (!rf_token) return ResponseAPI(400, { msg: 'Please login now!' });
-    const decode = jwt.verify(rf_token, `${process.env.REFRESH_TOKEN_SECRET}`);
-    if (!decode) return ResponseAPI(400, { msg: 'Please login now!' });
-    console.log(decode);
-    if (decode['id']) {
-      const user = await UserModel.findById(decode['id']).select('-password');
-      if (!user)
-        return ResponseAPI(400, { msg: 'This account does not exist.' });
 
-      const access_token = generateAccessToken({ id: user._id });
-      return ResponseAPI(200, { access_token, user });
-    }
-    return ResponseAPI(200, { message: 'success' });
-  }
-
-  static async getAllContacts(username) {
-    const user = await User.findOne({ username });
+  static async getFriendList(id) {
+    const user = await User.findOne({ _id: id });
     if (!user) return new ResponseAPI(400, { message: 'User not exist' });
-    const chatRooms = await ChatRoom.find({
-      $and: [
-        { userIds: { $elemMatch: { $eq: user._id.toString() } } },
-        { userIds: { $elemMatch: { $in: user.friendIdsList } } },
-      ],
-    }).sort({ updatedAt: 'desc' });
-    if (chatRooms.length == 0)
-      return new ResponseAPI(400, { message: 'No contacts available' });
-    let contacts = [];
-    let chatRoomIdList = [];
-    for (let i = 0; i < chatRooms.length; i++) {
-      let friendId =
-        chatRooms[i].userIds[0] != user.id
-          ? chatRooms[i].userIds[0]
-          : chatRooms[i].userIds[1];
-      const friend = await User.findById(friendId).select({
+    let friendList = [];
+    for (let i = 0; i < user.friendIdsList.length; i++) {
+      const friend = await User.findById(
+        user.friendIdsList[i].toString()
+      ).select({
         _id: 1,
         fullname: 1,
         avatar: 1,
       });
       if (!friend) return new ResponseAPI(400, 'Friend User not found');
-      contacts.push(friend);
-      chatRoomIdList.push(chatRooms[i]._id.toString());
+      friendList.push(friend);
+    }
+    return new ResponseAPI(200, {
+      data: { friendList: friendList },
+      message: 'Get friendlist successfully!',
+    });
+  }
+
+  static async getAllContacts(id) {
+    const user = await User.findOne({ _id: id });
+    if (!user) return new ResponseAPI(400, { message: 'User not exist' });
+    // const chatRooms = await ChatRoom.find({
+    //   $and: [
+    //     { userIds: { $elemMatch: { $eq: user._id.toString() } } },
+    //     { userIds: { $elemMatch: { $in: user.friendIdsList } } },
+    //   ],
+    // }).sort({ updatedAt: 'desc' });
+    const chatRoom = await User.findById(id).populate('chatroom');
+    // if (chatRooms.length == 0)
+    //   return new ResponseAPI(400, { message: 'No contacts available' });
+    let contacts = [];
+    let chatRoomIdList = [];
+    for (let i = 0; i < chatRoom.chatroom.length; i++) {
+      let friendList = [];
+      for (
+        let j = 0;
+        j < Math.min(chatRoom.chatroom[i].userIds.length, 3);
+        j++
+      ) {
+        if (chatRoom.chatroom[i].userIds[j].toString() !== id) {
+          const friend = await User.findById(
+            chatRoom.chatroom[i].userIds[j].toString()
+          ).select({
+            _id: 1,
+            fullname: 1,
+            avatar: 1,
+          });
+          if (!friend) return new ResponseAPI(400, 'Friend User not found');
+          friendList.push(friend);
+        }
+      }
+      contacts.push(friendList);
+      chatRoomIdList.push(chatRoom.chatroom[i]._id.toString());
     }
     // console.log(contacts);
     return new ResponseAPI(200, {

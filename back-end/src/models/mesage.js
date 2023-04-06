@@ -1,21 +1,33 @@
 const ChatRoom = require('../entities/chatRoom');
 const Message = require('../entities/message');
+const User = require('../entities/user');
+const mongoose = require('mongoose');
+
 const { ResponseAPI } = require('../utils/response');
 
 class MessageModel {
   static async getMessages(myId, chatRoomId) {
     // const { myId } = req.body;
     // const chatRoomId = req.params.chatRoomId;
-    const messages = await Message.find({
-      chatRoomId: chatRoomId,
-    }).sort({ updatedAt: 'asc' });
-    const projectedMessages = messages.map(msg => {
-      return {
-        fromSelf: msg.senderId == myId,
-        message: msg,
-      };
-    });
-    return new ResponseAPI(200, { data: projectedMessages });
+
+    const messages = await Message.aggregate([
+      {
+        $match: {
+          chatRoomId: chatRoomId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'senderId',
+          foreignField: '_id',
+          as: 'sender',
+        },
+      },
+      { $unwind: '$sender' },
+    ]);
+
+    return new ResponseAPI(200, { data: messages });
   }
 
   static async getMessageById(id) {

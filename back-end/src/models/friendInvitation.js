@@ -81,7 +81,7 @@ class FriendInvitationModel {
     const user = await User.findById(userId);
     if (!user) return new ResponseAPI(400, { message: 'User not found' });
     const invitations = await FriendInvitation.find({
-      $or: [{senderId: userId}, {receiverId: userId}],
+      $or: [{ senderId: userId }, { receiverId: userId }],
       status: InviteStatus.processing(),
     }).sort({ updateAt: 'desc' });
     if (invitations.length == 0)
@@ -100,16 +100,28 @@ class FriendInvitationModel {
     if (!invitation || invitation.status != InviteStatus.processing())
       new ResponseAPI(400, { message: 'Invitation not found' });
     invitation.status = InviteStatus.agreed();
-    await ChatRoom.create({
+    const doc = await ChatRoom.create({
       userIds: [invitation.senderId, invitation.receiverId],
     });
-    const sender = await User.findByIdAndUpdate(invitation.senderId, {
-      $push: { friendIdsList: invitation.receiverId },
+    await User.findByIdAndUpdate(invitation.senderId.toString(), {
+      $push: { chatroom: doc._id },
     });
+    await User.findByIdAndUpdate(invitation.receiverId.toString(), {
+      $push: { chatroom: doc._id },
+    });
+    const sender = await User.findByIdAndUpdate(
+      invitation.senderId.toString(),
+      {
+        $push: { friendIdsList: invitation.receiverId },
+      }
+    );
     if (!sender) return new ResponseAPI(400, { message: 'User not found' });
-    const receiver = await User.findByIdAndUpdate(invitation.receiverId, {
-      $push: { friendIdsList: invitation.senderId },
-    });
+    const receiver = await User.findByIdAndUpdate(
+      invitation.receiverId.toString(),
+      {
+        $push: { friendIdsList: invitation.senderId.toString() },
+      }
+    );
     if (!receiver) return new ResponseAPI(400, { message: 'User not found' });
     if (sender.friendIdsList.includes(receiver._id.toString()))
       return new ResponseAPI(400, { message: 'Already friend' });

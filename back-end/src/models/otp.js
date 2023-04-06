@@ -60,7 +60,6 @@ class otpModel {
   static async confirmOTP(OTPcode, username, phone, password, email, fullname) {
     // const { OTPcode, username, phone, password, email, fullname } = req.body;
     const OTPentity = await OTPmodel.findOne({ code: OTPcode });
-    console.log(OTPentity);
     let now = new Date();
     if (OTPentity) {
       if (OTPentity) {
@@ -79,6 +78,7 @@ class otpModel {
         phone,
         password: hashedPassword,
         email,
+        chatroom: [],
       });
       user.password = undefined;
       return new ResponseAPI(200, {
@@ -86,6 +86,7 @@ class otpModel {
         data: user,
       });
     }
+    return new ResponseAPI(400, { message: 'Wrong OTP!' });
   }
 }
 

@@ -1,14 +1,13 @@
 const { UserModel } = require('../models/user');
 const { ControllerService } = require('../utils/decorators');
 const { Token } = require('../utils/generateToken');
-const jwt = require('jsonwebtoken');
 
 class UserMiddleware {
   static async login(req, res, next) {
     const { phone, password } = req.body;
     const result = await UserModel.login(phone, password);
     if (result.getStatusCode() === 200) {
-      const refresh_token = Token.generateRefreshToken({
+      const refresh_token = await Token.generateRefreshToken({
         id: result.data.data._id,
       });
       await res.cookie('refreshtoken', refresh_token, {
@@ -59,6 +58,17 @@ class UserMiddleware {
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
+  static async changeInfo(req, res, next) {
+    const { fullname, password, username, id } = req.body;
+    if (password.length < 8)
+      return res
+        .status(400)
+        .send({ message: 'Password must have length at least of 8' });
+
+    const result = await UserModel.changeInfo(fullname, password, username, id);
+    return res.status(result.getStatusCode()).send(result.getData());
+  }
+
   static async forgotPassword(req, res, next) {
     const { newPassword, confirmNewPassword, email } = req.body;
     if (newPassword.length < 8)
@@ -75,16 +85,15 @@ class UserMiddleware {
     return res.status(result.getStatusCode()).send(result.getData());
   }
 
-  static async refreshToken(req, res, next) {
-    const rf_token = req.cookies.refreshtoken;
-    console.log(rf_token);
-    const result = UserModel.refreshToken(rf_token);
-    res.status(result.getStatusCode()).send(result.getData());
+  static async getFriendsList(req, res, next) {
+    const { id } = req.params;
+    const result = await UserModel.getFriendList(id);
+    return res.status(result.getStatusCode()).send(result.getData());
   }
 
   static async getAllContacts(req, res, next) {
-    const { username } = req.params;
-    const result = await UserModel.getAllContacts(username);
+    const { id } = req.params;
+    const result = await UserModel.getAllContacts(id);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 

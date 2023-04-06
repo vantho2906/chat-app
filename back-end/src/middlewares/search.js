@@ -3,7 +3,6 @@ const { SearchModel } = require('../models/search');
 class SearchMiddleware {
   static async findByFullname(req, res, next) {
     const { fullname } = req.body;
-    console.log(fullname);
     const result = await SearchModel.findByFullname(fullname);
     return res.status(result.getStatusCode()).send(result.getData());
   }

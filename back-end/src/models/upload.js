@@ -23,9 +23,14 @@ class UploadModel {
         contentType: file.mimetype,
         imageBase64: encode_image,
       };
-      user.avatar = avatar;
-      await user.save();
-      user.password = undefined;
+      await UserModel.updateOne(
+        { username: username },
+        {
+          $set: {
+            avatar: avatar,
+          },
+        }
+      );
       return new ResponseAPI(200, {
         message: 'Upload image successfully',
         data: user,
