@@ -4,7 +4,6 @@ import NotFound from './components/NotFound';
 
 const generatePage = name => {
   if (name) name = name[0].toUpperCase() + name.slice(1);
-  console.log(name);
   const component = () => require(`./pages/${name}`).default;
 
   //   console.log(component());

@@ -37,7 +37,6 @@ const Notification = () => {
         return;
       }
     });
-    console.log(inviteId);
     const message = await axios.post(`${acceptRequestRoute}/${inviteId}`);
     if (message.status === 200) {
       setRequestAccepted(prev => [...prev, id]);
@@ -52,7 +51,6 @@ const Notification = () => {
         return;
       }
     });
-    console.log(inviteId);
     const message = await axios.post(`${cancelledRequestRoute}/${inviteId}`);
     if (message.status === 200) {
       setRequestCancelled(prev => [...prev, id]);

@@ -23,8 +23,6 @@ function Contacts({ contacts, changeChat, socket, onlineUsers, navSelect }) {
 
   const { auth } = useSelector(state => state);
 
-  console.log(auth);
-
   useEffect(() => {
     if (socket.current) {
       socket.current.on('get-friend-request', data => {

@@ -59,13 +59,9 @@ class UserMiddleware {
   }
 
   static async changeInfo(req, res, next) {
-    const { fullname, password, username, id } = req.body;
-    if (password.length < 8)
-      return res
-        .status(400)
-        .send({ message: 'Password must have length at least of 8' });
+    const { fullname, username, id } = req.body;
 
-    const result = await UserModel.changeInfo(fullname, password, username, id);
+    const result = await UserModel.changeInfo(fullname, username, id);
     return res.status(result.getStatusCode()).send(result.getData());
   }
 

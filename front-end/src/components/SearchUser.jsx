@@ -57,7 +57,6 @@ function SearchUser({ socket }) {
       receiverId,
       myId,
     });
-    console.log(res);
     socket.current.emit('send-friend-request', {
       receiverId,
       myId,
@@ -100,14 +99,21 @@ function SearchUser({ socket }) {
                     key={index}
                   >
                     <div className="avatar flex flex-row items-center space-x-2 text-lg">
-                      <img
-                        src={
-                          'data:image/png;base64, ' +
-                          contact.avatar?.imageBase64
-                        }
-                        alt=""
-                        className="w-[50px] h-[50px] rounded-full"
-                      />
+                      {contact.avatar ? (
+                        <img
+                          src={
+                            'data:image/png;base64, ' +
+                            contact.avatar?.imageBase64
+                          }
+                          alt=""
+                          className="w-[50px] h-[50px] rounded-full"
+                        />
+                      ) : (
+                        <div className="text-[30px] text-[rgb(249,251,255)] h-[50px] w-[50px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                          <p>{contact?.fullname[0]}</p>
+                        </div>
+                      )}
+
                       <h3>{contact.fullname}</h3>
                     </div>
                     <div className="username flex flex-row flex-1 justify-end mr-2">

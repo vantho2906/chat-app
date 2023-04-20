@@ -56,9 +56,9 @@ class UserModel {
     return new ResponseAPI(200, { message: 'Password changed successfully!' });
   }
 
-  static async changeInfo(fullname, password, username, id) {
+  static async changeInfo(fullname, username, id) {
+    console.log(id);
     const user = await User.findByIdAndUpdate(id, {
-      password: password,
       username: username,
       fullname: fullname,
     });

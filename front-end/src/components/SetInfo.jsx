@@ -15,7 +15,6 @@ const SetInfo = () => {
     username: auth.username,
     email: auth.email,
     phone: auth.phone,
-    password: '',
   });
 
   const [edit, setEdit] = useState({
@@ -35,14 +34,14 @@ const SetInfo = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    dispatch(changeInfo({ ...values, id: auth._id }));
+    dispatch(changeInfo({ ...values, _id: auth._id }, auth));
   };
 
   return (
     <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg flex items-center justify-center space-x-3">
       <div className="flex flex-col p-10 gap-10">
         <div className="w-full flex items-center gap-4">
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 flex-1">
             {auth.avatar ? (
               <img
                 src={'data:image/png;base64, ' + auth.avatar?.imageBase64}
@@ -51,7 +50,7 @@ const SetInfo = () => {
               />
             ) : (
               <div className=" text-[50px] text-[rgb(249,251,255)] h-20 w-20 flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
-                <p>{auth.fullname[0]}</p>
+                <p>{auth?.fullname[0]}</p>
               </div>
             )}
 
@@ -64,7 +63,7 @@ const SetInfo = () => {
               </div>
             </div>
           </div>
-          <div className="w-full flex justify-end">
+          <div className="flex justify-end">
             <button
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-2 rounded flex items-center gap-1"
               onClick={() => navigate('/setAvatar')}
@@ -165,7 +164,7 @@ const SetInfo = () => {
             </div>
             <div className="">
               <p className="pl-2">Password</p>
-              <div className="flex items-center w-[100%]">
+              <div className="flex items-center w-[88%]">
                 <input
                   className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-md p-2"
                   type="password"
@@ -175,7 +174,7 @@ const SetInfo = () => {
                   onChange={e => handleChange(e)}
                   disabled={edit['password']}
                 />
-                <div
+                {/* <div
                   onClick={() =>
                     setEdit({
                       ...edit,
@@ -188,7 +187,7 @@ const SetInfo = () => {
                   ) : (
                     <AiOutlineCloseCircle fontSize={26} />
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

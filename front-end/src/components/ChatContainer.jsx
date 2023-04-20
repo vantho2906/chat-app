@@ -77,7 +77,6 @@ function ChatContainer({
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
-        console.log(response.data.data);
         setMessages(response.data.data);
       }
     };
@@ -245,6 +244,7 @@ function ChatContainer({
                     className={`message flex w-full relative items-end gap-1 ${
                       message.fromSelf ? 'flex-row-reverse' : 'flex-row'
                     }`}
+                    title={message.sender.fullname}
                   >
                     <div className="shadow-lg">
                       {message.sender.avatar ? (
@@ -258,7 +258,7 @@ function ChatContainer({
                         />
                       ) : (
                         <div className="text-xl text-[rgb(249,251,255)] h-[20px] w-[20px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
-                          <p>{currentChat[0]?.fullname[0]}</p>
+                          <p>{message.sender.fullname[0]}</p>
                         </div>
                       )}
                     </div>

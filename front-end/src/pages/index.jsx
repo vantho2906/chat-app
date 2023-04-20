@@ -27,7 +27,7 @@ function Chat() {
   const { auth } = useSelector(state => state);
 
   useEffect(() => {
-    if (auth) {
+    if (auth.access_token) {
       socket.current = io(host);
       dispatch({ type: 'SOCKET', payload: socket.current });
       socket.current.emit('login', { userId: auth._id });
@@ -37,8 +37,10 @@ function Chat() {
         setOnlineUsers(usersId);
         setOfflineUsersTime(data.offlineUsersTime);
       });
+    } else {
+      navigate('/login');
     }
-  }, [auth]);
+  }, [auth.access_token]);
 
   // useEffect(() => {
   //   const checkUser = async () => {

@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { registerRoute } from '../utils/APIRoutes';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../redux/actions/authAction';
+import { postAPI } from '../utils/FetchData';
+import { validRegister } from '../utils/Valid';
 
 function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { check } = useSelector(state => state);
   const [values, setValues] = useState({
     fullname: '',
     username: '',
@@ -21,21 +25,31 @@ function Register() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const { username, phone, email, password, confirmPassword, fullname } =
-      values;
+    const check = validRegister(values);
+    if (check.errLength > 0) {
+      dispatch({ type: 'ALERT', payload: { errors: check.errMsg[0] } });
+    } else {
+      try {
+        const res = await postAPI(registerRoute, values);
+        const { username, phone, email, password, fullname } = values;
 
-    dispatch(register(values));
-    navigate('/confirmOTP', {
-      state: {
-        username: username,
-        email: email,
-        phone: phone,
-        password: password,
-        fullname: fullname,
-      },
-    });
+        navigate('/confirmOTP', {
+          state: {
+            username: username,
+            email: email,
+            phone: phone,
+            password: password,
+            fullname: fullname,
+          },
+        });
+      } catch (err) {
+        dispatch({
+          type: 'ALERT',
+          payload: { errors: err.response.data.message },
+        });
+      }
+    }
   };
-
   const handleChange = e => {
     let value = e.target.files ? e.target.files : e.target.value;
     setValues({

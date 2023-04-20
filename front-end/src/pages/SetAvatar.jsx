@@ -12,7 +12,7 @@ import axios from 'axios';
 import { avatarRoute } from '../utils/APIRoutes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ImageCropDialog from '../components/ImageCropDialog';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function SetAvatar() {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ function SetAvatar() {
   const [file, setFile] = useState(null);
   const [selecteImg, setSelecteImg] = useState(false);
   const { auth } = useSelector(state => state);
+  const dispatch = useDispatch();
 
   const toastOptions = {
     position: 'bottom-right',
@@ -103,7 +104,7 @@ function SetAvatar() {
       avatar.append('avatar', file);
       avatar.append('username', auth.username);
       const data = await axios.post(avatarRoute, avatar);
-      console.log(data);
+      dispatch({ type: 'AUTH', payload: data.data.data });
       if (data.status === 200) {
         navigate('/');
       } else {

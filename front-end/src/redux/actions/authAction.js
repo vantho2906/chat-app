@@ -6,22 +6,6 @@ import {
 import { getAPI, postAPI } from '../../utils/FetchData';
 import { validRegister } from '../../utils/Valid';
 
-export const register = userRegister => async dispatch => {
-  const check = validRegister(userRegister);
-  if (check.errLength > 0) {
-    return dispatch({ type: 'ALERT', payload: { errors: check.errMsg[0] } });
-  }
-  try {
-    dispatch({ type: 'ALERT', payload: { loading: true } });
-    const res = await postAPI(registerRoute, userRegister);
-    dispatch({ type: 'ALERT', payload: { loading: false } });
-    dispatch({ type: 'ALERT', payload: { success: 'success' } });
-  } catch (err) {
-    console.log(err);
-    dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
-  }
-};
-
 export const login = userLogin => async dispatch => {
   try {
     dispatch({ type: 'ALERT', payload: { loading: true } });
@@ -33,7 +17,6 @@ export const login = userLogin => async dispatch => {
     dispatch({ type: 'ALERT', payload: { loading: false } });
     dispatch({ type: 'ALERT', payload: { success: 'Login success' } });
   } catch (err) {
-    console.log(err);
     dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
   }
 };
@@ -64,8 +47,10 @@ export const refreshToken = () => async dispatch => {
     dispatch({ type: 'ALERT', payload: { loading: true } });
 
     const res = await getAPI(refreshTokenRoute);
-
-    dispatch({ type: 'AUTH', payload: res.data.user });
+    dispatch({
+      type: 'AUTH',
+      payload: { ...res.data.user, access_token: res.data.access_token },
+    });
 
     dispatch({ type: 'ALERT', payload: {} });
   } catch (err) {

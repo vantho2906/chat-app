@@ -14,7 +14,6 @@ export const sendOTP = userInfo => async dispatch => {
 
     // dispatch({ type: 'ALERT', payload: { success: 'success' } });
   } catch (err) {
-    console.log(err);
     dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
   }
 };
@@ -32,7 +31,6 @@ export const confirmOTP = userInfo => async dispatch => {
     }
     dispatch({ type: 'ALERT', payload: { loading: false } });
   } catch (err) {
-    console.log(err);
     dispatch({ type: 'OTP', payload: { check: false } });
     dispatch({ type: 'ALERT', payload: { errors: err.response.data.message } });
   }

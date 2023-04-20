@@ -36,7 +36,7 @@ export const validRegister = userRegister => {
 };
 
 export const validInfo = info => {
-  const { username, phone, email, password, fullname } = info;
+  const { username, phone, email, fullname } = info;
   const errors = [];
   if (!fullname) {
     errors.push('Fullname must be required');
@@ -57,8 +57,6 @@ export const validInfo = info => {
       phone[1] !== '9')
   ) {
     errors.push('Phone number invalid');
-  } else if (password.length < 8) {
-    errors.push('Password should be greater than 8 characters');
   }
 
   return {

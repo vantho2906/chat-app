@@ -48,7 +48,6 @@ function ImageCropDialog({
 
   const onCrop = async () => {
     const croppedImageUrl = await getCroppedImg(imageUrl, croppedAreaPixels);
-    console.log(croppedImageUrl);
     setCroppedImageFor(crop, zoom, aspect, croppedImageUrl);
   };
 

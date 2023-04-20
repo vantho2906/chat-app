@@ -31,6 +31,8 @@ class UploadModel {
           },
         }
       );
+      const user = await UserModel.findOne({ username });
+
       return new ResponseAPI(200, {
         message: 'Upload image successfully',
         data: user,

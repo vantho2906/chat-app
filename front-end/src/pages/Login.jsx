@@ -33,7 +33,6 @@ function Login() {
   };
 
   useEffect(() => {
-    console.log(auth);
     if (auth.access_token) {
       navigate('/');
     }

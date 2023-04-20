@@ -22,10 +22,8 @@ function Message({ changeChat, onlineUsers }) {
       let data;
       if (auth._id) data = await axios.get(`${getAllContacts}/${auth?._id}`);
 
-      console.log(data);
-
       setContacts(data?.data.data.chatRoomIdList);
-      setUserChats(data.data.data.contacts);
+      setUserChats(data?.data.data.contacts);
     };
     handleUserChats();
   }, [auth]);
