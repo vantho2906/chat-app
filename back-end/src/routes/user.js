@@ -3,6 +3,7 @@ const { UserMiddleware } = require('../middlewares/user');
 const router = require('express').Router();
 
 router.post('/login', UserMiddleware.login);
+router.get('/logout', UserMiddleware.logout);
 router.post('/register', UserMiddleware.register);
 router.get('/get-contacts/:id', UserMiddleware.getAllContacts);
 router.get('/get-friendlist/:id', UserMiddleware.getFriendsList);

@@ -18,6 +18,7 @@ function Register() {
   const [values, setValues] = useState({
     fullname: '',
     username: '',
+    email: '',
     phone: '',
     password: '',
     confirmPassword: '',

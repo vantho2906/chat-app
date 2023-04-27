@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import ChatInput from './ChatInput';
 import {
@@ -9,20 +9,23 @@ import {
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import logoHome from './logo/logoHome.png';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import LoadingCompoent from './alert/LoadingCompoent';
 
 function ChatContainer({
+  navSelect,
   currentChat,
   currentRoom,
   onlineUsers,
   offlineUsersTime,
 }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState('');
   const [arrivalMessages, setArrivalMessages] = useState('');
   // const [online, setOnline] = useState(onlineUsers);
   const [date, setDate] = useState(0);
   const scrollRef = useRef();
   const [minutes, setMinutes] = useState(1);
+  const dispatch = useDispatch();
   const { auth, socket } = useSelector(state => state);
 
   // useEffect(() => {
@@ -69,20 +72,23 @@ function ChatContainer({
   //   }
   // }, [onlineUsers]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleSetMessages = async () => {
       if (currentChat) {
+        setMessages([]);
+        dispatch({ type: 'ALERT', payload: { loading: true } });
         const myId = auth._id;
         const response = await axios.post(
           `${getMessagesRoute}/${currentRoom}`,
           { myId }
         );
         setMessages(response.data.data);
+        dispatch({ type: 'ALERT', payload: { loading: false } });
       }
     };
 
     handleSetMessages();
-  }, [currentChat, auth]);
+  }, [currentChat]);
 
   useEffect(() => {
     const joinRoom = () => {
@@ -125,18 +131,24 @@ function ChatContainer({
     });
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     arrivalMessages && setMessages(prev => [...prev, arrivalMessages]);
   }, [arrivalMessages]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     scrollRef?.current?.scrollIntoView({ behaviour: 'smooth' });
   }, [messages]);
 
   return (
     <>
       {currentChat ? (
-        <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg">
+        <div
+          className={`h-full lg:w-[50%] ${
+            navSelect === 'search-friends' || navSelect === 'notifications'
+              ? 'w-0'
+              : 'w-[75%]'
+          } bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg`}
+        >
           <div className="bg-[#F9FBFF] w-full flex flex-row px-4 py-2 justify-between">
             <div className="user-details flex flex-row items-center space-x-4">
               {currentChat.length == 2 ? (
@@ -195,10 +207,16 @@ function ChatContainer({
 
               <p className="text-xl text-[#777777]">
                 {currentChat.length == 2
-                  ? currentChat[0].fullname +
-                    ',' +
-                    currentChat[1].fullname +
-                    '...'
+                  ? (currentChat[0].fullname + ',' + currentChat[1].fullname)
+                      .length > 15
+                    ? (
+                        currentChat[0].fullname +
+                        ',' +
+                        currentChat[1].fullname
+                      ).substring(0, 15) + '...'
+                    : currentChat[0].fullname + ',' + currentChat[1].fullname
+                  : currentChat[0].fullname.length > 15
+                  ? currentChat[0].fullname.substring(0, 15) + '...'
                   : currentChat[0].fullname}
               </p>
             </div>
@@ -242,7 +260,9 @@ function ChatContainer({
                     key={uuidv4()}
                     ref={scrollRef}
                     className={`message flex w-full relative items-end gap-1 ${
-                      message.fromSelf ? 'flex-row-reverse' : 'flex-row'
+                      message.sender._id === auth._id
+                        ? 'flex-row-reverse'
+                        : 'flex-row'
                     }`}
                     title={message.sender.fullname}
                   >
@@ -264,7 +284,7 @@ function ChatContainer({
                     </div>
                     <div
                       className={`max-w-[30%] break-words flex flex-col p-1 ${
-                        message.fromSelf
+                        message.sender._id === auth._id
                           ? 'bg-[#79c7c5] text-[#e9e9e9]'
                           : 'bg-[#97b6e2] text-[#e9e9e9]'
                       }  min-w-[5rem] rounded-xl`}
@@ -284,13 +304,19 @@ function ChatContainer({
           <ChatInput handleSendMsg={handleSendMsg} />
         </div>
       ) : (
-        <div className="h-full w-[50%] bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg flex items-center justify-center space-x-3">
+        <div
+          className={`h-full flex gap-2 justify-center items-center lg:w-[50%] ${
+            navSelect === 'search-friends' || navSelect === 'notifications'
+              ? 'w-0'
+              : 'w-[75%]'
+          } bg-[#F9FBFF] bg-opacity-80 rounded-xl overflow-hidden shadow-lg`}
+        >
           <img
             src={logoHome}
             alt=""
-            className="w-[100px] h-[100px] flex items-center content-center"
+            className="w-[5rem] h-[5rem] flex items-center content-center"
           />
-          <h2 data-text="CHAT_APP" className="text-6xl font-light">
+          <h2 data-text="CHAT_APP" className="text-[3rem] font-light">
             CHAT_APP
           </h2>
         </div>

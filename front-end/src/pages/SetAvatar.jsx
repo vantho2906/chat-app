@@ -104,7 +104,10 @@ function SetAvatar() {
       avatar.append('avatar', file);
       avatar.append('username', auth.username);
       const data = await axios.post(avatarRoute, avatar);
-      dispatch({ type: 'AUTH', payload: data.data.data });
+      dispatch({
+        type: 'AUTH',
+        payload: { ...auth, avatar: data.data.data.avatar },
+      });
       if (data.status === 200) {
         navigate('/');
       } else {
@@ -178,7 +181,12 @@ function SetAvatar() {
               src={avatarImageCrop?.imageUrl}
               alt=""
             />
-            <button type="submit">Confirm</button>
+            <button
+              type="submit"
+              className="rounded hover:bg-opacity-95 bg-[#63a09e] text-white font-normal"
+            >
+              Confirm
+            </button>
           </form>
         </FormContainer>
       )}

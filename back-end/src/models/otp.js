@@ -33,8 +33,6 @@ class otpModel {
     const OTPcode = OTPgenerate();
     const OTPentity = await OTPmodel.create({
       code: OTPcode,
-      username: username,
-      email: email,
     });
     const text = `Hi ${username}, your phone number verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     let check = await this.sendEmail(email, text);
@@ -46,10 +44,9 @@ class otpModel {
   static async resendOTP(username, email) {
     // const { username, email } = req.body;
     const OTPcode = OTPgenerate();
-    const OTPentity = await OTPmodel.findOneAndUpdate(
-      { username: username, email: email },
-      { code: OTPcode }
-    );
+    const OTPentity = await OTPmodel.create({
+      code: OTPcode,
+    });
     const text = `Hi ${username}, your email verification OTP is ${OTPcode}. OTP is only valid for 2 minutes`;
     let check = await this.sendEmail(email, text);
     if (check)
@@ -69,8 +66,8 @@ class otpModel {
       }
       if (!OTPentity)
         return new ResponseAPI(400, { message: 'You enter wrong OTP' });
-      if (OTPentity.username != username || OTPentity.email != email)
-        return new ResponseAPI(400, { message: 'You enter wrong OTP' });
+      // if (OTPentity.username != username || OTPentity.email != email)
+      //   return new ResponseAPI(400, { message: 'You enter wrong OTP' });
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await Usermodel.create({
         fullname,

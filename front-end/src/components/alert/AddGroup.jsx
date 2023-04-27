@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,15 +6,16 @@ import { logout } from '../../redux/actions/authAction';
 import { useNavigate } from 'react-router-dom';
 import { getAllContacts, getFriendList } from '../../utils/APIRoutes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus, faClose } from '@fortawesome/free-solid-svg-icons';
 
 import axios from 'axios';
 import { createChatroom } from '../../redux/actions/userAction';
+import LoadingCompoent from './LoadingCompoent';
 
 export default function AddGroup() {
   const [open, setOpen] = useState(true);
   const [member, setMember] = useState([]);
-  const [searchUser, setSearchUser] = useState([]);
+  const [searchUser, setSearchUser] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -22,7 +23,7 @@ export default function AddGroup() {
 
   const cancelButtonRef = useRef(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleSearchUser = async () => {
       let data;
       if (auth._id) data = await axios.get(`${getFriendList}/${auth?._id}`);
@@ -38,6 +39,11 @@ export default function AddGroup() {
     );
   };
 
+  const handleRemoveMember = ele => {
+    setMember(member.filter(member => member.fullname !== ele.fullname));
+    setSearchUser([...searchUser, ele]);
+  };
+
   const handleCreate = () => {
     const arr = member.map(user => user._id);
     dispatch(createChatroom([auth._id, ...arr]));
@@ -47,7 +53,7 @@ export default function AddGroup() {
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className="relative z-20"
         initialFocus={cancelButtonRef}
         onClose={() => {
           setOpen(false);
@@ -67,7 +73,7 @@ export default function AddGroup() {
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full justify-center p-4 text-center items-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -77,10 +83,10 @@ export default function AddGroup() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform flex flex-col justify-between overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-[400px] sm:my-8 sm:w-full sm:max-w-lg">
+              <Dialog.Panel className="relative transform flex flex-col justify-between overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-[400px] w-[30rem]">
                 <div className="pt-1">
                   <span className="px-4 ">Friend(s)</span>
-                  {searchUser && (
+                  {searchUser ? (
                     <div className="bg-white px-4 overflow-y-scroll h-[200px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded border-y-2 border-[#ccc]">
                       {searchUser?.length !== 0 ? (
                         <div>
@@ -106,7 +112,11 @@ export default function AddGroup() {
                                     </div>
                                   )}
 
-                                  <h3>{contact.fullname}</h3>
+                                  <h3>
+                                    {contact.fullname.length > 15
+                                      ? contact.fullname.substr(0, 15) + '...'
+                                      : contact.fullname}
+                                  </h3>
                                 </div>
                                 <div className="username flex flex-row flex-1 justify-end mr-2">
                                   <FontAwesomeIcon
@@ -126,6 +136,8 @@ export default function AddGroup() {
                         <p>Empty</p>
                       )}
                     </div>
+                  ) : (
+                    <LoadingCompoent />
                   )}
                 </div>
 
@@ -134,8 +146,14 @@ export default function AddGroup() {
                   <div className="w-full flex flex-wrap gap-2">
                     {member && member.length > 0 ? (
                       member?.map(ele => (
-                        <div className="flex h-[24px] items-center bg-[#ccc] rounded-full">
+                        <div className="flex relative h-[24px] font-light items-center text-white bg-[#63a09e] rounded-full">
                           <span className="p-2">{ele.fullname}</span>
+                          <FontAwesomeIcon
+                            onClick={() => handleRemoveMember(ele)}
+                            icon={faClose}
+                            size="1x"
+                            className="bg-black rounded-full w-3 h-3 cursor-pointer absolute right-0 bottom-4"
+                          />
                         </div>
                       ))
                     ) : (

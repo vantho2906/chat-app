@@ -1,51 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
-import { getAllContacts, host } from '../utils/APIRoutes';
+import { host } from '../utils/APIRoutes';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
+import LoadingCompoent from './alert/LoadingCompoent';
+import { getContacts } from '../redux/actions/userAction';
+import { getAllContacts } from '../utils/APIRoutes';
 
 function Message({ changeChat, onlineUsers }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
-  const [userChats, setUserChats] = useState([]);
-  const [contacts, setContacts] = useState([]);
   const dispatch = useDispatch();
   const changeCurrentChat = (index, contact) => {
-    changeChat(contacts[index], contact);
+    changeChat(auth.contactList.chatRoomIdList[index], contact);
     setCurrentSelected(index);
   };
 
   const { auth } = useSelector(state => state);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleUserChats = async () => {
-      let data;
-      if (auth._id) data = await axios.get(`${getAllContacts}/${auth?._id}`);
-
-      setContacts(data?.data.data.chatRoomIdList);
-      setUserChats(data?.data.data.contacts);
+      auth._id && (await dispatch(getContacts(auth)));
     };
     handleUserChats();
-  }, [auth]);
+  }, [auth._id]);
+
+  if (!auth.contactList) return <LoadingCompoent />;
+
   return (
     <div className="h-[70%] flex flex-col justify-end">
-      <div className="overflow-y-scroll h-[210px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-2">
-        {userChats ? (
-          <div className="flex flex-col gap-3">
-            {userChats.map((contact, index) => {
+      <div className="overflow-y-scroll overflow-x-hidden lg:h-[210px] h-[400px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-2">
+        {auth.contactList ? (
+          <div className="flex flex-col justify-center">
+            {auth.contactList.contacts.map((contact, index) => {
               return (
                 <div
-                  className={`flex px-4 h-16 space-y-2 border-b-[#79C7C5] border-b-[1px] ${
-                    index === currentSelected ? 'selected' : ''
+                  className={`flex justify-center lg:justify-start lg:px-4 py-2 cursor-pointer space-y-2 border-b-[#79C7C5] lg:border-b-[1px] ${
+                    index === currentSelected ? ' bg-white/50 rounded-lg' : ''
                   }`}
                   onClick={() => changeCurrentChat(index, contact)}
                   key={index}
+                  title={contact[0].fullname}
                 >
-                  <div className="flex items-center justify-center mr-6 relative">
+                  <div className="flex items-center justify-center lg:mr-6 relative">
                     {onlineUsers && onlineUsers?.includes(contact[0]._id) ? (
-                      <div className="absolute z-20 top-10 left-8 bg-[#31a24c] w-[20px] h-[20px] border-[#242526] border-[3px] rounded-full"></div>
+                      <div className="absolute z-20 top-10 left-8 bg-[#31a24c] w-[16px] h-[16px] border-[#242526] border-[3px] rounded-full"></div>
                     ) : (
-                      <div className="absolute z-20 top-10 left-8 bg-[#ccc] w-[20px] h-[20px] border-[#242526] border-[3px] rounded-full"></div>
+                      <div className="absolute z-20 top-10 left-8 bg-[#ccc] w-[16px] h-[16px] border-[#242526] border-[3px] rounded-full"></div>
                     )}
                     {contact.length == 2 ? (
                       <div className="relative text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex rounded-full">
@@ -57,7 +58,7 @@ function Message({ changeChat, onlineUsers }) {
                                 'data:image/png;base64, ' +
                                 contact[0].avatar.imageBase64
                               }
-                              alt=""
+                              alt="Avatar"
                             />
                           ) : (
                             <div className="text-3xl text-[rgb(249,251,255)] h-[36px] w-[36px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
@@ -101,13 +102,22 @@ function Message({ changeChat, onlineUsers }) {
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-col justify-center">
+                  <div className="hidden lg:flex flex-col justify-center">
                     <h3 className="text-[#777777] mb-1">
                       {contact.length == 2
-                        ? contact[0].fullname + ',' + contact[1].fullname
+                        ? (contact[0].fullname + ',' + contact[1].fullname)
+                            .length > 20
+                          ? (
+                              contact[0].fullname +
+                              ',' +
+                              contact[1].fullname
+                            ).substring(0, 20) + '...'
+                          : contact[0].fullname + ',' + contact[1].fullname
+                        : contact[0].fullname.length > 15
+                        ? contact[0].fullname.substring(0, 15) + '...'
                         : contact[0].fullname}
                     </h3>
-                    <p className="text-[#79C7C5]">Last message</p>
+                    {/* <p className="text-[#79C7C5]">Last message</p> */}
                   </div>
                 </div>
               );

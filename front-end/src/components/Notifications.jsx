@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +17,7 @@ const Notification = () => {
   const [requestCancelled, setRequestCancelled] = useState([]);
   const { socket } = useSelector(state => state);
   const { auth } = useSelector(state => state);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleRequest = async () => {
       const data = await axios.get(`${getRequestRoute}/${auth?._id}`);
       setCurrentRequest(prev => [...prev, ...data.data.data]);
@@ -83,7 +83,11 @@ const Notification = () => {
                       </div>
                     )}
 
-                    <h1 className="text-lg">{contact.fullname}</h1>
+                    <h1 className="text-lg">
+                      {contact?.fullname.length > 15
+                        ? contact.fullname.substring(0, 15) + '...'
+                        : contact.fullname}
+                    </h1>
                   </div>
 
                   <div className="username">

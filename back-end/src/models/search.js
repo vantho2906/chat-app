@@ -5,7 +5,7 @@ class SearchModel {
   static async findByFullname(fullname) {
     // const { fullname } = req.body;
     const users = await User.find({
-      fullname: { $regex: fullname, $options: 'i' },
+      fullname: { $regex: `${fullname}`, $options: 'i' },
     }).select({
       _id: 1,
       fullname: 1,

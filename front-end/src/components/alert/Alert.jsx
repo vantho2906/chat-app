@@ -4,6 +4,8 @@ import Loading from './Loading';
 import LogoutAlert from './LogoutAlert';
 import Toast from './Toast';
 import AddGroup from './AddGroup';
+import LoadingCompoent from './LoadingCompoent';
+
 export const Alert = () => {
   const { alert } = useSelector(state => state);
   return (
@@ -15,6 +17,7 @@ export const Alert = () => {
       {alert.success && (
         <Toast title="Success" body={alert.success} bgColor="bg-success" />
       )}
+      {alert.loadingComponent && <LoadingCompoent />}
       {alert.logout && <LogoutAlert />}
       {alert.addGroup && <AddGroup />}
     </div>

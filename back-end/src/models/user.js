@@ -27,7 +27,14 @@ class UserModel {
     });
   }
 
-  static async register(phone, email, username, password, confirmPassword) {
+  static async register(
+    phone,
+    email,
+    fullname,
+    username,
+    password,
+    confirmPassword
+  ) {
     const phoneCheck = await User.findOne({ phone });
     if (phoneCheck)
       return new ResponseAPI(400, { message: 'Phone already exists' });
@@ -37,6 +44,7 @@ class UserModel {
     const emailCheck = await User.findOne({ email });
     if (emailCheck)
       return new ResponseAPI(400, { message: 'Email already exists' });
+
     if (password != confirmPassword)
       return new ResponseAPI(400, {
         message: 'Password and confirm password are not the same',

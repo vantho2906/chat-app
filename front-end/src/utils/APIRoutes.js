@@ -1,8 +1,9 @@
-export const host = process.env.PROXY_API || 'http://localhost:5001';
+export const host = 'http://localhost:5001/api/v1';
 
 export const registerRoute = `${host}/user/register`;
 export const avatarRoute = `${host}/upload`;
 export const loginRoute = `${host}/user/login`;
+export const logoutRoute = `${host}/user/logout`;
 export const refreshTokenRoute = `${host}/refresh_token`;
 export const getUserRoute = `${host}/user`;
 export const changeInfoRoute = `${host}/user/change-info`;
@@ -28,4 +29,4 @@ export const addMessageRoute = `${host}/message/add`;
 export const createChatroomRoute = `${host}/chatroom/create`;
 
 export const allUsersRoute = `${host}/user/allusers`;
-export const getAllMessageRoute = `${host}/api/messages/getmsg`;
+export const getAllMessageRoute = `${host}/messages/getmsg`;

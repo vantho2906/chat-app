@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -39,9 +39,15 @@ function Contacts({ contacts, changeChat, socket, onlineUsers, navSelect }) {
   // }, [socket.current]);
 
   return (
-    <div className="w-[30%] py-5 px-3 bg-[#F9FBFF] bg-opacity-50 h-[95%] overflow-hidden">
+    <div
+      className={`lg:w-[30%] ${
+        navSelect === 'search-friends' || navSelect === 'notifications'
+          ? 'w-full'
+          : 'w-[75px]'
+      } lg:py-5 lg:px-3 bg-[#F9FBFF] bg-opacity-50 h-[95%] overflow-hidden`}
+    >
       <div>
-        <div className="flex flex-col space-x-4 mb-5 items-center gap-2 h-[30%]">
+        <div className="lg:flex hidden flex-col space-x-4 mb-5 items-center gap-2 h-[30%]">
           {auth?.avatar ? (
             <img
               src={'data:image/png;base64, ' + auth.avatar.imageBase64}
@@ -55,7 +61,9 @@ function Contacts({ contacts, changeChat, socket, onlineUsers, navSelect }) {
           )}
 
           <div className="text-2xl text-[#79C7C5] font-normal">
-            {auth?.fullname}
+            {auth.fullname && auth?.fullname.length > 15
+              ? auth.fullname.substr(0, 15) + '...'
+              : auth.fullname}
           </div>
         </div>
         {navSelect === 'messages' && (

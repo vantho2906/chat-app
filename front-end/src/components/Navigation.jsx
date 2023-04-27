@@ -42,7 +42,7 @@ const Navigation = ({ currentUser, socket, handleSetNav, navSelect }) => {
           onClick={() => {
             handleSetNav('messages');
           }}
-          className={`px-[5px] flex flex-1 items-center justify-center ${
+          className={`px-[5px] cursor-pointer flex flex-1 items-center justify-center ${
             navSelect === 'messages' ? 'bg-[#79C7C5] text-[#F9FBFF]' : ''
           } flex-1`}
         >
@@ -52,7 +52,7 @@ const Navigation = ({ currentUser, socket, handleSetNav, navSelect }) => {
           onClick={() => {
             handleSetNav('search-friends');
           }}
-          className={`flex-1 flex items-center justify-center font-bold ${
+          className={`flex-1 flex cursor-pointer items-center justify-center font-bold ${
             navSelect === 'search-friends' ? 'bg-[#79C7C5] text-[#F9FBFF]' : ''
           }`}
         >
@@ -63,7 +63,7 @@ const Navigation = ({ currentUser, socket, handleSetNav, navSelect }) => {
             handleSetNav('notifications');
             setNumberNotes(0);
           }}
-          className={`flex-1 flex items-center justify-center ${
+          className={`flex-1 flex cursor-pointer items-center justify-center ${
             navSelect === 'notifications' ? 'bg-[#79C7C5] text-[#F9FBFF]' : ''
           }`}
         >
@@ -78,19 +78,19 @@ const Navigation = ({ currentUser, socket, handleSetNav, navSelect }) => {
           onClick={() => {
             handleSetNav('info');
           }}
-          className={`px-[5px] flex flex-1 items-center justify-center ${
+          className={`px-[5px] cursor-pointer flex flex-1 items-center justify-center ${
             navSelect === 'info' ? 'bg-[#79C7C5] text-[#F9FBFF]' : ''
           } flex-1`}
         >
-          <AiOutlineUser fontSize={20} />
+          <AiOutlineUser fontSize={30} />
         </div>
         <div
           onClick={() => {
             dispatch({ type: 'ALERT', payload: { logout: true } });
           }}
-          className={`px-[5px] flex flex-1 items-center justify-center`}
+          className={`px-[5px] cursor-pointer flex flex-1 items-center justify-center`}
         >
-          <FiLogOut fontSize={20} />
+          <FiLogOut fontSize={28} />
         </div>
       </div>
     </div>
