@@ -9,6 +9,7 @@ export const getUserRoute = `${host}/user`;
 export const changeInfoRoute = `${host}/user/change-info`;
 export const getAllContacts = `${host}/user/get-contacts`;
 export const getFriendList = `${host}/user/get-friendlist`;
+export const getAllUsers = `${host}/user/get-all-users`;
 
 export const sendOTPRoute = `${host}/otp/send`;
 export const resendOTPRoute = `${host}/otp/resend`;

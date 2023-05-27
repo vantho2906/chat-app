@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import styled from 'styled-components';
-import { host } from '../utils/APIRoutes';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import LoadingCompoent from './alert/LoadingCompoent';
-import { getContacts } from '../redux/actions/userAction';
-import { getAllContacts } from '../utils/APIRoutes';
+import { useQuery } from 'react-query';
+import { getContacts } from '../apis/user.api';
 
 function Message({ changeChat, onlineUsers }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
@@ -18,21 +15,21 @@ function Message({ changeChat, onlineUsers }) {
 
   const { auth } = useSelector(state => state);
 
-  useLayoutEffect(() => {
-    const handleUserChats = async () => {
-      auth._id && (await dispatch(getContacts(auth)));
-    };
-    handleUserChats();
-  }, [auth._id]);
+  const { data, isLoading } = useQuery({
+    queryKey: ['getContacts', auth._id],
+    queryFn: () => getContacts(auth._id),
+    staleTime: 10 * (60 * 1000),
+    cacheTime: 15 * (60 * 1000),
+  });
 
-  if (!auth.contactList) return <LoadingCompoent />;
+  if (isLoading) return <LoadingCompoent />;
 
   return (
     <div className="h-[70%] flex flex-col justify-end">
       <div className="overflow-y-scroll overflow-x-hidden lg:h-[210px] h-[400px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-2">
-        {auth.contactList ? (
+        {data?.data?.data ? (
           <div className="flex flex-col justify-center">
-            {auth.contactList.contacts.map((contact, index) => {
+            {data?.data?.data.contacts.map((contact, index) => {
               return (
                 <div
                   className={`flex justify-center lg:justify-start lg:px-4 py-2 cursor-pointer space-y-2 border-b-[#79C7C5] lg:border-b-[1px] ${

@@ -7,6 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from 'react-redux';
 import Navigation from '../components/Navigation';
 import SetInfo from '../components/SetInfo';
+import { getAPI } from '../utils/FetchData';
+import { refreshTokenRoute } from '../utils/APIRoutes';
+import { useQuery } from 'react-query';
+import Loading from '../components/alert/Loading';
 
 function Chat() {
   const navigate = useNavigate();
@@ -22,20 +26,22 @@ function Chat() {
   const { auth } = useSelector(state => state);
 
   useEffect(() => {
+    console.log(auth);
+    if (!auth.access_token) {
+      navigate('/login');
+    }
+  }, [auth.access_token]);
+
+  useEffect(() => {
     socket.current = io('http://localhost:5001/');
     const handleHome = async () => {
-      const chat_app_key = await localStorage.getItem('chat-app');
-      if (chat_app_key === 'fe1') {
-        dispatch({ type: 'SOCKET', payload: socket.current });
-        socket.current.emit('login', { userId: auth._id });
-        socket.current.on('onlineUser', data => {
-          const usersId = Object.values(data.onlineUsers);
-          setOnlineUsers(usersId);
-          setOfflineUsersTime(data.offlineUsersTime);
-        });
-      } else {
-        await navigate('/login');
-      }
+      dispatch({ type: 'SOCKET', payload: socket.current });
+      socket.current.emit('login', { userId: auth._id });
+      socket.current.on('onlineUser', data => {
+        const usersId = Object.values(data.onlineUsers);
+        setOnlineUsers(usersId);
+        setOfflineUsersTime(data.offlineUsersTime);
+      });
     };
     handleHome();
     return () => {

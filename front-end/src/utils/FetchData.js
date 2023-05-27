@@ -3,21 +3,28 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: 'https://chat-app-be1.onrender.com',
+  // baseURL: 'http://localhost:5001',
+  // baseURL: 'https://chat-app-be1.onrender.com',
 });
 
-export const postAPI = async (url, info) => {
-  const res = await axiosInstance.post(url, info);
+export const postAPI = async (url, info, token) => {
+  const res = await axiosInstance.post(url, info, {
+    headers: { Authorization: token },
+  });
   return res;
 };
 
-export const getAPI = async url => {
-  const res = await axiosInstance.get(url);
+export const getAPI = async (url, token) => {
+  const res = await axiosInstance.get(url, {
+    headers: { Authorization: token },
+  });
   return res;
 };
 
-export const patchAPI = async (url, info) => {
-  const res = await axios.patch(url, info);
+export const patchAPI = async (url, info, token) => {
+  const res = await axiosInstance.patch(url, info, {
+    headers: { Authorization: token },
+  });
 
   return res;
 };

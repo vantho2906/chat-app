@@ -5,22 +5,20 @@ import LogoutAlert from './LogoutAlert';
 import Toast from './Toast';
 import AddGroup from './AddGroup';
 import LoadingCompoent from './LoadingCompoent';
+import { ToastContainer, toast } from 'react-toastify';
 
 export const Alert = () => {
   const { alert } = useSelector(state => state);
   return (
-    <div>
-      {alert.loading && <Loading />}
-      {alert.errors && (
-        <Toast title="Errors" body={alert.errors} bgColor="bg-danger" />
-      )}
-      {alert.success && (
-        <Toast title="Success" body={alert.success} bgColor="bg-success" />
-      )}
-      {alert.loadingComponent && <LoadingCompoent />}
-      {alert.logout && <LogoutAlert />}
-      {alert.addGroup && <AddGroup />}
-    </div>
+    <>
+      <div>
+        {alert.loading && <Loading />}
+        {alert.loadingComponent && <LoadingCompoent />}
+        {alert.logout && <LogoutAlert />}
+        {alert.addGroup && <AddGroup />}
+      </div>
+      <ToastContainer />
+    </>
   );
 };
 

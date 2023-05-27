@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Loading = () => {
   return (
     <FormContainer>
-      <div className="d-flex z-30 position-fixed w-100 h-100 text-center align-items-center justify-content-center">
+      <div className="d-flex z-30 fixed top-0 left-0 w-100 h-100 text-center align-items-center justify-content-center">
         <div className="meetup ">
           <div></div>
           <div></div>
@@ -19,7 +19,7 @@ const Loading = () => {
 const FormContainer = styled.div`
   div {
     background-color: rgba(0, 0, 0, 0.3);
-    z-index: 30;
+    z-index: 999;
   }
   @-webkit-keyframes meetup {
     0%,

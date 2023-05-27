@@ -9,7 +9,7 @@ module.exports = {
   socketConnect: async server => {
     const io = socket(server, {
       cors: {
-        origin: 'https://chat-app-fe-ruddy.vercel.app',
+        origin: 'http://localhost:3000',
         credentials: true,
       },
     });

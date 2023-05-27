@@ -52,6 +52,11 @@ class UserModel {
     return new ResponseAPI(200, { message: 'Skip this step successfully!' });
   }
 
+  static async getAllUsers() {
+    const users = await User.find({});
+    return new ResponseAPI(200, { users: users });
+  }
+
   static async changePassword(email, password, newPassword) {
     // const { email, password, newPassword, confirmNewPassword } = req.body;
     const user = await User.findOne({ email });
@@ -65,14 +70,13 @@ class UserModel {
   }
 
   static async changeInfo(fullname, username, id) {
-    console.log(id);
     const user = await User.findByIdAndUpdate(id, {
       username: username,
       fullname: fullname,
     });
     if (!user) return new ResponseAPI(400, { message: 'User not found!' });
 
-    return new ResponseAPI(200, { message: 'Password changed successfully!' });
+    return new ResponseAPI(200, { message: 'Info change successfully' });
   }
 
   static async forgotPassword(newPassword, email) {
