@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import logoHome from './logo/logoHome.png';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingCompoent from './alert/LoadingCompoent';
+import { useQuery } from 'react-query';
+import { getMessageRoom } from '../apis/user.api';
 
 function ChatContainer({
   navSelect,
@@ -71,6 +73,13 @@ function ChatContainer({
   //     setDate(null);
   //   }
   // }, [onlineUsers]);
+
+  const { data } = useQuery({
+    queryKey: ['getMessageRoom', currentRoom],
+    queryFn: () => getMessageRoom(currentRoom, auth),
+  });
+
+  // console.log(data);
 
   useLayoutEffect(() => {
     const handleSetMessages = async () => {

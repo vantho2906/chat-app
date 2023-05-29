@@ -12,6 +12,8 @@ function App() {
   const { data } = useQuery({
     queryKey: ['getUsers'],
     queryFn: () => getUsers(),
+    staleTime: 10 * (60 * 1000),
+    cacheTime: 15 * (60 * 1000),
   });
 
   useEffect(() => {

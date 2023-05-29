@@ -9,7 +9,7 @@ function Message({ changeChat, onlineUsers }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const dispatch = useDispatch();
   const changeCurrentChat = (index, contact) => {
-    changeChat(auth.contactList.chatRoomIdList[index], contact);
+    changeChat(data.data.data.chatRoomIdList[index], contact);
     setCurrentSelected(index);
   };
 

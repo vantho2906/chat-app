@@ -5,26 +5,38 @@ import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import {
   getRequestRoute,
-  getUserRoute,
   acceptRequestRoute,
   cancelledRequestRoute,
 } from '../utils/APIRoutes';
 import { useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
+import { getUsers } from '../apis/user.api';
+import LoadingCompoent from './alert/LoadingCompoent';
 const Notification = () => {
   const [currentRequest, setCurrentRequest] = useState([]);
   const [currentUserRequest, setCurrentUserRequest] = useState([]);
   const [requestAccepted, setRequestAccepted] = useState([]);
   const [requestCancelled, setRequestCancelled] = useState([]);
-  const { socket } = useSelector(state => state);
+  // const { socket } = useSelector(state => state);
   const { auth } = useSelector(state => state);
+  const { data: allUser, isFetching } = useQuery({
+    queryKey: ['getUsers'],
+    queryFn: () => getUsers(),
+    staleTime: 10 * (60 * 1000),
+    cacheTime: 15 * (60 * 1000),
+  });
+
   useLayoutEffect(() => {
     const handleRequest = async () => {
       const data = await axios.get(`${getRequestRoute}/${auth?._id}`);
       setCurrentRequest(prev => [...prev, ...data.data.data]);
-      data.data.data.map(async user => {
-        const item = await axios.get(`${getUserRoute}/${user.senderId}`);
-        setCurrentUserRequest(prev => [...prev, item.data.data]);
+      let checkUserRequest = [];
+      allUser.data.users.forEach(user => {
+        checkUserRequest[user._id] = user;
       });
+      setCurrentUserRequest(
+        data.data.data.map(user => checkUserRequest[user.senderId])
+      );
     };
     handleRequest();
   }, []);
@@ -58,67 +70,76 @@ const Notification = () => {
   };
 
   return (
-    <Container>
-      <div className="search-user w-full">
-        {currentUserRequest && currentUserRequest.length !== 0 ? (
-          <div className="flex flex-col gap-2 overflow-y-scroll h-[160px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
-            {currentUserRequest.map((contact, index) => {
-              return (
-                <div
-                  className="contact flex flex-row bg-[#ffffff30] max-h-[4rem] h-[4rem] w-full rounded-md p-3 items-center justify-between"
-                  key={index}
-                >
-                  <div className="flex flex-row items-center justify-center gap-3">
-                    {contact.avatar ? (
-                      <img
-                        src={
-                          'data:image/png;base64, ' + contact.avatar.imageBase64
-                        }
-                        alt=""
-                        className="rounded-full h-[50px] w-[50px]"
-                      />
-                    ) : (
-                      <div className="text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex items-center justify-center m-auto rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
-                        <p>{contact?.fullname[0]}</p>
-                      </div>
-                    )}
+    <>
+      {isFetching ? (
+        <LoadingCompoent />
+      ) : (
+        <Container>
+          <div className="search-user w-full">
+            {currentUserRequest && currentUserRequest.length !== 0 ? (
+              <div className="flex flex-col gap-2 overflow-y-scroll h-[160px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
+                {currentUserRequest.map((contact, index) => {
+                  return (
+                    <div
+                      className="contact flex flex-row bg-[#ffffff30] max-h-[4rem] h-[4rem] w-full rounded-md p-3 items-center justify-between"
+                      key={index}
+                    >
+                      <div className="flex flex-row items-center justify-center gap-3">
+                        {contact.avatar ? (
+                          <img
+                            src={
+                              'data:image/png;base64, ' +
+                              contact.avatar.imageBase64
+                            }
+                            alt=""
+                            className="rounded-full h-[50px] w-[50px]"
+                          />
+                        ) : (
+                          <div className="text-3xl text-[rgb(249,251,255)] h-[50px] w-[50px] flex items-center justify-center m-auto rounded-full bg-gradient-to-r from-[#79C7C5] to-[#A1E2D9]">
+                            <p>{contact?.fullname[0]}</p>
+                          </div>
+                        )}
 
-                    <h1 className="text-lg">
-                      {contact?.fullname.length > 15
-                        ? contact.fullname.substring(0, 15) + '...'
-                        : contact.fullname}
-                    </h1>
-                  </div>
-
-                  <div className="username">
-                    {requestAccepted.includes(contact._id) ? (
-                      <div className="text-lg">Accepted</div>
-                    ) : requestCancelled.includes(contact._id) ? (
-                      <div className="text-lg">Cancelled</div>
-                    ) : (
-                      <div className="flex flex-row gap-3">
-                        <FontAwesomeIcon
-                          onClick={() => handleAcceptedRequest(contact._id)}
-                          icon={faCheck}
-                          className="text-2xl cursor-pointer"
-                        />
-                        <FontAwesomeIcon
-                          onClick={() => handleCancelledRequest(contact._id)}
-                          icon={faXmark}
-                          className="text-2xl cursor-pointer"
-                        />
+                        <h1 className="text-lg">
+                          {contact?.fullname.length > 15
+                            ? contact.fullname.substring(0, 15) + '...'
+                            : contact.fullname}
+                        </h1>
                       </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+
+                      <div className="username">
+                        {requestAccepted.includes(contact._id) ? (
+                          <div className="text-lg">Accepted</div>
+                        ) : requestCancelled.includes(contact._id) ? (
+                          <div className="text-lg">Cancelled</div>
+                        ) : (
+                          <div className="flex flex-row gap-3">
+                            <FontAwesomeIcon
+                              onClick={() => handleAcceptedRequest(contact._id)}
+                              icon={faCheck}
+                              className="text-2xl cursor-pointer"
+                            />
+                            <FontAwesomeIcon
+                              onClick={() =>
+                                handleCancelledRequest(contact._id)
+                              }
+                              icon={faXmark}
+                              className="text-2xl cursor-pointer"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p>Nothing</p>
+            )}
           </div>
-        ) : (
-          <p>Nothing</p>
-        )}
-      </div>
-    </Container>
+        </Container>
+      )}
+    </>
   );
 };
 
