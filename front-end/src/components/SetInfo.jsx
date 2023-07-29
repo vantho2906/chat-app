@@ -205,34 +205,7 @@ const SetInfo = () => {
                   </div>
                 </div>
               </div>
-              <div className="">
-                <p className="pl-2">Password</p>
-                <div className="flex items-center w-[88%]">
-                  <input
-                    className="w-full bg-[#F9FBFF] h-[40px] border-[#777777] border-[2px] outline-none rounded-md p-2"
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    value={values.password}
-                    onChange={e => handleChange(e)}
-                    disabled={edit['password']}
-                  />
-                  {/* <div
-                  onClick={() =>
-                    setEdit({
-                      ...edit,
-                      ['password']: !edit['password'],
-                    })
-                  }
-                >
-                  {edit.password ? (
-                    <BiEditAlt fontSize={26} />
-                  ) : (
-                    <AiOutlineCloseCircle fontSize={26} />
-                  )}
-                </div> */}
-                </div>
-              </div>
+              {/*  */}
             </div>
             <button
               className="w-50 h-10 rounded hover:bg-opacity-95 bg-[#63a09e] text-white"

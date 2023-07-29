@@ -12,7 +12,6 @@ function Logout({ socket }) {
     socket.current.disconnect(true);
     localStorage.clear();
     navigate('/login');
-    window.location.reload();
   };
   return (
     <Button onClick={handleClick}>

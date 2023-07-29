@@ -1,4 +1,4 @@
-import { getAPI } from '../utils/FetchData';
+import { getAPI, postAPI } from '../utils/FetchData';
 import {
   getAllContacts,
   getAllUsers,
@@ -14,5 +14,6 @@ export const getUsers = async () => {
 };
 
 export const getMessageRoom = async (currentRoom, userId) => {
-  return await getAPI(`${getMessagesRoute}/${currentRoom}`, { userId });
+  console.log(userId);
+  return await postAPI(`${getMessagesRoute}/${currentRoom}`, { userId });
 };

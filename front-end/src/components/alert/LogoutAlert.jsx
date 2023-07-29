@@ -1,9 +1,11 @@
 import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../redux/actions/authAction';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from 'react-query';
+import { getAPI } from '../../utils/FetchData';
+import { logoutRoute } from '../../utils/APIRoutes';
+import { toast } from 'react-toastify';
 
 export default function LogoutAlert() {
   const [open, setOpen] = useState(true);
@@ -12,6 +14,31 @@ export default function LogoutAlert() {
   const { socket } = useSelector(state => state);
 
   const cancelButtonRef = useRef(null);
+
+  const toastOptions = {
+    position: 'top-right',
+    autoClose: 3000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: 'light',
+  };
+
+  const { mutate: logout } = useMutation({
+    mutationFn: () => {
+      return getAPI(logoutRoute);
+    },
+    onError: error => {
+      toast.error(error.data.message, toastOptions);
+    },
+    onSuccess: data => {
+      dispatch({
+        type: 'AUTH',
+        payload: {},
+      });
+      navigate('/login');
+      toast.success(data.data.msg, toastOptions);
+    },
+  });
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -65,8 +92,7 @@ export default function LogoutAlert() {
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-[#63a09e] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#79C7C5] sm:ml-3 sm:w-auto"
                     onClick={() => {
                       setOpen(false);
-                      dispatch(logout());
-                      navigate('/login');
+                      logout();
                     }}
                   >
                     Logout
@@ -75,9 +101,7 @@ export default function LogoutAlert() {
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:!bg-gray-200 sm:mt-0 sm:w-auto"
                     onClick={() => {
-                      dispatch({ type: 'ALERT', payload: { logout: false } });
                       setOpen(false);
-                      socket.close();
                     }}
                     ref={cancelButtonRef}
                   >

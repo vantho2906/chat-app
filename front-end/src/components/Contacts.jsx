@@ -14,11 +14,7 @@ import Menu from './Menu';
 import Navigation from './Navigation';
 import { useSelector } from 'react-redux';
 
-function Contacts({ contacts, changeChat, socket, onlineUsers, navSelect }) {
-  const [currentUserName, setCurrentUserName] = useState(undefined);
-  // const [onlineUsers, setOnlineUsers] = useState([]);
-  // const [navSelect, setNavSelect] = useState('messages');
-  const [menu, setMenu] = useState(false);
+function Contacts({ currentRoom, changeChat, socket, onlineUsers, navSelect }) {
   const [numberNotes, setNumberNotes] = useState(0);
 
   const { auth } = useSelector(state => state);
@@ -67,7 +63,11 @@ function Contacts({ contacts, changeChat, socket, onlineUsers, navSelect }) {
           </div>
         </div>
         {navSelect === 'messages' && (
-          <Message changeChat={changeChat} onlineUsers={onlineUsers} />
+          <Message
+            changeChat={changeChat}
+            currentRoom={currentRoom}
+            onlineUsers={onlineUsers}
+          />
         )}
         {navSelect === 'search-friends' && <SearchUser socket={socket} />}
         {navSelect === 'notifications' && <Notifications socket={socket} />}

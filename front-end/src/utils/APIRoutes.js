@@ -1,6 +1,10 @@
-export const host = 'http://localhost:5001/api/v1';
+export const host = process.env.SERVER_URL ?? 'http://localhost:5001/api/v1';
+export const host1 = process.env.SERVER_URL ?? 'http://localhost:10030';
+// export const host = 'http://localhost:5001/api/v1';
 
-export const registerRoute = `${host}/user/register`;
+export const firstStepRegisterRoute = `${host1}/auth/first-step-normal-register`;
+export const finalStepRegisterRoute = `${host1}/auth/final-step-normal-register`;
+
 export const avatarRoute = `${host}/upload`;
 export const loginRoute = `${host}/user/login`;
 export const logoutRoute = `${host}/user/logout`;

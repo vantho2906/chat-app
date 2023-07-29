@@ -40,8 +40,6 @@ function SearchUser({ socket }) {
     );
   };
 
-  console.log(loadUserChats);
-
   const filterUsers = fullname => {
     const regex = new RegExp(fullname, 'i'); // 'i' flag for case-insensitive search
     return data?.data.users.filter(
@@ -101,7 +99,7 @@ function SearchUser({ socket }) {
         )}
       </div>
       {searchUser && (
-        <div className="contacts overflow-y-scroll h-[240px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
+        <div className="contacts overflow-y-scroll h-[400px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-5">
           {loading ? (
             searchUser && <LoadingCompoent />
           ) : (
@@ -111,7 +109,7 @@ function SearchUser({ socket }) {
                   {loadUserChats?.map((contact, index) => {
                     return (
                       <div
-                        className="contact flex flex-row items-center px-2 py-2 cursor-pointer rounded-md border-b-[#79C7C5] border-b-[1px] hover:bg-white/20"
+                        className="contact flex flex-row items-center px-2 py-3 cursor-pointer rounded-md border-b-[#79C7C5] border-b-[1px] hover:bg-white/20"
                         key={index}
                       >
                         <div className="avatar flex flex-row items-center space-x-2 text-lg">

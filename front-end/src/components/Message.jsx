@@ -5,12 +5,13 @@ import LoadingCompoent from './alert/LoadingCompoent';
 import { useQuery } from 'react-query';
 import { getContacts } from '../apis/user.api';
 
-function Message({ changeChat, onlineUsers }) {
+function Message({ currentRoom, changeChat, onlineUsers }) {
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const dispatch = useDispatch();
   const changeCurrentChat = (index, contact) => {
     changeChat(data.data.data.chatRoomIdList[index], contact);
     setCurrentSelected(index);
+    console.log(data);
   };
 
   const { auth } = useSelector(state => state);
@@ -26,14 +27,16 @@ function Message({ changeChat, onlineUsers }) {
 
   return (
     <div className="h-[70%] flex flex-col justify-end">
-      <div className="overflow-y-scroll overflow-x-hidden lg:h-[210px] h-[400px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-2">
+      <div className="overflow-y-scroll overflow-x-hidden h-[400px] scrollbar-thin scrollbar-thumb-black scrollbar-thumb-rounded mb-2">
         {data?.data?.data ? (
           <div className="flex flex-col justify-center">
             {data?.data?.data.contacts.map((contact, index) => {
               return (
                 <div
-                  className={`flex justify-center lg:justify-start lg:px-4 py-2 cursor-pointer space-y-2 border-b-[#79C7C5] lg:border-b-[1px] ${
-                    index === currentSelected ? ' bg-white/50 rounded-lg' : ''
+                  className={`flex hover:bg-white/20 justify-center lg:justify-start lg:px-4 py-3 cursor-pointer space-y-2 border-b-[#79C7C5] lg:border-b-[1px] ${
+                    currentRoom === data?.data?.data.chatRoomIdList[index]
+                      ? ' bg-white/50 rounded-lg'
+                      : ''
                   }`}
                   onClick={() => changeCurrentChat(index, contact)}
                   key={index}

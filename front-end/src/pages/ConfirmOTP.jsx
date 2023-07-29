@@ -7,10 +7,13 @@ import {
   sendOTPRoute,
   resendOTPRoute,
   confirmOTPRoute,
+  finalStepRegisterRoute,
 } from '../utils/APIRoutes';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { confirmOTP, resendOTP, sendOTP } from '../redux/actions/OTPAction';
+import { confirmOTP, resendOTP } from '../redux/actions/OTPAction';
+import { postAPI } from '../utils/FetchData';
+import { useMutation } from 'react-query';
 
 function ConfirmOTP() {
   const navigate = useNavigate();
@@ -18,60 +21,66 @@ function ConfirmOTP() {
   const [OTPcode, setOTPcode] = useState('');
   const location = useLocation();
   const { otp } = useSelector(state => state);
-  const { username, email, phone, password, fullname } = location.state;
+  const { userInfo } = location.state;
 
   const handleChange = e => {
     setOTPcode(e.target.value);
   };
-  useEffect(() => {
-    const handleSendOTP = async () => {
-      dispatch(sendOTP({ username: username, email: email }));
-    };
-    handleSendOTP();
-  }, []);
+
+  const toastOptions = {
+    position: 'top-right',
+    autoClose: 3000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: 'light',
+  };
 
   useEffect(() => {
     if (otp.check) {
+      toast.success('Register success!', toastOptions);
       navigate('/login');
     }
   }, [otp]);
 
+  const { mutate: resendOTP, isLoading: isResendingOTP } = useMutation({
+    mutationFn: info => {
+      return postAPI(resendOTPRoute, info);
+    },
+    onError: error => {
+      toast.error(error.data.message, toastOptions);
+    },
+    onSuccess: data => {
+      toast.success(data.data.message, toastOptions);
+    },
+  });
+
+  const { mutate: confirmOTP, isLoading: isConfirmingOTP } = useMutation({
+    mutationFn: info => {
+      return postAPI(finalStepRegisterRoute, info);
+    },
+    onError: error => {
+      toast.error(error.data.message, toastOptions);
+    },
+    onSuccess: data => {
+      console.log(data);
+      // toast.success(data.data.message, toastOptions);
+    },
+  });
+
   const handleResendOTP = async () => {
-    dispatch(resendOTP({ username: username, email: email }));
+    // resendOTP({ username: username, email: email });
   };
 
   const handleSubmitOTP = async e => {
     e.preventDefault();
 
-    dispatch(
-      confirmOTP({
-        OTPcode: OTPcode,
-        username: username,
-        email: email,
-        fullname: fullname,
-        phone: phone,
-        password: password,
-      })
-    );
-
-    // const data = axios.post(confirmOTPRoute, {
-    //   OTPcode,
-    //   email,
-    //   username,
-    //   fullname,
-    //   phone,
-    //   password,
-    // });
-    // data.then(res => {
-    //   if (res.status === 200) {
-    //     console.log('successfully');
-    //     navigate('/register/avatar', {
-    //       state: {
-    //         username: username,
-    //       },
-    //     });
-    //   }
-    // });
+    confirmOTP({
+      userOTP: OTPcode,
+      fname: userInfo.fname,
+      lname: userInfo.lname,
+      email: userInfo.email,
+      password: userInfo.password,
+    });
   };
 
   return (
@@ -98,7 +107,7 @@ function ConfirmOTP() {
         </span>
         <button
           type="submit"
-          className="w-full h-[40px] rounded-xl hover:bg-opacity-80 bg-[#777777] text-white"
+          className="w-full h-[40px] rounded-xl hover:bg-opacity-80 bg-[#63a09e] text-white"
         >
           Submit
         </button>
